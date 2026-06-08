@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rational — AI Employees for Finance & Accounting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1A1714;
+  --paper: #FAF7F2;
+  --cream: #F3EDE4;
+  --warm: #C4883A;
+  --warm-soft: rgba(196,136,58,0.08);
+  --warm-glow: rgba(196,136,58,0.2);
+  --ease: cubic-bezier(0.25, 1, 0.5, 1);
+  --pad: max(1.2rem, 3vw);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ===== GRAIN OVERLAY ===== */
+.grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.25;
+  z-index: 9999;
+}
+
+/* ===== PROGRESS BAR ===== */
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: var(--warm);
+  z-index: 10001;
+  width: 0%;
+  transition: width 0.1s linear;
+}
+
+/* ===== AMBIENT BACKGROUND ===== */
+.ambient-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.ambient-spot {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.12;
+  background: var(--warm);
+}
+
+.ambient-spot:nth-child(1) {
+  width: 500px; height: 500px;
+  top: 10%; left: 20%;
+  animation: drift1 25s ease-in-out infinite;
+}
+.ambient-spot:nth-child(2) {
+  width: 400px; height: 400px;
+  top: 50%; right: 10%;
+  animation: drift2 30s ease-in-out infinite;
+}
+.ambient-spot:nth-child(3) {
+  width: 350px; height: 350px;
+  bottom: 20%; left: 40%;
+  animation: drift3 22s ease-in-out infinite;
+}
+
+@keyframes drift1 {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(40px, -30px); }
+  66% { transform: translate(-20px, 20px); }
+}
+@keyframes drift2 {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(-30px, 40px); }
+  66% { transform: translate(20px, -20px); }
+}
+@keyframes drift3 {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(20px, 30px); }
+  66% { transform: translate(-40px, -10px); }
+}
+
+/* ===== NAV ===== */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10000;
+  padding: 1rem var(--pad);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background 0.4s ease, backdrop-filter 0.4s ease;
+}
+
+nav.scrolled {
+  background: rgba(250, 247, 242, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(196,136,58,0.1);
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.wordmark {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.5rem;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.yc-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid var(--warm);
+  color: var(--warm);
+  border-radius: 3px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.65rem 1.4rem;
+  border-radius: 6px;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s var(--ease);
+}
+
+.btn-solid {
+  background: var(--ink);
+  color: var(--paper);
+}
+.btn-solid:hover {
+  background: #2d2823;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(26,23,20,0.15);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1.5px solid var(--ink);
+}
+.btn-ghost:hover {
+  background: var(--warm-soft);
+  border-color: var(--warm);
+  color: var(--warm);
+}
+
+/* ===== HERO ===== */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 8rem var(--pad) 4rem;
+  z-index: 1;
+}
+
+.hero-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+}
+
+.hero h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(2.8rem, 7vw, 5.5rem);
+  line-height: 1.05;
+  margin-bottom: 1.2rem;
+  letter-spacing: -0.02em;
+}
+
+.hero p {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  line-height: 1.7;
+  color: #4a433c;
+  max-width: 560px;
+  margin-bottom: 2rem;
+}
+
+.hero-ctas {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* ===== STATS BAND ===== */
+.stats-band {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  padding: 3rem var(--pad);
+  background: var(--cream);
+  border-top: 1px solid rgba(196,136,58,0.15);
+  border-bottom: 1px solid rgba(196,136,58,0.15);
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat-number {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: var(--warm);
+  display: block;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #6b6158;
+  margin-top: 0.3rem;
+}
+
+/* ===== MARQUEE ===== */
+.marquee-section {
+  position: relative;
+  z-index: 1;
+  padding: 2rem 0;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+.marquee-row {
+  display: flex;
+  white-space: nowrap;
+  animation: marquee-left 35s linear infinite;
+}
+
+.marquee-row.reverse {
+  animation: marquee-right 35s linear infinite;
+  margin-top: 0.8rem;
+}
+
+.marquee-row span {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(26,23,20,0.25);
+  padding: 0 2rem;
+}
+
+@keyframes marquee-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes marquee-right {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+/* ===== SECTIONS ===== */
+section {
+  position: relative;
+  z-index: 1;
+  padding: 5rem var(--pad);
+}
+
+.section-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--warm);
+  margin-bottom: 0.8rem;
+}
+
+.section-heading {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  line-height: 1.15;
+  margin-bottom: 1.5rem;
+  max-width: 600px;
+}
+
+/* ===== PROBLEM (two-column) ===== */
+.problem-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+.problem-right p {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: #4a433c;
+}
+
+/* ===== SOLUTION (2x2 grid) ===== */
+.capabilities-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+  max-width: 800px;
+}
+
+.capability-card {
+  padding: 1.8rem;
+  border-radius: 10px;
+  background: var(--cream);
+  border: 1px solid rgba(196,136,58,0.1);
+  transition: all 0.4s var(--ease);
+}
+
+.capability-card:hover {
+  border-color: var(--warm-glow);
+  box-shadow: 0 8px 30px rgba(196,136,58,0.08);
+  transform: translateY(-2px);
+}
+
+.capability-card h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.capability-card p {
+  font-size: 0.9rem;
+  color: #6b6158;
+  line-height: 1.6;
+}
+
+/* ===== FLOW VISUALIZATION ===== */
+.flow-section {
+  background: var(--cream);
+  border-top: 1px solid rgba(196,136,58,0.1);
+  border-bottom: 1px solid rgba(196,136,58,0.1);
+}
+
+.flow-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-top: 3rem;
+  padding: 2rem 0;
+  position: relative;
+  overflow-x: auto;
+}
+
+.flow-track {
+  display: flex;
+  align-items: center;
+  position: relative;
+  gap: 0;
+}
+
+.flow-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.flow-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 2px solid rgba(196,136,58,0.3);
+  position: relative;
+  transition: all 0.4s var(--ease);
+}
+
+.flow-dot::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  transition: all 0.4s var(--ease);
+}
+
+.flow-node.active .flow-dot {
+  background: var(--warm);
+  border-color: var(--warm);
+  box-shadow: 0 0 20px var(--warm-glow);
+}
+
+.flow-node.active .flow-dot::after {
+  border-color: var(--warm);
+  animation: pulse-ring 1.5s ease-out infinite;
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+.flow-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #6b6158;
+  margin-top: 1rem;
+  text-align: center;
+  white-space: nowrap;
+  transition: color 0.4s var(--ease);
+}
+
+.flow-node.active .flow-label {
+  color: var(--warm);
+  font-weight: 600;
+}
+
+.flow-line {
+  width: 60px;
+  height: 2px;
+  background: rgba(196,136,58,0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.flow-line-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background: var(--warm);
+  border-radius: 1px;
+  box-shadow: 0 0 8px var(--warm-glow);
+  transition: width 0.3s ease;
+}
+
+.flow-line.active .flow-line-fill {
+  width: 100%;
+}
+
+/* ===== OUTCOMES ===== */
+.outcomes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin-top: 2.5rem;
+}
+
+.outcome-card {
+  text-align: center;
+  padding: 2rem 1.5rem;
+  border-radius: 10px;
+  background: var(--cream);
+  border: 1px solid rgba(196,136,58,0.1);
+}
+
+.outcome-number {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: var(--warm);
+  display: block;
+}
+
+.outcome-label {
+  font-size: 0.9rem;
+  color: #6b6158;
+  margin-top: 0.5rem;
+  line-height: 1.5;
+}
+
+/* ===== HOW IT WORKS (timeline) ===== */
+.timeline {
+  position: relative;
+  max-width: 600px;
+  margin-top: 3rem;
+  padding-left: 3rem;
+}
+
+.timeline-track {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 8px;
+  width: 2px;
+  background: rgba(196,136,58,0.15);
+}
+
+.timeline-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0%;
+  background: var(--warm);
+  border-radius: 1px;
+  transition: height 0.3s ease;
+}
+
+.timeline-step {
+  position: relative;
+  padding-bottom: 3rem;
+}
+
+.timeline-step:last-child { padding-bottom: 0; }
+
+.timeline-marker {
+  position: absolute;
+  left: -3rem;
+  top: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 2px solid rgba(196,136,58,0.3);
+  transform: translateX(calc(-50% + 9px));
+  transition: all 0.4s var(--ease);
+}
+
+.timeline-step.active .timeline-marker {
+  background: var(--warm);
+  border-color: var(--warm);
+  box-shadow: 0 0 15px var(--warm-glow);
+}
+
+.timeline-step-number {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--warm);
+  margin-bottom: 0.4rem;
+}
+
+.timeline-step h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+}
+
+.timeline-step p {
+  font-size: 0.9rem;
+  color: #6b6158;
+  line-height: 1.7;
+}
+
+/* ===== ROLE CARDS ===== */
+.role-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+}
+
+.role-card {
+  padding: 2rem;
+  border-radius: 10px;
+  background: var(--paper);
+  border: 1px solid rgba(196,136,58,0.12);
+  transition: all 0.4s var(--ease);
+}
+
+.role-card:hover {
+  border-color: var(--warm);
+  box-shadow: 0 12px 40px rgba(196,136,58,0.1);
+  transform: translateY(-3px);
+}
+
+.role-card h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.2rem;
+  margin-bottom: 0.6rem;
+  color: var(--warm);
+}
+
+.role-card p {
+  font-size: 0.9rem;
+  color: #6b6158;
+  line-height: 1.7;
+}
+
+/* ===== TRUST STRIP ===== */
+.trust-strip {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding: 2.5rem var(--pad);
+  background: var(--cream);
+  border-top: 1px solid rgba(196,136,58,0.1);
+  border-bottom: 1px solid rgba(196,136,58,0.1);
+}
+
+.trust-item {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #6b6158;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.trust-item::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--warm);
+  border-radius: 50%;
+  opacity: 0.6;
+}
+
+/* ===== CTA MEGA ===== */
+.cta-mega {
+  background: var(--ink);
+  padding: 5rem var(--pad);
+  text-align: center;
+}
+
+.cta-mega .section-heading {
+  color: var(--paper);
+  margin: 0 auto 1rem;
+}
+
+.cta-mega p {
+  color: rgba(250,247,242,0.7);
+  margin-bottom: 2rem;
+  font-size: 1.05rem;
+}
+
+.cta-mega .btn-solid {
+  background: var(--warm);
+  color: var(--paper);
+  font-size: 1rem;
+  padding: 0.8rem 2rem;
+}
+
+.cta-mega .btn-solid:hover {
+  background: #d4983f;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(196,136,58,0.3);
+}
+
+.cta-mega .cta-note {
+  font-size: 0.8rem;
+  color: rgba(250,247,242,0.4);
+  margin-top: 1.2rem;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  position: relative;
+  z-index: 1;
+  padding: 2rem var(--pad);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(196,136,58,0.1);
+}
+
+footer .wordmark {
+  font-size: 1.2rem;
+}
+
+footer .copyright {
+  font-size: 0.8rem;
+  color: #6b6158;
+}
+
+/* ===== SCROLL REVEAL ===== */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  filter: blur(3px);
+  transition: opacity 0.9s var(--ease), transform 0.9s var(--ease), filter 0.9s var(--ease);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+  .marquee-row { animation: none !important; }
+  .ambient-spot { animation: none !important; }
+  .flow-node.active .flow-dot::after { animation: none !important; }
+  .flow-line-fill { transition: none !important; }
+  .timeline-fill { transition: none !important; }
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+  .problem-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .capabilities-grid {
+    grid-template-columns: 1fr;
+  }
+  .stats-band {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .outcomes-grid {
+    grid-template-columns: 1fr;
+  }
+  .role-grid {
+    grid-template-columns: 1fr;
+  }
+  .flow-visual {
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding: 2rem 1rem;
+  }
+  .flow-line { width: 35px; }
+  .trust-strip {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  nav { padding: 0.8rem var(--pad); }
+  .yc-badge { display: none; }
+  .hero { padding: 6rem var(--pad) 3rem; }
+  .hero h1 { font-size: 2.4rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- Grain Overlay -->
+<svg class="grain" xmlns="http://www.w3.org/2000/svg">
+  <filter id="noiseFilter">
+    <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="4" stitchTiles="stitch"/>
+  </filter>
+  <rect width="100%" height="100%" filter="url(#noiseFilter)" opacity="0.4"/>
+</svg>
+
+<!-- Ambient Background -->
+<div class="ambient-bg">
+  <div class="ambient-spot"></div>
+  <div class="ambient-spot"></div>
+  <div class="ambient-spot"></div>
+</div>
+
+<!-- Nav -->
+<nav id="nav">
+  <div class="nav-left">
+    <a href="#" class="wordmark">Rational</a>
+    <span class="yc-badge">Backed by YC</span>
+  </div>
+  <a href="#demo" class="btn btn-solid">Book a Demo</a>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <canvas class="hero-canvas" id="heroCanvas"></canvas>
+  <div class="hero-content">
+    <h1 class="reveal">The new satisfying hire.</h1>
+    <p class="reveal">AI employees for finance &amp; accounting that learn your chart of accounts, your vendor rules, your exceptions — and start producing work in 48 hours.</p>
+    <div class="hero-ctas reveal">
+      <a href="#demo" class="btn btn-solid">Book a Demo →</a>
+      <a href="#how" class="btn btn-ghost">See How It Works</a>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Band -->
+<div class="stats-band">
+  <div class="stat reveal">
+    <span class="stat-number" data-target="340" data-suffix="K">0</span>
+    <span class="stat-label">accountants quit since 2019</span>
+  </div>
+  <div class="stat reveal">
+    <span class="stat-number" data-target="90" data-suffix="%">0</span>
+    <span class="stat-label">of firms can't fill roles</span>
+  </div>
+  <div class="stat reveal">
+    <span class="stat-number" data-target="48" data-suffix="hrs">0</span>
+    <span class="stat-label">to first AI employee</span>
+  </div>
+</div>
+
+<!-- Dual-Direction Marquee -->
+<div class="marquee-section">
+  <div class="marquee-row">
+    <span>ACCOUNTS PAYABLE</span><span>•</span><span>RECONCILIATION</span><span>•</span><span>MONTH-END CLOSE</span><span>•</span><span>VENDOR MANAGEMENT</span><span>•</span><span>INVOICE PROCESSING</span><span>•</span>
+    <span>ACCOUNTS PAYABLE</span><span>•</span><span>RECONCILIATION</span><span>•</span><span>MONTH-END CLOSE</span><span>•</span><span>VENDOR MANAGEMENT</span><span>•</span><span>INVOICE PROCESSING</span><span>•</span>
+  </div>
+  <div class="marquee-row reverse">
+    <span>QUICKBOOKS</span><span>•</span><span>XERO</span><span>•</span><span>NETSUITE</span><span>•</span><span>SAGE</span><span>•</span><span>BILL.COM</span><span>•</span><span>EXPENSIFY</span><span>•</span><span>RAMP</span><span>•</span><span>BREX</span><span>•</span>
+    <span>QUICKBOOKS</span><span>•</span><span>XERO</span><span>•</span><span>NETSUITE</span><span>•</span><span>SAGE</span><span>•</span><span>BILL.COM</span><span>•</span><span>EXPENSIFY</span><span>•</span><span>RAMP</span><span>•</span><span>BREX</span><span>•</span>
+  </div>
+</div>
+
+<!-- Problem Section -->
+<section class="problem-section">
+  <div class="problem-grid">
+    <div class="problem-left">
+      <span class="section-label reveal">The Crisis</span>
+      <h2 class="section-heading reveal">Accounting is running out of people.</h2>
+    </div>
+    <div class="problem-right">
+      <p class="reveal">The pipeline is broken. 340,000 accountants have left the profession since 2019, and new graduates aren't replacing them. Meanwhile, the work keeps growing. A single Bay Area bookkeeper costs $70–95K fully loaded — if you can even find one. Firms are turning away clients. Controllers are doing the work of three people. Something has to give.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Solution Section -->
+<section class="solution-section">
+  <span class="section-label reveal">Not a Tool. An Employee.</span>
+  <h2 class="section-heading reveal">Works the way your team already does.</h2>
+  <div class="capabilities-grid">
+    <div class="capability-card reveal">
+      <h3>Chart of Accounts</h3>
+      <p>Learns your specific GL structure — every account, every sub-account, every mapping rule your team uses.</p>
+    </div>
+    <div class="capability-card reveal">
+      <h3>Vendor Rules</h3>
+      <p>Knows that Office Depot always goes to 6200, that the Johnson invoice needs three-way match, that recurring charges from AWS split across departments.</p>
+    </div>
+    <div class="capability-card reveal">
+      <h3>Approval Chains</h3>
+      <p>Routes work to the right person at the right threshold. Director approval over $5K. VP approval over $25K. Your rules, enforced consistently.</p>
+    </div>
+    <div class="capability-card reveal">
+      <h3>Exceptions</h3>
+      <p>Flags what doesn't look right — new vendors, unusual amounts, missing POs — and escalates to your team for a decision, then remembers the answer.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Flow Visualization -->
+<section class="flow-section">
+  <span class="section-label reveal">From Inbox to Approval</span>
+  <h2 class="section-heading reveal">Watch an invoice move through your process.</h2>
+  <div class="flow-visual reveal" id="flowVisual">
+    <div class="flow-track">
+      <div class="flow-node" data-step="0">
+        <div class="flow-dot"></div>
+        <span class="flow-label">Invoice received</span>
+      </div>
+      <div class="flow-line"><div class="flow-line-fill"></div></div>
+      <div class="flow-node" data-step="1">
+        <div class="flow-dot"></div>
+        <span class="flow-label">Vendor matched</span>
+      </div>
+      <div class="flow-line"><div class="flow-line-fill"></div></div>
+      <div class="flow-node" data-step="2">
+        <div class="flow-dot"></div>
+        <span class="flow-label">Coded to GL</span>
+      </div>
+      <div class="flow-line"><div class="flow-line-fill"></div></div>
+      <div class="flow-node" data-step="3">
+        <div class="flow-dot"></div>
+        <span class="flow-label">Routed for approval</span>
+      </div>
+      <div class="flow-line"><div class="flow-line-fill"></div></div>
+      <div class="flow-node" data-step="4">
+        <div class="flow-dot"></div>
+        <span class="flow-label">Approved &amp; queued</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Outcomes Section -->
+<section class="outcomes-section">
+  <h2 class="section-heading reveal" style="text-align:center; max-width:700px; margin:0 auto 1.5rem;">What changes when your best hire never leaves.</h2>
+  <div class="outcomes-grid">
+    <div class="outcome-card reveal">
+      <span class="outcome-number" data-target="75" data-suffix="%" data-prefix="">0</span>
+      <span class="outcome-label">less manual processing</span>
+    </div>
+    <div class="outcome-card reveal">
+      <span class="outcome-number" data-target="3" data-suffix="-day" data-prefix="">0</span>
+      <span class="outcome-label">month-end close (down from 12+)</span>
+    </div>
+    <div class="outcome-card reveal">
+      <span class="outcome-number" data-target="0" data-suffix="" data-prefix="">0</span>
+      <span class="outcome-label">retraining cycles</span>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section id="how" class="how-section">
+  <span class="section-label reveal">How It Works</span>
+  <h2 class="section-heading reveal">Three steps to your newest team member.</h2>
+  <div class="timeline" id="timeline">
+    <div class="timeline-track">
+      <div class="timeline-fill" id="timelineFill"></div>
+    </div>
+    <div class="timeline-step reveal" data-step="1">
+      <div class="timeline-marker"></div>
+      <span class="timeline-step-number">Step 01</span>
+      <h3>We sit with your team for 48 hours.</h3>
+      <p>We watch how your people make decisions — which invoices get coded where, what triggers an exception, who approves what. We capture every rule, written and unwritten.</p>
+    </div>
+    <div class="timeline-step reveal" data-step="2">
+      <div class="timeline-marker"></div>
+      <span class="timeline-step-number">Step 02</span>
+      <h3>Your AI employee starts producing real work.</h3>
+      <p>Not a demo. Real invoices, real reconciliations, real coding — on your actual data, in your actual systems. Your team reviews everything at first.</p>
+    </div>
+    <div class="timeline-step reveal" data-step="3">
+      <div class="timeline-marker"></div>
+      <span class="timeline-step-number">Step 03</span>
+      <h3>It gets smarter every week.</h3>
+      <p>Every correction your team makes becomes permanent knowledge. After a month, most work flows through without human touch. After three months, it handles edge cases your last hire never learned.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Role-Based Section -->
+<section class="roles-section">
+  <h2 class="section-heading reveal" style="text-align:center; max-width:600px; margin:0 auto 2.5rem;">Built for the people who feel the pain.</h2>
+  <div class="role-grid">
+    <div class="role-card reveal">
+      <h3>For CFOs</h3>
+      <p>Headcount capacity without the six-month search. Scale your finance function without scaling your payroll. Budget with certainty.</p>
+    </div>
+    <div class="role-card reveal">
+      <h3>For Controllers</h3>
+      <p>Close faster with fewer errors. Stop choosing between speed and accuracy. Get your weekends back during close.</p>
+    </div>
+    <div class="role-card reveal">
+      <h3>For AP Managers</h3>
+      <p>Stop drowning in invoices. Focus on vendor relationships and exceptions — let routine processing handle itself.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Trust Strip -->
+<div class="trust-strip">
+  <span class="trust-item reveal">SOC 2 Compliant</span>
+  <span class="trust-item reveal">Your Data Never Trains Models</span>
+  <span class="trust-item reveal">Works Inside Your Existing Stack</span>
+  <span class="trust-item reveal">Human-in-the-Loop Review</span>
+</div>
+
+<!-- CTA Mega -->
+<section class="cta-mega" id="demo">
+  <h2 class="section-heading reveal">Your next great hire isn't human.</h2>
+  <p class="reveal">See how Rational works on your actual data, your actual processes.</p>
+  <a href="#" class="btn btn-solid reveal">Book a Demo →</a>
+  <p class="cta-note reveal">No commitment. No credit card. Just a conversation.</p>
+</section>
+
+<!-- Footer -->
+<footer>
+  <a href="#" class="wordmark">Rational</a>
+  <span class="copyright">&copy; 2026 Rational</span>
+</footer>
+
+<script>
+(function() {
+  'use strict';
+
+  // Respect reduced motion
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ===== PROGRESS BAR =====
+  const progressBar = document.getElementById('progressBar');
+  function updateProgress() {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progressBar.style.width = progress + '%';
+  }
+
+  // ===== NAV SCROLL =====
+  const nav = document.getElementById('nav');
+  function updateNav() {
+    if (window.scrollY > 50) {
+      nav.classList.add('scrolled');
+    } else {
+      nav.classList.remove('scrolled');
+    }
+  }
+
+  // ===== SCROLL REVEAL =====
+  const revealElements = document.querySelectorAll('.reveal');
+  const revealObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        // Stagger children
+        const parent = entry.target.parentElement;
+        const siblings = Array.from(parent.querySelectorAll('.reveal'));
+        const index = siblings.indexOf(entry.target);
+        const delay = index * 100;
+        setTimeout(function() {
+          entry.target.classList.add('visible');
+        }, prefersReducedMotion ? 0 : delay);
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+
+  revealElements.forEach(function(el) {
+    if (prefersReducedMotion) {
+      el.classList.add('visible');
+    } else {
+      revealObserver.observe(el);
+    }
+  });
+
+  // ===== ANIMATED COUNTERS =====
+  function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
+  }
+
+  function animateCounter(el) {
+    const target = parseInt(el.getAttribute('data-target'));
+    const suffix = el.getAttribute('data-suffix') || '';
+    const prefix = el.getAttribute('data-prefix') || '';
+    const duration = 2000;
+    const startTime = performance.now();
+
+    if (target === 0) {
+      el.textContent = prefix + '0' + (suffix ? ' ' + suffix : '');
+      return;
+    }
+
+    function update(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = easeOutCubic(progress);
+      const current = Math.round(target * eased);
+      el.textContent = prefix + current + suffix;
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      }
+    }
+    requestAnimationFrame(update);
+  }
+
+  const counters = document.querySelectorAll('[data-target]');
+  const counterObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        if (!prefersReducedMotion) {
+          animateCounter(entry.target);
+        } else {
+          const target = entry.target.getAttribute('data-target');
+          const suffix = entry.target.getAttribute('data-suffix') || '';
+          entry.target.textContent = target + suffix;
+        }
+        counterObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  counters.forEach(function(el) { counterObserver.observe(el); });
+
+  // ===== FLOW VISUALIZATION ANIMATION =====
+  const flowNodes = document.querySelectorAll('.flow-node');
+  const flowLines = document.querySelectorAll('.flow-line');
+  let flowInterval;
+  let flowActive = false;
+
+  function runFlowAnimation() {
+    const totalSteps = flowNodes.length;
+    const stepDuration = 1200; // ms per step
+    let currentStep = 0;
+
+    function clearFlow() {
+      flowNodes.forEach(function(n) { n.classList.remove('active'); });
+      flowLines.forEach(function(l) { l.classList.remove('active'); });
+    }
+
+    function advanceStep() {
+      clearFlow();
+      // Activate current node
+      if (currentStep < totalSteps) {
+        flowNodes[currentStep].classList.add('active');
+        // Activate all lines before current step
+        for (let i = 0; i < currentStep; i++) {
+          if (flowLines[i]) flowLines[i].classList.add('active');
+        }
+      }
+      currentStep++;
+      if (currentStep > totalSteps) {
+        currentStep = 0;
+        setTimeout(advanceStep, 800);
+      } else {
+        setTimeout(advanceStep, stepDuration);
+      }
+    }
+
+    advanceStep();
+  }
+
+  const flowVisual = document.getElementById('flowVisual');
+  const flowObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting && !flowActive && !prefersReducedMotion) {
+        flowActive = true;
+        runFlowAnimation();
+      }
+    });
+  }, { threshold: 0.3 });
+
+  if (flowVisual) flowObserver.observe(flowVisual);
+
+  // ===== TIMELINE FILL =====
+  const timeline = document.getElementById('timeline');
+  const timelineFill = document.getElementById('timelineFill');
+  const timelineSteps = document.querySelectorAll('.timeline-step');
+
+  function updateTimeline() {
+    if (!timeline || prefersReducedMotion) return;
+    const rect = timeline.getBoundingClientRect();
+    const timelineTop = rect.top;
+    const timelineHeight = rect.height;
+    const viewCenter = window.innerHeight * 0.6;
+    const progress = Math.max(0, Math.min(1, (viewCenter - timelineTop) / timelineHeight));
+    timelineFill.style.height = (progress * 100) + '%';
+
+    timelineSteps.forEach(function(step, i) {
+      const stepRect = step.getBoundingClientRect();
+      if (stepRect.top < viewCenter) {
+        step.classList.add('active');
+      } else {
+        step.classList.remove('active');
+      }
+    });
+  }
+
+  // ===== HERO CANVAS (Organic Blobs) =====
+  const canvas = document.getElementById('heroCanvas');
+  const ctx = canvas ? canvas.getContext('2d') : null;
+  let canvasVisible = true;
+  let animationId;
+
+  function resizeCanvas() {
+    if (!canvas) return;
+    canvas.width = canvas.parentElement.offsetWidth;
+    canvas.height = canvas.parentElement.offsetHeight;
+  }
+
+  const blobs = [
+    { x: 0.7, y: 0.3, radius: 200, phase: 0, speed: 0.0008 },
+    { x: 0.3, y: 0.6, radius: 160, phase: 2, speed: 0.001 },
+    { x: 0.5, y: 0.4, radius: 180, phase: 4, speed: 0.0006 }
+  ];
+
+  function drawBlobs(time) {
+    if (!ctx || !canvasVisible || prefersReducedMotion) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    blobs.forEach(function(blob) {
+      const cx = blob.x * canvas.width + Math.sin(time * blob.speed + blob.phase) * 40;
+      const cy = blob.y * canvas.height + Math.cos(time * blob.speed * 0.7 + blob.phase) * 30;
+      const r = blob.radius + Math.sin(time * blob.speed * 1.2 + blob.phase) * 20;
+
+      const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+      gradient.addColorStop(0, 'rgba(196, 136, 58, 0.08)');
+      gradient.addColorStop(0.5, 'rgba(196, 136, 58, 0.04)');
+      gradient.addColorStop(1, 'rgba(196, 136, 58, 0)');
+
+      ctx.beginPath();
+      // Draw organic blob shape using bezier
+      const points = 8;
+      for (let i = 0; i <= points; i++) {
+        const angle = (i / points) * Math.PI * 2;
+        const wobble = Math.sin(time * blob.speed * 2 + angle * 3 + blob.phase) * 0.15;
+        const dr = r * (1 + wobble);
+        const px = cx + Math.cos(angle) * dr;
+        const py = cy + Math.sin(angle) * dr;
+        if (i === 0) {
+          ctx.moveTo(px, py);
+        } else {
+          const prevAngle = ((i - 1) / points) * Math.PI * 2;
+          const midAngle = (prevAngle + angle) / 2;
+          const cpWobble = Math.sin(time * blob.speed * 2 + midAngle * 3 + blob.phase) * 0.15;
+          const cpR = r * (1 + cpWobble) * 1.1;
+          const cpx = cx + Math.cos(midAngle) * cpR;
+          const cpy = cy + Math.sin(midAngle) * cpR;
+          ctx.quadraticCurveTo(cpx, cpy, px, py);
+        }
+      }
+      ctx.closePath();
+      ctx.fillStyle = gradient;
+      ctx.fill();
+    });
+
+    animationId = requestAnimationFrame(drawBlobs);
+  }
+
+  // Canvas visibility observer
+  if (canvas && !prefersReducedMotion) {
+    const canvasObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        canvasVisible = entry.isIntersecting;
+        if (canvasVisible && !animationId) {
+          animationId = requestAnimationFrame(drawBlobs);
+        } else if (!canvasVisible && animationId) {
+          cancelAnimationFrame(animationId);
+          animationId = null;
+        }
+      });
+    }, { threshold: 0 });
+    canvasObserver.observe(canvas);
+    resizeCanvas();
+    animationId = requestAnimationFrame(drawBlobs);
+    window.addEventListener('resize', resizeCanvas);
+  }
+
+  // ===== SCROLL EVENT =====
+  let ticking = false;
+  window.addEventListener('scroll', function() {
+    if (!ticking) {
+      requestAnimationFrame(function() {
+        updateProgress();
+        updateNav();
+        updateTimeline();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+
+  // Initial calls
+  updateProgress();
+  updateNav();
+  updateTimeline();
+})();
+</script>
+</body>
+</html>

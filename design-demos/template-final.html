@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rational — The Intelligence Layer for Professional Services</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1A1714;
+  --paper: #FAF7F2;
+  --cream: #F3EDE4;
+  --warm: #C4883A;
+  --warm-soft: rgba(196,136,58,0.08);
+  --warm-glow: rgba(196,136,58,0.2);
+  --t1: #5C5650;
+  --t2: #8A8279;
+  --t3: #B8B0A6;
+  --t4: #DDD6CC;
+  --t5: #EDE8E0;
+  --font-heading: 'DM Serif Display', serif;
+  --font-body: 'Inter', sans-serif;
+  --margin: max(1.2rem, 3vw);
+  --ease: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: #fff;
+  color: var(--ink);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ===== PROGRESS BAR ===== */
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: var(--warm);
+  z-index: 10001;
+  width: 0%;
+  opacity: 0;
+  transition: width 0.1s linear, opacity 0.3s ease;
+}
+.progress-bar.visible { opacity: 1; }
+
+/* ===== GRAIN OVERLAY ===== */
+.grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.grain.active { opacity: 0.25; }
+
+/* ===== NAV ===== */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  padding: 1rem var(--margin);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: transparent;
+  transition: background 0.4s var(--ease);
+}
+nav.scrolled {
+  background: var(--paper);
+}
+.nav-wordmark {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  color: var(--ink);
+  text-decoration: none;
+}
+.yc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  pointer-events: auto;
+}
+.yc-logo {
+  width: 24px;
+  height: 24px;
+  background: #F26522;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #fff;
+  line-height: 1;
+}
+.yc-text {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+.btn-cta {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--paper);
+  background: var(--ink);
+  border: none;
+  padding: 0.6rem 1.4rem;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.3s var(--ease), transform 0.2s var(--ease);
+}
+.btn-cta:hover {
+  background: var(--t1);
+  transform: translateY(-1px);
+}
+
+/* ===== HERO — SCROLL CLIP-PATH ===== */
+.hero {
+  position: relative;
+  height: calc(1500px + 100vh);
+  background: #fff;
+}
+.hero-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #fff;
+}
+.hero-image {
+  position: absolute;
+  inset: 0;
+  background-image: url('https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=2000&q=80');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 170%;
+  clip-path: polygon(20% 22%, 80% 22%, 80% 78%, 20% 78%);
+  will-change: clip-path, background-size;
+}
+.hero-text {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  pointer-events: none;
+  padding: 0 var(--margin);
+}
+.hero-headline {
+  font-family: var(--font-heading);
+  font-size: clamp(2.8rem, 7vw, 5.5rem);
+  line-height: 1.1;
+  color: var(--ink);
+  margin-bottom: 1rem;
+}
+.hero-headline .char {
+  display: inline-block;
+  opacity: 0;
+  filter: blur(6px);
+  transform: translateY(8px);
+  animation: charReveal 0.6s var(--ease) forwards;
+}
+@keyframes charReveal {
+  to { opacity: 1; filter: blur(0); transform: translateY(0); }
+}
+.hero-subtitle {
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  color: var(--t1);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* ===== SOCIAL PROOF PILL ===== */
+.social-proof-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--paper);
+  border: 1px solid var(--t4);
+  border-radius: 50px;
+  padding: 0.35rem 1rem 0.35rem 0.4rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.pill-avatars {
+  display: flex;
+}
+.pill-avatars .pill-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--paper);
+  margin-left: -6px;
+  object-fit: cover;
+}
+.pill-avatars .pill-avatar:first-child { margin-left: 0; }
+.pill-text {
+  font-size: 0.75rem;
+  color: var(--t2);
+}
+.pill-text strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* ===== CANVAS BLOBS ===== */
+.blob-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ===== STATS BAND ===== */
+.stats {
+  position: relative;
+  padding: 5rem var(--margin);
+  display: flex;
+  justify-content: center;
+  gap: clamp(2rem, 6vw, 6rem);
+  flex-wrap: wrap;
+}
+.stat {
+  text-align: center;
+  opacity: 0;
+  transform: translateY(20px);
+}
+.stat-number {
+  font-family: var(--font-heading);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  color: var(--ink);
+}
+.stat-label {
+  font-size: 0.85rem;
+  color: var(--t2);
+  margin-top: 0.3rem;
+}
+
+/* ===== MARQUEE ===== */
+.marquee-section {
+  padding: 2rem 0;
+  overflow: hidden;
+  border-top: 1px solid var(--t5);
+  border-bottom: 1px solid var(--t5);
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  gap: 3rem;
+  padding: 0.8rem 0;
+}
+.marquee-track.left { animation: marqueeLeft 30s linear infinite; }
+.marquee-track.right { animation: marqueeRight 30s linear infinite; }
+@keyframes marqueeLeft {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes marqueeRight {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+.marquee-item {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--t3);
+  white-space: nowrap;
+}
+.marquee-wrapper {
+  position: relative;
+}
+.marquee-wrapper::before,
+.marquee-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 80px;
+  z-index: 2;
+  pointer-events: none;
+}
+.marquee-wrapper::before {
+  left: 0;
+  background: linear-gradient(to right, var(--paper), transparent);
+}
+.marquee-wrapper::after {
+  right: 0;
+  background: linear-gradient(to left, var(--paper), transparent);
+}
+
+/* ===== SECTION SHARED ===== */
+section {
+  position: relative;
+  z-index: 1;
+}
+.section-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 6rem var(--margin);
+}
+.section-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--t3);
+  margin-bottom: 1rem;
+}
+.section-heading {
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+}
+.section-body {
+  font-size: 1.05rem;
+  color: var(--t1);
+  line-height: 1.7;
+  max-width: 600px;
+}
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  filter: blur(4px);
+  transition: opacity 0.8s var(--ease), transform 0.8s var(--ease), filter 0.8s var(--ease);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+/* ===== SIGNAL OVERLOAD SECTION ===== */
+.signal-section {
+  position: relative;
+  background: var(--cream);
+  overflow: hidden;
+  min-height: 520px;
+}
+.signal-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 6rem var(--margin);
+}
+.signal-stats {
+  display: flex;
+  justify-content: center;
+  gap: clamp(2rem, 6vw, 5rem);
+  margin-top: 3rem;
+}
+.signal-stat-num {
+  font-family: var(--font-heading);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  color: var(--warm);
+  line-height: 1;
+}
+.signal-stat-label {
+  font-size: 0.85rem;
+  color: var(--t2);
+  margin-top: 0.4rem;
+  max-width: 160px;
+}
+@media (max-width: 768px) {
+  .signal-stats { flex-direction: column; align-items: center; gap: 2rem; }
+}
+
+
+/* ===== RATIONAL LOOP — SCROLL TIMELINE + PENTAGON ===== */
+.flow-section {
+  height: 600vh;
+  background: #fff;
+  position: relative;
+  overflow: clip;
+}
+.loop-sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  height: 100vh;
+  overflow: hidden;
+}
+.loop-header {
+  position: absolute;
+  top: 3vh;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 4;
+  width: 100%;
+  padding: 0 var(--margin);
+  pointer-events: none;
+}
+.loop-timeline {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+.loop-panel {
+  position: absolute;
+  top: 14vh;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: stretch;
+  opacity: 0;
+  will-change: opacity, transform;
+}
+.loop-panel[data-side="left"] { flex-direction: row; }
+.loop-panel[data-side="right"] { flex-direction: row-reverse; }
+.loop-card {
+  width: 35%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 3rem clamp(1.5rem, 3vw, 3rem);
+  background: #fff;
+  border: 1px solid var(--t5);
+  position: relative;
+  z-index: 2;
+}
+.loop-card-number {
+  font-family: var(--font-heading);
+  font-size: clamp(3rem, 6vw, 5rem);
+  color: var(--t4);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+.loop-panel.is-active .loop-card-number { color: var(--warm); }
+.loop-card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--warm-soft);
+  border: 1.5px solid var(--warm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+.loop-card-icon svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--warm);
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.loop-card-title {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  color: var(--ink);
+  margin-bottom: 0.6rem;
+}
+.loop-card-desc {
+  font-size: 0.95rem;
+  color: var(--t1);
+  line-height: 1.7;
+  max-width: 380px;
+}
+.loop-image {
+  width: 65%;
+  position: relative;
+  overflow: hidden;
+}
+.loop-image-bg {
+  position: absolute;
+  inset: -8%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  will-change: transform;
+}
+
+/* Orbital pentagon */
+.loop-orbital {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.85);
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+.loop-orbital.is-visible {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+.orbit-core {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--warm) 0%, rgba(196,136,58,0.3) 60%, transparent 100%);
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.orbit-core-inner {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--cream);
+}
+.orbit-core-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid var(--warm-glow);
+  animation: corePulse 3s ease-in-out infinite;
+}
+.orbit-core-ring:nth-child(1) { width: 72px; height: 72px; inset: -8px; }
+.orbit-core-ring:nth-child(2) { width: 92px; height: 92px; inset: -18px; animation-delay: 1s; }
+.orbit-core-ring:nth-child(3) { width: 112px; height: 112px; inset: -28px; animation-delay: 2s; }
+@keyframes corePulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.15; transform: scale(1.12); }
+}
+.orbit-stage {
+  position: absolute;
+  width: min(500px, 80vw);
+  height: min(500px, 80vw);
+}
+.orbit-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid var(--t4);
+}
+.orbit-rotor {
+  position: absolute;
+  inset: 0;
+  animation: orbitSpin 48s linear infinite;
+}
+@keyframes orbitSpin { to { transform: rotate(360deg); } }
+.orbit-node {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+}
+.orbit-node-inner {
+  animation: orbitSpinReverse 48s linear infinite;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+@keyframes orbitSpinReverse { to { transform: rotate(-360deg); } }
+.orbit-node-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1.5px solid var(--t4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.3s var(--ease), box-shadow 0.3s var(--ease), transform 0.3s var(--ease);
+}
+.orbit-node-circle svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--t2);
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.orbit-node:hover .orbit-node-circle {
+  border-color: var(--warm);
+  box-shadow: 0 0 0 4px var(--warm-glow);
+  transform: scale(1.1);
+}
+.orbit-node:hover .orbit-node-circle svg { stroke: var(--warm); }
+.orbit-node-label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--t2);
+  white-space: nowrap;
+  text-align: center;
+  transition: color 0.3s var(--ease);
+}
+.orbit-node:hover .orbit-node-label { color: var(--ink); }
+.orbit-summary-label {
+  position: absolute;
+  bottom: -3rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orbit-rotor, .orbit-node-inner, .orbit-core-ring { animation: none !important; }
+}
+@media (max-width: 768px) {
+  .flow-section { height: 400vh; }
+  .loop-sticky { height: 100svh; height: 100vh; }
+  .loop-card { width: 50%; padding: 2rem 1.2rem; }
+  .loop-image { width: 50%; }
+  .orbit-stage { width: min(300px, 80vw); height: min(300px, 80vw); }
+  .orbit-rotor, .orbit-node-inner { animation: none; }
+  .orbit-node-label { font-size: 0.6rem; }
+}
+
+/* ===== OUTCOMES 2x2 GRID ===== */
+.outcomes-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--t4);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 3rem;
+}
+.outcome-cell {
+  background: var(--cream);
+  padding: 2.5rem 2rem;
+  text-align: center;
+}
+.outcome-number {
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+.outcome-label {
+  font-size: 0.85rem;
+  color: var(--t2);
+}
+@media (max-width: 768px) {
+  .outcomes-grid { grid-template-columns: 1fr; }
+}
+
+
+/* ===== TRUST STRIP ===== */
+.trust {
+  border-top: 1px solid var(--t5);
+  border-bottom: 1px solid var(--t5);
+}
+.trust-inner {
+  display: flex;
+  justify-content: center;
+  gap: clamp(2rem, 5vw, 5rem);
+  flex-wrap: wrap;
+  padding: 3rem var(--margin);
+}
+.trust-item {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--t2);
+}
+
+
+/* ===== CTA MEGA ===== */
+.cta-mega {
+  position: relative;
+  background: var(--ink);
+  overflow: hidden;
+  padding: 8rem var(--margin);
+  text-align: center;
+}
+.cta-mega::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(255,255,255,0.03) 10px,
+    rgba(255,255,255,0.03) 11px
+  );
+  pointer-events: none;
+}
+.cta-glow {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 400px;
+  background: radial-gradient(ellipse, var(--warm-glow) 0%, transparent 70%);
+  pointer-events: none;
+  opacity: 0.6;
+}
+.cta-mouse-gradient {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle 300px at var(--mx, 50%) var(--my, 50%), rgba(196,136,58,0.08), transparent);
+}
+.cta-corner {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: var(--warm);
+  animation: cornerPulse 3s ease-in-out infinite;
+}
+.cta-corner:nth-child(1) { top: 2rem; left: 2rem; animation-delay: 0s; }
+.cta-corner:nth-child(2) { top: 2rem; right: 2rem; animation-delay: 0.75s; }
+.cta-corner:nth-child(3) { bottom: 2rem; left: 2rem; animation-delay: 1.5s; }
+.cta-corner:nth-child(4) { bottom: 2rem; right: 2rem; animation-delay: 2.25s; }
+@keyframes cornerPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.5; }
+}
+.cta-content {
+  position: relative;
+  z-index: 2;
+}
+.cta-heading {
+  font-family: var(--font-heading);
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  color: var(--paper);
+  margin-bottom: 2rem;
+  line-height: 1.2;
+}
+.cta-btn {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--warm);
+  border: none;
+  padding: 1rem 2.5rem;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.3s var(--ease), transform 0.2s var(--ease);
+}
+.cta-btn:hover {
+  background: #d49a4e;
+  transform: translateY(-2px);
+}
+.cta-note {
+  font-size: 0.8rem;
+  color: var(--t3);
+  margin-top: 1rem;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  padding: 3rem var(--margin);
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--t3);
+  border-top: 1px solid var(--t5);
+}
+footer span {
+  font-family: var(--font-heading);
+  color: var(--ink);
+  font-size: 1rem;
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  .hero-image {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%) !important;
+    background-size: cover !important;
+  }
+  .hero-headline .char {
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+    animation: none !important;
+  }
+  .marquee-track { animation: none !important; }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+  }
+  .cta-corner { animation: none !important; }
+  .flow-node { transition: none !important; }
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+  .hero-image {
+    clip-path: polygon(25% 28%, 75% 28%, 75% 72%, 25% 72%);
+    background-image: url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80');
+  }
+  .hero-headline { font-size: clamp(2rem, 8vw, 3rem); }
+  .flow-connector { width: 2px; height: 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Grain Overlay -->
+<svg class="grain" xmlns="http://www.w3.org/2000/svg">
+  <filter id="noiseFilter">
+    <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/>
+    <feColorMatrix type="saturate" values="0"/>
+  </filter>
+  <rect width="100%" height="100%" filter="url(#noiseFilter)"/>
+</svg>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- Nav -->
+<nav id="mainNav">
+  <a href="#" class="nav-wordmark">Rational</a>
+  <a href="mailto:founders@rational.work" class="btn-cta">Book a Demo</a>
+</nav>
+
+<!-- Hero — Scroll Clip-Path -->
+<section class="hero" id="heroSection">
+  <div class="hero-sticky">
+    <div class="hero-image" id="heroImage"></div>
+    <div class="hero-text" id="heroText">
+      <div class="yc-badge">
+        <span class="yc-logo">Y</span>
+        <span class="yc-text">Backed by Y Combinator</span>
+      </div>
+      <h1 class="hero-headline" id="heroHeadline"></h1>
+      <p class="hero-subtitle">AI employees that coordinate your firm's work, remember every client preference, and get better every week. Onboarded in 48 hours.</p>
+      <div class="social-proof-pill" id="socialPill" style="margin-top: 1.2rem; margin-bottom: 0;">
+        <div class="pill-avatars">
+          <img src="https://i.pravatar.cc/80?img=32" width="20" height="20" alt="" class="pill-avatar">
+          <img src="https://i.pravatar.cc/80?img=47" width="20" height="20" alt="" class="pill-avatar">
+          <img src="https://i.pravatar.cc/80?img=12" width="20" height="20" alt="" class="pill-avatar">
+          <img src="https://i.pravatar.cc/80?img=25" width="20" height="20" alt="" class="pill-avatar">
+        </div>
+        <p class="pill-text">Trusted by <strong>600+</strong> F&amp;A teams worldwide</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div style="background: var(--paper);">
+<!-- Stats Band -->
+<section class="stats" id="statsSection">
+  <canvas class="blob-canvas" id="blobCanvas"></canvas>
+  <div class="stat reveal">
+    <div class="stat-number" data-target="125" data-suffix="M hrs">0</div>
+    <div class="stat-label">Annual shortfall in accounting</div>
+  </div>
+  <div class="stat reveal" style="transition-delay: 100ms;">
+    <div class="stat-number" data-target="60" data-suffix="%">0</div>
+    <div class="stat-label">of firm labor is coordination, not client work</div>
+  </div>
+  <div class="stat reveal" style="transition-delay: 200ms;">
+    <div class="stat-number" data-target="73" data-suffix=" days">0</div>
+    <div class="stat-label">Average time to fill a CPA role</div>
+  </div>
+</section>
+
+<!-- Dual Marquee -->
+<section class="marquee-section">
+  <div class="marquee-wrapper">
+    <div class="marquee-track left">
+      <span class="marquee-item">ENGAGEMENT ROUTING</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">DOCUMENT COLLECTION</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">CLIENT FOLLOW-UPS</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">DEADLINE TRACKING</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">REVIEWER ASSIGNMENT</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">ESCALATION HANDLING</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">ENGAGEMENT ROUTING</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">DOCUMENT COLLECTION</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">CLIENT FOLLOW-UPS</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">DEADLINE TRACKING</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">REVIEWER ASSIGNMENT</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">ESCALATION HANDLING</span>
+      <span class="marquee-item">&bull;</span>
+    </div>
+  </div>
+  <div class="marquee-wrapper" style="margin-top: 0.5rem;">
+    <div class="marquee-track right">
+      <span class="marquee-item">QUICKBOOKS</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">XERO</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">NETSUITE</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">CANOPY</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">KARBON</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">BILL.COM</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">SAGE</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">TAXDOME</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">QUICKBOOKS</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">XERO</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">NETSUITE</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">CANOPY</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">KARBON</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">BILL.COM</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">SAGE</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">TAXDOME</span>
+      <span class="marquee-item">&bull;</span>
+    </div>
+  </div>
+</section>
+
+<!-- Signal Overload Section -->
+<section class="signal-section" id="signalSection">
+  <div class="signal-content reveal">
+    <p class="section-label">The Problem</p>
+    <h2 class="section-heading">A dozen tools. Hundreds of clients.<br>The bottleneck: your team.</h2>
+    <div class="signal-stats">
+      <div>
+        <div class="signal-stat-num">60%</div>
+        <div class="signal-stat-label">of firm labor is coordination, not client work</div>
+      </div>
+      <div>
+        <div class="signal-stat-num">300K</div>
+        <div class="signal-stat-label">accounting roles sit unfilled nationwide</div>
+      </div>
+      <div>
+        <div class="signal-stat-num">72 days</div>
+        <div class="signal-stat-label">average to fill a single accounting position</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Rational Loop — Scroll Timeline + Pentagon -->
+<section class="flow-section" id="rationalLoop">
+  <div class="loop-sticky">
+    <div class="loop-header">
+      <p class="section-label">The Rational Loop</p>
+      <h2 class="section-heading">Observe. Reason. Act. Improve.</h2>
+    </div>
+
+    <div class="loop-timeline" id="loopTimeline">
+      <article class="loop-panel" data-stage="0" data-side="left">
+        <div class="loop-card">
+          <div class="loop-card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/></svg></div>
+          <div class="loop-card-number">01</div>
+          <h3 class="loop-card-title">Signal detected</h3>
+          <p class="loop-card-desc">Your tools generate hundreds of signals daily. Emails, deadlines, status changes, capacity shifts. Rational catches every one.</p>
+        </div>
+        <div class="loop-image"><div class="loop-image-bg" style="background-image:url('https://images.unsplash.com/photo-1596526131083-e8c633c948d2?auto=format&fit=crop&w=1600&q=80')"></div></div>
+      </article>
+
+      <article class="loop-panel" data-stage="1" data-side="right">
+        <div class="loop-card">
+          <div class="loop-card-icon"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div>
+          <div class="loop-card-number">02</div>
+          <h3 class="loop-card-title">Context loaded</h3>
+          <p class="loop-card-desc">Rational pulls the full picture: client history, team capacity, preferences, and priorities. Nothing gets missed.</p>
+        </div>
+        <div class="loop-image"><div class="loop-image-bg" style="background-image:url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1600&q=80')"></div></div>
+      </article>
+
+      <article class="loop-panel" data-stage="2" data-side="left">
+        <div class="loop-card">
+          <div class="loop-card-icon"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg></div>
+          <div class="loop-card-number">03</div>
+          <h3 class="loop-card-title">Best action determined</h3>
+          <p class="loop-card-desc">Every option is scored. Williams: 92% fit — industry match, reviewed Cornerstone last 2 years, Tuesday AM available.</p>
+        </div>
+        <div class="loop-image"><div class="loop-image-bg" style="background-image:url('https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1600&q=80')"></div></div>
+      </article>
+
+      <article class="loop-panel" data-stage="3" data-side="right">
+        <div class="loop-card">
+          <div class="loop-card-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg></div>
+          <div class="loop-card-number">04</div>
+          <h3 class="loop-card-title">Team coordinated</h3>
+          <p class="loop-card-desc">The right person gets the right task through their preferred channel. No chasing. No dropped balls.</p>
+        </div>
+        <div class="loop-image"><div class="loop-image-bg" style="background-image:url('https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=1600&q=80')"></div></div>
+      </article>
+
+      <article class="loop-panel" data-stage="4" data-side="left">
+        <div class="loop-card">
+          <div class="loop-card-icon"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+          <div class="loop-card-number">05</div>
+          <h3 class="loop-card-title">Knowledge compounded</h3>
+          <p class="loop-card-desc">Every correction becomes permanent. Week 4 is measurably sharper than week 1. Your firm's intelligence grows forever.</p>
+        </div>
+        <div class="loop-image"><div class="loop-image-bg" style="background-image:url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1600&q=80')"></div></div>
+      </article>
+    </div>
+
+    <div class="loop-orbital" id="loopOrbital">
+      <div class="orbit-stage" id="orbitStage">
+        <div class="orbit-ring"></div>
+        <div class="orbit-rotor" id="orbitRotor">
+          <div class="orbit-node" data-orbit="0">
+            <div class="orbit-node-inner">
+              <div class="orbit-node-circle">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/></svg>
+              </div>
+              <span class="orbit-node-label">Signal detected</span>
+            </div>
+          </div>
+          <div class="orbit-node" data-orbit="1">
+            <div class="orbit-node-inner">
+              <div class="orbit-node-circle">
+                <svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+              </div>
+              <span class="orbit-node-label">Context loaded</span>
+            </div>
+          </div>
+          <div class="orbit-node" data-orbit="2">
+            <div class="orbit-node-inner">
+              <div class="orbit-node-circle">
+                <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
+              </div>
+              <span class="orbit-node-label">Best action</span>
+            </div>
+          </div>
+          <div class="orbit-node" data-orbit="3">
+            <div class="orbit-node-inner">
+              <div class="orbit-node-circle">
+                <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+              </div>
+              <span class="orbit-node-label">Team coordinated</span>
+            </div>
+          </div>
+          <div class="orbit-node" data-orbit="4">
+            <div class="orbit-node-inner">
+              <div class="orbit-node-circle">
+                <svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+              </div>
+              <span class="orbit-node-label">Knowledge compounded</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="orbit-core">
+        <div class="orbit-core-ring"></div>
+        <div class="orbit-core-ring"></div>
+        <div class="orbit-core-ring"></div>
+        <div class="orbit-core-inner"></div>
+      </div>
+      <div class="orbit-summary-label">The Rational Loop</div>
+    </div>
+  </div>
+</section>
+
+<!-- Outcomes -->
+<section>
+  <div class="section-inner">
+    <div class="reveal">
+      <p class="section-label">Impact</p>
+      <h2 class="section-heading">What changes after 90 days.</h2>
+    </div>
+    <div class="outcomes-grid reveal" style="transition-delay: 150ms;">
+      <div class="outcome-cell">
+        <div class="outcome-number" data-target="4" data-suffix=".2 hrs">0</div>
+        <div class="outcome-label">of coordination handled in 60 seconds</div>
+      </div>
+      <div class="outcome-cell">
+        <div class="outcome-number" data-target="247" data-suffix="">0</div>
+        <div class="outcome-label">Engagements coordinated simultaneously</div>
+      </div>
+      <div class="outcome-cell">
+        <div class="outcome-number" data-target="0" data-prefix="" data-suffix="">0</div>
+        <div class="outcome-label">Knowledge lost to turnover</div>
+      </div>
+      <div class="outcome-cell">
+        <div class="outcome-number" data-target="50" data-prefix="$" data-suffix="K/yr">0</div>
+        <div class="outcome-label">Per AI employee — half a full-time hire</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Trust Strip -->
+<section class="trust">
+  <div class="trust-inner">
+    <span class="trust-item reveal">SOC 2 Type II</span>
+    <span class="trust-item reveal" style="transition-delay: 50ms;">Bank-Grade Encryption</span>
+    <span class="trust-item reveal" style="transition-delay: 100ms;">Works With Your Stack</span>
+    <span class="trust-item reveal" style="transition-delay: 150ms;">Human-in-the-Loop Always</span>
+  </div>
+</section>
+
+
+<!-- CTA Mega -->
+<section class="cta-mega" id="ctaMega">
+  <div class="cta-corner"></div>
+  <div class="cta-corner"></div>
+  <div class="cta-corner"></div>
+  <div class="cta-corner"></div>
+  <div class="cta-glow"></div>
+  <div class="cta-mouse-gradient" id="ctaMouseGradient"></div>
+  <div class="cta-content">
+    <h2 class="cta-heading reveal">Your firm's coordination layer<br>starts here.</h2>
+    <a href="mailto:founders@rational.work" class="cta-btn reveal" style="transition-delay: 100ms;" id="book-demo">Book a Demo</a>
+    <p class="cta-note reveal" style="transition-delay: 200ms;">No commitment. No credit card. Just a conversation.</p>
+  </div>
+</section>
+
+</div>
+<!-- Footer -->
+<footer>
+  <span>Rational</span>
+  <p style="margin-top: 0.5rem;">&copy; 2026 Rational, Inc. All rights reserved.</p>
+</footer>
+
+<script>
+(function() {
+  'use strict';
+
+  // ===== HERO HEADLINE CHAR-BY-CHAR ANIMATION =====
+  const headlineText = 'Your perfect next hire.';
+  const headlineEl = document.getElementById('heroHeadline');
+  headlineText.split('').forEach((char, i) => {
+    const span = document.createElement('span');
+    span.className = 'char';
+    span.textContent = char === ' ' ? ' ' : char;
+    span.style.animationDelay = `${i * 35}ms`;
+    headlineEl.appendChild(span);
+  });
+
+  // ===== SMOOTH SCROLL CLIP-PATH HERO =====
+  const heroSection = document.getElementById('heroSection');
+  const heroImage = document.getElementById('heroImage');
+  const heroText = document.getElementById('heroText');
+  const isMobile = window.innerWidth <= 768;
+  const clipX = isMobile ? 25 : 20;
+  const clipY = isMobile ? 28 : 22;
+
+  function updateHero() {
+    const rect = heroSection.getBoundingClientRect();
+    const scrollDistance = 1500;
+    const scrolled = -rect.top;
+    const progress = Math.max(0, Math.min(1, scrolled / scrollDistance));
+
+    // Interpolate clip-path
+    const x1 = lerp(clipX, 0, progress);
+    const y1 = lerp(clipY, 0, progress);
+    const x2 = lerp(100 - clipX, 100, progress);
+    const y2 = lerp(100 - clipY, 100, progress);
+    heroImage.style.clipPath = `polygon(${x1}% ${y1}%, ${x2}% ${y1}%, ${x2}% ${y2}%, ${x1}% ${y2}%)`;
+
+    // Interpolate background-size
+    const bgSize = lerp(170, 100, progress);
+    heroImage.style.backgroundSize = `${bgSize}%`;
+
+    // Fade text — only disappear once image fully zoomed out
+    const textOpacity = progress < 0.75 ? 1 : progress > 1 ? 0 : 1 - ((progress - 0.75) / 0.25);
+    heroText.style.opacity = textOpacity;
+
+    return progress;
+  }
+
+  function lerp(a, b, t) {
+    return a + (b - a) * t;
+  }
+
+  let loopActive = false;
+
+  // ===== NAV TRANSITION =====
+  const mainNav = document.getElementById('mainNav');
+  const grainEl = document.querySelector('.grain');
+  const creamSections = document.querySelectorAll('.signal-section');
+  function updateNav(heroProgress) {
+    if (heroProgress > 0.9) {
+      mainNav.classList.add('scrolled');
+      grainEl.classList.add('active');
+      const navBottom = mainNav.getBoundingClientRect().bottom;
+      let onCream = false;
+      creamSections.forEach(s => {
+        const r = s.getBoundingClientRect();
+        if (r.top < navBottom && r.bottom > navBottom) onCream = true;
+      });
+      mainNav.style.background = onCream ? 'var(--cream)' : 'var(--paper)';
+    } else {
+      mainNav.classList.remove('scrolled');
+      grainEl.classList.remove('active');
+      mainNav.style.background = '';
+    }
+  }
+
+  // ===== PROGRESS BAR =====
+  const progressBar = document.getElementById('progressBar');
+  function updateProgress(heroProgress) {
+    if (heroProgress >= 1) {
+      progressBar.classList.add('visible');
+      const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
+      const remaining = document.body.scrollHeight - heroBottom - window.innerHeight;
+      const pastHero = window.scrollY - heroBottom;
+      const pct = Math.max(0, Math.min(100, (pastHero / remaining) * 100));
+      progressBar.style.width = pct + '%';
+    } else {
+      progressBar.classList.remove('visible');
+      progressBar.style.width = '0%';
+    }
+  }
+
+
+  // ===== SCROLL HANDLER =====
+  function onScroll() {
+    const heroProgress = updateHero();
+    updateNav(heroProgress);
+    updateProgress(heroProgress);
+    if (typeof updateLoopScroll === 'function') updateLoopScroll();
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // ===== INTERSECTION OBSERVER FOR REVEALS =====
+  const reveals = document.querySelectorAll('.reveal');
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      entry.target.classList.toggle('visible', entry.isIntersecting);
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+  reveals.forEach(el => revealObserver.observe(el));
+
+  // ===== ANIMATED COUNTERS =====
+  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+  function animateCounter(el) {
+    const target = parseInt(el.getAttribute('data-target'));
+    const suffix = el.getAttribute('data-suffix') || '';
+    const prefix = el.getAttribute('data-prefix') || '';
+    if (target === 0) { el.textContent = prefix || '0'; return; }
+    const duration = 1500;
+    const start = performance.now();
+    function tick(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const value = Math.round(easeOutCubic(progress) * target);
+      el.textContent = prefix + value + (suffix ? suffix : '');
+      if (progress < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  const counterEls = document.querySelectorAll('[data-target]');
+  const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        animateCounter(entry.target);
+      } else {
+        entry.target.textContent = '0';
+      }
+    });
+  }, { threshold: 0.5 });
+  counterEls.forEach(el => counterObserver.observe(el));
+
+
+  // ===== RATIONAL LOOP — SCROLL TIMELINE + PENTAGON =====
+  const loopSection = document.getElementById('rationalLoop');
+  const loopTimeline = document.getElementById('loopTimeline');
+  const loopOrbital = document.getElementById('loopOrbital');
+  const loopPanels = [...document.querySelectorAll('.loop-panel')];
+  const orbitNodes = [...document.querySelectorAll('.orbit-node')];
+
+  const loopObserver = new IntersectionObserver(entries => {
+    loopActive = entries.some(e => e.isIntersecting);
+  }, { rootMargin: '200px 0px' });
+  loopObserver.observe(loopSection);
+
+  function smoothstep(edge0, edge1, x) {
+    const t = Math.max(0, Math.min(1, (x - edge0) / (edge1 - edge0)));
+    return t * t * (3 - 2 * t);
+  }
+
+  function clamp(v, min, max) {
+    return Math.max(min, Math.min(max, v));
+  }
+
+  function updateLoopScroll() {
+    if (!loopActive) return;
+    const rect = loopSection.getBoundingClientRect();
+    const scrollable = loopSection.offsetHeight - window.innerHeight;
+    if (scrollable <= 0) return;
+    const raw = clamp(-rect.top / scrollable, 0, 1);
+
+    const timelineProgress = clamp(raw / 0.82, 0, 1);
+    const orbitalRaw = clamp((raw - 0.78) / 0.22, 0, 1);
+    const orbitalProgress = smoothstep(0, 1, orbitalRaw);
+
+    const count = loopPanels.length;
+    loopPanels.forEach((panel, i) => {
+      const card = panel.querySelector('.loop-card');
+      const img = panel.querySelector('.loop-image');
+      const imgBg = panel.querySelector('.loop-image-bg');
+      const stageStart = i / count;
+      const stageEnd = (i + 1) / count;
+      const local = clamp((timelineProgress - stageStart) / (stageEnd - stageStart), 0, 1);
+
+      const isVisible = local > 0.005 && local < 0.995 && timelineProgress <= stageEnd + 0.01;
+      const fadeIn = smoothstep(0, 0.20, local);
+      const fadeOut = 1 - smoothstep(0.80, 1, local);
+      const panelOpacity = isVisible ? Math.min(fadeIn, fadeOut) : 0;
+
+      panel.style.opacity = panelOpacity;
+      panel.classList.toggle('is-active', isVisible && local > 0.20 && local < 0.80);
+
+      if (panelOpacity <= 0) {
+        card.style.transform = '';
+        card.style.clipPath = '';
+        panel.style.filter = '';
+        if (img) img.style.transform = '';
+        if (img) img.style.clipPath = '';
+        if (imgBg) imgBg.style.transform = '';
+        return;
+      }
+
+      const enter = smoothstep(0, 0.30, local);
+      const exit = smoothstep(0.70, 1, local);
+
+      const exitDrift = exit > 0 ? lerp(0, -12, exit) : 0;
+
+      switch (i) {
+        case 0: {
+          const ty = lerp(40, 0, enter) + exitDrift;
+          card.style.transform = 'translateY(' + ty + 'px)';
+          if (img) img.style.transform = 'translateY(' + (ty * 0.5) + 'px)';
+          if (imgBg) imgBg.style.transform = 'scale(' + lerp(1.06, 1.0, local) + ')';
+          break;
+        }
+
+        case 1: {
+          const sc = lerp(1.06, 1, enter);
+          const bl = lerp(6, 0, enter);
+          panel.style.filter = bl > 0.3 ? 'blur(' + bl + 'px)' : '';
+          card.style.transform = 'scale(' + sc + ') translateY(' + exitDrift + 'px)';
+          if (img) img.style.transform = 'scale(' + sc + ') translateY(' + exitDrift + 'px)';
+          if (imgBg) imgBg.style.transform = 'scale(' + lerp(1.04, 1.0, local) + ')';
+          if (exit > 0) {
+            const ebl = lerp(0, 4, exit);
+            panel.style.filter = ebl > 0.3 ? 'blur(' + ebl + 'px)' : '';
+          }
+          break;
+        }
+
+        case 2: {
+          const ty = lerp(80, 0, enter) + exitDrift;
+          card.style.transform = 'translateY(' + ty + 'px)';
+          if (img) img.style.transform = 'translateY(' + (ty * 0.6) + 'px)';
+          if (imgBg) {
+            const px = lerp(42, 55, local);
+            imgBg.style.transform = 'scale(1.05)';
+            imgBg.style.backgroundPosition = px + '% center';
+          }
+          break;
+        }
+
+        case 3: {
+          if (enter < 1) {
+            const rev = lerp(50, 0, enter);
+            panel.style.clipPath = 'inset(' + rev + '% ' + rev + '% ' + rev + '% ' + rev + '%)';
+          } else {
+            panel.style.clipPath = '';
+          }
+          if (imgBg) imgBg.style.transform = 'scale(' + lerp(1.0, 1.05, local) + ')';
+          card.style.transform = 'translateY(' + exitDrift + 'px)';
+          if (img) img.style.transform = 'translateY(' + exitDrift + 'px)';
+          break;
+        }
+
+        case 4: {
+          const bright = lerp(0.8, 1, enter);
+          panel.style.filter = bright < 0.99 ? 'brightness(' + bright + ')' : '';
+          card.style.transform = 'translateY(' + exitDrift + 'px)';
+          if (img) img.style.transform = 'translateY(' + exitDrift + 'px)';
+          if (imgBg) {
+            const sc = lerp(1.08, 1.0, local);
+            imgBg.style.transform = 'scale(' + sc + ')';
+          }
+          break;
+        }
+      }
+    });
+
+    loopTimeline.style.opacity = 1 - orbitalProgress;
+    loopTimeline.style.transform = 'translateY(' + (orbitalProgress * -30) + 'px)';
+    loopOrbital.classList.toggle('is-visible', orbitalProgress > 0.05);
+    loopOrbital.style.opacity = orbitalProgress;
+    loopOrbital.style.transform = 'scale(' + (0.85 + orbitalProgress * 0.15) + ')';
+  }
+
+  function positionPentagonNodes() {
+    const stage = document.getElementById('orbitStage');
+    if (!stage) return;
+    const size = stage.getBoundingClientRect().width;
+    const radius = size * 0.42;
+
+    orbitNodes.forEach((node, i) => {
+      const angle = (-90 + i * 72) * Math.PI / 180;
+      const x = Math.cos(angle) * radius;
+      const y = Math.sin(angle) * radius;
+      node.style.transform = 'translate(calc(-50% + ' + x + 'px), calc(-50% + ' + y + 'px))';
+    });
+  }
+
+  positionPentagonNodes();
+  window.addEventListener('resize', positionPentagonNodes);
+
+
+  // ===== CTA MOUSE-FOLLOW GRADIENT =====
+  const ctaMega = document.getElementById('ctaMega');
+  const ctaMouseGradient = document.getElementById('ctaMouseGradient');
+  ctaMega.addEventListener('mousemove', (e) => {
+    const rect = ctaMega.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    ctaMouseGradient.style.setProperty('--mx', x + '%');
+    ctaMouseGradient.style.setProperty('--my', y + '%');
+  });
+
+  // ===== CANVAS BLOBS =====
+  const blobCanvas = document.getElementById('blobCanvas');
+  const blobCtx = blobCanvas.getContext('2d');
+  let blobsVisible = false;
+  const blobs = [
+    { x: 0.2, y: 0.3, r: 180, phase: 0 },
+    { x: 0.7, y: 0.5, r: 140, phase: 2 },
+    { x: 0.5, y: 0.7, r: 160, phase: 4 }
+  ];
+
+  function resizeBlobCanvas() {
+    const parent = blobCanvas.parentElement;
+    blobCanvas.width = parent.offsetWidth;
+    blobCanvas.height = parent.offsetHeight;
+  }
+  resizeBlobCanvas();
+  window.addEventListener('resize', resizeBlobCanvas);
+
+  const blobObserver = new IntersectionObserver((entries) => {
+    blobsVisible = entries[0].isIntersecting;
+  }, { threshold: 0 });
+  blobObserver.observe(blobCanvas);
+
+  function drawBlobs(time) {
+    if (blobsVisible) {
+      blobCtx.clearRect(0, 0, blobCanvas.width, blobCanvas.height);
+      blobs.forEach(blob => {
+        const t = time * 0.001;
+        const cx = blob.x * blobCanvas.width + Math.sin(t * 0.3 + blob.phase) * 30;
+        const cy = blob.y * blobCanvas.height + Math.cos(t * 0.2 + blob.phase) * 20;
+        const gradient = blobCtx.createRadialGradient(cx, cy, 0, cx, cy, blob.r);
+        gradient.addColorStop(0, 'rgba(196, 136, 58, 0.06)');
+        gradient.addColorStop(1, 'rgba(196, 136, 58, 0)');
+        blobCtx.fillStyle = gradient;
+        blobCtx.beginPath();
+        blobCtx.arc(cx, cy, blob.r, 0, Math.PI * 2);
+        blobCtx.fill();
+      });
+    }
+    requestAnimationFrame(drawBlobs);
+  }
+  requestAnimationFrame(drawBlobs);
+
+})();
+</script>
+</body>
+</html>

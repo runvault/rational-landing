@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rational — The New Satisfying Hire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pad: max(1rem, 2.5vw);
+  --navy: #0a0e1a;
+  --charcoal: #12161f;
+  --slate: #1a1f2e;
+  --border: #2a2f3e;
+  --text: #f0f0f0;
+  --text-dim: #a0a8b8;
+  --accent: #e84525;
+  --accent-hover: #ff5533;
+  --white: #ffffff;
+  --serif: 'IBM Plex Serif', serif;
+  --sans: 'IBM Plex Sans', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--navy);
+  color: var(--text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.03;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Scroll progress bar */
+#scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--accent);
+  width: 0%;
+  z-index: 10001;
+  transition: width 0.1s linear;
+}
+
+/* Animation system */
+.js-ready .anim {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.js-ready .anim.shown {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Background patterns */
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.bg-dots {
+  background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.bg-diag {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 10px,
+    rgba(255,255,255,0.015) 10px,
+    rgba(255,255,255,0.015) 11px
+  );
+}
+
+/* Nav */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10000;
+  padding: 0.75rem var(--pad);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(10, 14, 26, 0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-logo {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--white);
+  letter-spacing: -0.02em;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.yc-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  letter-spacing: 0.02em;
+}
+
+.yc-badge::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: #f57c00;
+  display: inline-block;
+}
+
+.btn-nav {
+  display: inline-block;
+  padding: 0.5rem 1.25rem;
+  background: var(--accent);
+  color: var(--white);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: background 0.2s;
+}
+
+.btn-nav:hover { background: var(--accent-hover); }
+
+/* Section base */
+section {
+  padding: 5rem var(--pad);
+}
+
+.label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+
+h1, h2, h3 {
+  font-family: var(--serif);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Hero */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 4rem;
+  background: var(--navy);
+}
+
+.hero h1 {
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  line-height: 1.05;
+  margin-bottom: 1.5rem;
+  color: var(--white);
+}
+
+.hero-subtitle {
+  font-size: clamp(1rem, 1.8vw, 1.25rem);
+  color: var(--text-dim);
+  max-width: 42rem;
+  line-height: 1.6;
+  margin-bottom: 2.5rem;
+}
+
+.hero-ctas {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  display: inline-block;
+  padding: 0.85rem 2rem;
+  background: var(--accent);
+  color: var(--white);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover { background: var(--accent-hover); }
+
+.btn-secondary {
+  display: inline-block;
+  padding: 0.85rem 2rem;
+  border: 1px solid var(--border);
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.btn-secondary:hover {
+  border-color: var(--text-dim);
+  color: var(--white);
+}
+
+/* Stats */
+.stats {
+  background: var(--charcoal);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 3.5rem var(--pad);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  max-width: 900px;
+}
+
+.stat-item {
+  text-align: left;
+}
+
+.stat-number {
+  font-family: var(--serif);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.stat-number .suffix {
+  font-size: 0.6em;
+  color: var(--accent);
+}
+
+.stat-desc {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+
+/* Problem */
+.problem {
+  background: var(--navy);
+}
+
+.problem-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  margin-top: 2rem;
+}
+
+.problem h2 {
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  color: var(--white);
+  margin-bottom: 1.5rem;
+}
+
+.problem p {
+  color: var(--text-dim);
+  margin-bottom: 1.25rem;
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+/* Solution */
+.solution {
+  background: var(--charcoal);
+}
+
+.solution h2 {
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  color: var(--white);
+  margin-bottom: 1rem;
+}
+
+.solution-lead {
+  color: var(--text-dim);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  max-width: 40rem;
+  margin-bottom: 3rem;
+}
+
+.solution-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.sol-card {
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  background: var(--navy);
+}
+
+.sol-card h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 0.75rem;
+  font-family: var(--sans);
+}
+
+.sol-card p {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+/* Differentiator */
+.diff-strip {
+  background: var(--slate);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 4rem var(--pad);
+}
+
+.diff-strip h2 {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  color: var(--white);
+  margin-bottom: 1.25rem;
+}
+
+.diff-strip p {
+  color: var(--text-dim);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  max-width: 38rem;
+  margin-bottom: 2rem;
+}
+
+/* Outcomes */
+.outcomes {
+  background: var(--navy);
+}
+
+.outcomes h2 {
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  color: var(--white);
+  margin-bottom: 3rem;
+}
+
+.outcomes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.outcome-item {
+  border-left: 3px solid var(--accent);
+  padding-left: 1.5rem;
+}
+
+.outcome-num {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.outcome-num .suffix {
+  font-size: 0.5em;
+  color: var(--accent);
+}
+
+.outcome-label {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+/* How it works / Timeline */
+.how {
+  background: var(--charcoal);
+}
+
+.how h2 {
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  color: var(--white);
+  margin-bottom: 3.5rem;
+}
+
+.timeline {
+  position: relative;
+  padding-left: 2rem;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border);
+}
+
+.timeline-fill {
+  position: absolute;
+  left: 5px;
+  top: 0;
+  width: 2px;
+  height: 0%;
+  background: var(--accent);
+  transition: height 1.2s ease;
+}
+
+.timeline.filled .timeline-fill {
+  height: 100%;
+}
+
+.step {
+  position: relative;
+  margin-bottom: 3rem;
+  padding-left: 1.5rem;
+}
+
+.step:last-child { margin-bottom: 0; }
+
+.step::before {
+  content: '';
+  position: absolute;
+  left: -2rem;
+  top: 0.35rem;
+  width: 12px;
+  height: 12px;
+  background: var(--accent);
+}
+
+.step-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+
+.step h3 {
+  font-size: 1.15rem;
+  color: var(--white);
+  margin-bottom: 0.5rem;
+  font-family: var(--sans);
+  font-weight: 600;
+}
+
+.step p {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+  max-width: 32rem;
+}
+
+/* Trust strip */
+.trust {
+  background: var(--navy);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 2.5rem var(--pad);
+}
+
+.trust-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.trust-item {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-align: center;
+  padding: 1rem;
+  border: 1px solid var(--border);
+}
+
+/* ICP */
+.icp {
+  background: var(--charcoal);
+}
+
+.icp h2 {
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  color: var(--white);
+  margin-bottom: 2.5rem;
+}
+
+.icp-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.icp-card {
+  padding: 2rem 1.5rem;
+  border: 1px solid var(--border);
+  background: var(--navy);
+}
+
+.icp-card h3 {
+  font-size: 1.05rem;
+  color: var(--white);
+  margin-bottom: 0.75rem;
+  font-family: var(--sans);
+  font-weight: 600;
+}
+
+.icp-card p {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+/* Mega CTA */
+.mega-cta {
+  background: var(--slate);
+  padding: 6rem var(--pad);
+  text-align: center;
+  border-top: 1px solid var(--border);
+}
+
+.mega-cta h2 {
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  color: var(--white);
+  margin-bottom: 1.25rem;
+}
+
+.mega-cta p {
+  color: var(--text-dim);
+  font-size: 1rem;
+  line-height: 1.7;
+  max-width: 32rem;
+  margin: 0 auto 2.5rem;
+}
+
+.mega-cta .btn-primary {
+  padding: 1rem 3rem;
+  font-size: 1.1rem;
+}
+
+.mega-cta .note {
+  margin-top: 1.25rem;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+/* Footer */
+footer {
+  padding: 2rem var(--pad);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footer-logo {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-dim);
+}
+
+.footer-copy {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .stats-grid,
+  .outcomes-grid,
+  .trust-grid,
+  .icp-grid {
+    grid-template-columns: 1fr;
+  }
+  .problem-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .solution-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .solution-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+<body>
+
+<div id="scroll-progress"></div>
+
+<nav>
+  <span class="nav-logo">Rational</span>
+  <div class="nav-right">
+    <span class="yc-badge">Backed by YC</span>
+    <a href="mailto:founders@rational.work" class="btn-nav">Book a Demo</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero bg-grid">
+  <div class="anim">
+    <h1>The new satisfying hire.</h1>
+    <p class="hero-subtitle">AI employees for finance & accounting that learn your chart of accounts, your vendor rules, your exceptions — and start producing work in 48 hours.</p>
+    <div class="hero-ctas">
+      <a href="mailto:founders@rational.work" class="btn-primary">Book a Demo</a>
+      <a href="#how" class="btn-secondary">See How It Works</a>
+    </div>
+  </div>
+</section>
+
+<!-- Stats -->
+<section class="stats bg-dots">
+  <div class="stats-grid">
+    <div class="stat-item anim">
+      <div class="stat-number"><span class="counter" data-to="340" data-suf="K">0</span><span class="suffix">K</span></div>
+      <div class="stat-desc">Accountants quit since 2019</div>
+    </div>
+    <div class="stat-item anim">
+      <div class="stat-number"><span class="counter" data-to="90" data-suf="%">0</span><span class="suffix">%</span></div>
+      <div class="stat-desc">of firms can't fill roles</div>
+    </div>
+    <div class="stat-item anim">
+      <div class="stat-number"><span class="counter" data-to="48" data-suf="hrs">0</span><span class="suffix">hrs</span></div>
+      <div class="stat-desc">To your first AI employee</div>
+    </div>
+  </div>
+</section>
+
+<!-- Problem -->
+<section class="problem bg-diag">
+  <div class="anim">
+    <span class="label">The Crisis</span>
+    <h2>Accounting is running out of people.</h2>
+  </div>
+  <div class="problem-grid">
+    <div class="anim">
+      <p>340,000 accountants and auditors have left the profession since 2019. Not retired — quit. They moved to tech, to consulting, to anything that didn't mean another month-end close at 11 PM.</p>
+      <p>The pipeline is broken. CPA exam candidates are down 33% in a decade. Universities are closing accounting programs. The people who understand debits and credits are disappearing, and they're not coming back.</p>
+    </div>
+    <div class="anim">
+      <p>Meanwhile, every open role costs $70–95K fully loaded — if you can fill it at all. The average time-to-hire for a senior accountant is now 62 days. That's two months of backlogs, missed close deadlines, and your best people burning out covering the gap.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Solution -->
+<section class="solution bg-grid">
+  <div class="anim">
+    <span class="label">Not a Tool. An Employee.</span>
+    <h2>AI that works the way your team already does.</h2>
+    <p class="solution-lead">Most AI tools make you change your process. Rational learns your process. We capture the tacit knowledge — the unwritten rules, the tribal knowledge, the "ask Janet" decisions — and encode it into AI employees that actually do the work.</p>
+  </div>
+  <div class="solution-grid">
+    <div class="sol-card anim">
+      <h3>Chart of Accounts</h3>
+      <p>Learns your specific GL structure, account hierarchies, and coding conventions. Maps transactions the way your team would.</p>
+    </div>
+    <div class="sol-card anim">
+      <h3>Vendor Rules</h3>
+      <p>Understands which vendors hit which accounts, which need POs, which get auto-approved under threshold. Your rules, not generic ones.</p>
+    </div>
+    <div class="sol-card anim">
+      <h3>Approval Chains</h3>
+      <p>Knows who signs off on what, at what dollar amount, and which exceptions skip the chain. Routes work like your best admin would.</p>
+    </div>
+    <div class="sol-card anim">
+      <h3>Exceptions</h3>
+      <p>Handles the edge cases that break every other tool — the one-off vendors, the inter-company eliminations, the "we always do it this way" decisions.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Differentiator Strip -->
+<section class="diff-strip bg-dots">
+  <div class="anim">
+    <h2>Not an AI tool. Not an outsourced team. Not another SaaS dashboard.</h2>
+    <p>Tools still need your people to operate them. Outsourced teams don't know your business. Dashboards just visualize problems. Rational gives you AI employees that produce actual work product — coded transactions, reconciled accounts, processed invoices — reviewed by your team, not replaced by a widget.</p>
+    <a href="mailto:founders@rational.work" class="btn-primary">Book a Demo</a>
+  </div>
+</section>
+
+<!-- Outcomes -->
+<section class="outcomes bg-diag">
+  <div class="anim">
+    <span class="label">Results</span>
+    <h2>What changes when your best hire never leaves.</h2>
+  </div>
+  <div class="outcomes-grid">
+    <div class="outcome-item anim">
+      <div class="outcome-num"><span class="counter" data-to="75" data-suf="%">0</span><span class="suffix">%</span></div>
+      <div class="outcome-label">Less manual transaction processing</div>
+    </div>
+    <div class="outcome-item anim">
+      <div class="outcome-num"><span class="counter" data-to="3" data-suf=" days">0</span><span class="suffix"> days</span></div>
+      <div class="outcome-label">Month-end close, down from 12+</div>
+    </div>
+    <div class="outcome-item anim">
+      <div class="outcome-num"><span class="counter" data-to="0" data-suf="">0</span></div>
+      <div class="outcome-label">Retraining cycles when people leave</div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section class="how bg-grid" id="how">
+  <div class="anim">
+    <span class="label">Live in 48 Hours</span>
+    <h2>No integration project. No 6-month rollout. Just output.</h2>
+  </div>
+  <div class="timeline anim">
+    <div class="timeline-fill"></div>
+    <div class="step">
+      <div class="step-label">Day 1–2</div>
+      <h3>48-hour onsite kickoff</h3>
+      <p>We sit with your team, watch how they work, capture the rules that live in their heads. No questionnaires. No months of "discovery." Two days, and your AI employee knows your process.</p>
+    </div>
+    <div class="step">
+      <div class="step-label">Week 1</div>
+      <h3>Producing real work</h3>
+      <p>Your AI employee starts processing transactions, coding invoices, and preparing reconciliations — with human review on every output until trust is established.</p>
+    </div>
+    <div class="step">
+      <div class="step-label">Ongoing</div>
+      <h3>Gets smarter every week</h3>
+      <p>Every correction, every edge case, every new vendor — it learns. Unlike a new hire who leaves in 18 months, this knowledge compounds permanently.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Trust Strip -->
+<section class="trust">
+  <div class="trust-grid">
+    <div class="trust-item anim">SOC 2 Compliant</div>
+    <div class="trust-item anim">Your Data Never Trains Models</div>
+    <div class="trust-item anim">Works Inside Your Existing Stack</div>
+    <div class="trust-item anim">Human-in-the-Loop Review</div>
+  </div>
+</section>
+
+<!-- ICP -->
+<section class="icp bg-dots">
+  <div class="anim">
+    <span class="label">Built For</span>
+    <h2>Teams that can't afford to wait for the next hire.</h2>
+  </div>
+  <div class="icp-grid">
+    <div class="icp-card anim">
+      <h3>Scaling Startups</h3>
+      <p>Growing faster than your finance team can hire. Need month-end close that doesn't depend on one overworked controller doing everything manually.</p>
+    </div>
+    <div class="icp-card anim">
+      <h3>Accounting Firms</h3>
+      <p>Client load growing, staff shrinking. Need to serve more clients without burning out the associates you have left — or turning away revenue.</p>
+    </div>
+    <div class="icp-card anim">
+      <h3>Mid-Market Companies</h3>
+      <p>Too complex for simple automation, too lean to staff a full accounting department. Need enterprise-grade output without enterprise headcount.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Mega CTA -->
+<section class="mega-cta bg-diag">
+  <div class="anim">
+    <h2>Your next great hire isn't human.</h2>
+    <p>See how Rational can start producing work for your team in 48 hours. A 30-minute walkthrough — we'll show you exactly what your AI employee would do on day one.</p>
+    <a href="mailto:founders@rational.work" class="btn-primary">Book a Demo</a>
+    <div class="note">No commitment. No credit card. Just a conversation.</div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <span class="footer-logo">Rational</span>
+  <span class="footer-copy">&copy; 2026 Rational</span>
+</footer>
+
+<script>
+(function() {
+  // Add js-ready class
+  document.body.classList.add('js-ready');
+
+  // Scroll progress bar
+  var progressBar = document.getElementById('scroll-progress');
+  window.addEventListener('scroll', function() {
+    var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    var progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progressBar.style.width = progress + '%';
+  });
+
+  // IntersectionObserver for .anim elements
+  var animEls = document.querySelectorAll('.anim');
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('shown');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  animEls.forEach(function(el) {
+    observer.observe(el);
+  });
+
+  // Animated counters
+  var counters = document.querySelectorAll('.counter');
+  var counterObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        var el = entry.target;
+        var to = parseInt(el.getAttribute('data-to'), 10);
+        var duration = 1500;
+        var start = performance.now();
+
+        function animate(now) {
+          var elapsed = now - start;
+          var progress = Math.min(elapsed / duration, 1);
+          // Ease out cubic
+          var eased = 1 - Math.pow(1 - progress, 3);
+          var current = Math.round(eased * to);
+          el.textContent = current;
+          if (progress < 1) {
+            requestAnimationFrame(animate);
+          } else {
+            el.textContent = to;
+          }
+        }
+
+        requestAnimationFrame(animate);
+        counterObserver.unobserve(el);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  counters.forEach(function(el) {
+    counterObserver.observe(el);
+  });
+
+  // Timeline fill animation
+  var timeline = document.querySelector('.timeline');
+  if (timeline) {
+    var timelineObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('filled');
+          timelineObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    timelineObserver.observe(timeline);
+  }
+})();
+</script>
+</body>
+</html>
