@@ -979,7 +979,7 @@ footer span {
   <div class="section-inner">
     <div class="reveal" style="text-align: center;">
       <p class="section-label">Impact</p>
-      <h2 class="section-heading">What changes after 90 days.</h2>
+      <h2 class="section-heading">What changes after deploying <span style="color: #6366F1;">Rational</span>.</h2>
     </div>
     <div class="outcomes-grid reveal" style="transition-delay: 150ms;">
       <div class="outcome-cell">
@@ -1746,10 +1746,11 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
   const _lightPos = new THREE.Vector3();
   const isMobile = window.innerWidth <= 768;
 
-  const numFibers = isMobile ? 300 : 600;
+  const numFibers = isMobile ? 500 : 1200;
   const minSpan = 0.08;
   const maxSpan = 0.35;
-  const fiberWidth = 0.003;
+  const fiberWidthThin = 0.0012;
+  const fiberWidthThick = 0.0024;
   const flowRadius = 0.635;
   const endFade = 0.15;
   const flowMat = new THREE.MeshBasicMaterial({
@@ -1776,19 +1777,20 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
   let totalFlowVerts = 0;
   let totalFlowTris = 0;
   for (let i = 0; i < numFibers; i++) {
-    const angle = (i / numFibers) * Math.PI * 2 + (rng() - 0.5) * 0.4;
+    const angle = (i / numFibers) * Math.PI * 2 + (rng() - 0.5) * 0.12;
     const baseStart = (i * 0.618033988 + rng() * 0.03) % 1;
     const span = minSpan + rng() * (maxSpan - minSpan);
     const ptsPerFiber = Math.max(12, Math.round(span * 80));
     const vertexOffset = totalFlowVerts;
     totalFlowVerts += (ptsPerFiber + 1) * 2;
     totalFlowTris += ptsPerFiber * 6;
+    const fw = rng() < 0.7 ? fiberWidthThin : fiberWidthThick;
     flowLines.push({
       cosA: Math.cos(angle) * flowRadius,
       sinA: Math.sin(angle) * flowRadius,
       circCosBase: -Math.sin(angle),
       circSinBase: Math.cos(angle),
-      baseStart, span, ptsPerFiber, vertexOffset
+      baseStart, span, ptsPerFiber, vertexOffset, fw
     });
   }
 
@@ -1855,9 +1857,9 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
         const sx = _flC.x + _flN.x * fl.cosA + _flBn.x * fl.sinA;
         const sy = _flC.y + _flN.y * fl.cosA + _flBn.y * fl.sinA;
         const sz = _flC.z + _flN.z * fl.cosA + _flBn.z * fl.sinA;
-        const cx = _flN.x * fl.circCosBase * fiberWidth + _flBn.x * fl.circSinBase * fiberWidth;
-        const cy = _flN.y * fl.circCosBase * fiberWidth + _flBn.y * fl.circSinBase * fiberWidth;
-        const cz = _flN.z * fl.circCosBase * fiberWidth + _flBn.z * fl.circSinBase * fiberWidth;
+        const cx = _flN.x * fl.circCosBase * fl.fw + _flBn.x * fl.circSinBase * fl.fw;
+        const cy = _flN.y * fl.circCosBase * fl.fw + _flBn.y * fl.circSinBase * fl.fw;
+        const cz = _flN.z * fl.circCosBase * fl.fw + _flBn.z * fl.circSinBase * fl.fw;
         const pidx = (fl.vertexOffset + j * 2) * 3;
         pArr[pidx]     = sx + cx; pArr[pidx + 1] = sy + cy; pArr[pidx + 2] = sz + cz;
         pArr[pidx + 3] = sx - cx; pArr[pidx + 4] = sy - cy; pArr[pidx + 5] = sz - cz;
@@ -1941,21 +1943,12 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
   const whStages = [...document.querySelectorAll('.wh-stage')];
   const numSegs = stageWaypoints.length;
   const segLen = 1 / numSegs;
-  const travelFrac = 0.70;
-
   function remapWithEasing(scroll) {
     const seg = Math.min(Math.floor(scroll / segLen), numSegs - 1);
     const segP = (scroll - seg * segLen) / segLen;
     const prevWP = seg === 0 ? 0 : stageWaypoints[seg - 1];
     const currWP = stageWaypoints[seg];
-    if (segP <= travelFrac) {
-      const t = segP / travelFrac;
-      const eased = t < 0.5
-        ? 8 * t * t * t * t
-        : 1 - Math.pow(-2 * t + 2, 4) / 2;
-      return prevWP + (currWP - prevWP) * eased;
-    }
-    return currWP;
+    return prevWP + (currWP - prevWP) * segP;
   }
 
   function circularDist(a, b) {
@@ -2014,14 +2007,7 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
       smoothedP = targetP;
       smoothedPReady = true;
     } else {
-      let dampRate = 8;
-      const nearestDist = Math.min(...stageWaypoints.map(wp => circularDist(targetP, wp)));
-      if (nearestDist < 0.025) {
-        dampRate = 2.5;
-      } else if (nearestDist < 0.05) {
-        dampRate = 2.5 + 5.5 * ((nearestDist - 0.025) / 0.025);
-      }
-      smoothedP = lerpCircular(smoothedP, targetP, 1 - Math.exp(-dampRate * dt));
+      smoothedP = lerpCircular(smoothedP, targetP, 1 - Math.exp(-3 * dt));
     }
     const drift = Math.sin(t * 0.0003) * 0.008;
     const p = ((smoothedP + drift) % 1 + 1) % 1;
