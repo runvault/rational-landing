@@ -505,7 +505,7 @@ section {
   position: relative;
   flex: 1;
   min-height: 0;
-  background: #0A0806;
+  background: #F0F0F8;
 }
 .wh-stages {
   position: absolute;
@@ -529,10 +529,10 @@ section {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: #1E1B4B;
   text-align: center;
   padding: 2rem;
-  background: rgba(0,0,0,0.3);
+  background: rgba(255,255,255,0.7);
   pointer-events: none;
   transform: translateY(12px) scale(0.97);
   transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1);
@@ -546,21 +546,24 @@ section {
   font-weight: 300;
   line-height: 1;
   margin-bottom: 0.5rem;
-  opacity: 0.7;
+  opacity: 0.75;
+  color: #6366F1;
 }
 .wh-stage-content h3 {
   font-family: var(--font-heading);
   font-size: clamp(1.4rem, 2.5vw, 2rem);
   font-weight: 400;
   margin-bottom: 0.8rem;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  color: #1E1B4B;
+  text-shadow: none;
 }
 .wh-stage-content p {
   font-size: clamp(0.9rem, 1.1vw, 1.1rem);
   max-width: 520px;
   line-height: 1.7;
   opacity: 0.9;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  color: #312E81;
+  text-shadow: none;
 }
 .wh-header {
   position: relative;
@@ -569,6 +572,8 @@ section {
   padding: clamp(2.5rem, 5vh, 4rem) var(--margin) clamp(1.5rem, 3vh, 2.5rem);
   flex-shrink: 0;
 }
+.wormhole-section .section-label { color: #4F46E5; }
+.wormhole-section .section-heading { color: #1E1B4B; }
 @media (max-width: 768px) {
   .wormhole-section { height: 500vh; }
 }
@@ -1686,9 +1691,9 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
   const spline = new THREE.CatmullRomCurve3(points);
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x0A0806);
-  const baseFogColor = new THREE.Color(0x0D0904);
-  scene.fog = new THREE.FogExp2(baseFogColor, 0.18);
+  scene.background = new THREE.Color(0xF0F0F8);
+  const baseFogColor = new THREE.Color(0xE8E4F0);
+  scene.fog = new THREE.FogExp2(baseFogColor, 0.08);
 
   const camera = new THREE.PerspectiveCamera(95, window.innerWidth / window.innerHeight, 0.1, 1000);
 
@@ -1696,15 +1701,15 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
   const tubeGeo = new THREE.TubeGeometry(spline, tubeSegments, 0.65, 32, true);
 
   const wallMat = new THREE.MeshStandardMaterial({
-    color: 0x3A2A15,
+    color: 0x9888C0,
     side: THREE.BackSide,
     fog: true,
     transparent: true,
-    opacity: 0.15,
-    metalness: 0.7,
-    roughness: 0.4,
-    emissive: new THREE.Color(0x1A0E05),
-    emissiveIntensity: 0.04,
+    opacity: 0.35,
+    metalness: 0.05,
+    roughness: 0.85,
+    emissive: new THREE.Color(0x6355A0),
+    emissiveIntensity: 0.06,
     polygonOffset: true,
     polygonOffsetFactor: 1,
     polygonOffsetUnits: 1
@@ -1719,33 +1724,60 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
     splineSamples.push(spline.getPointAt(i / tubeSegments));
   }
 
-  const colEntry = new THREE.Color(0xFFD700);
-  const colMid = new THREE.Color(0xD4AF37);
-  const colDeep = new THREE.Color(0xCD853F);
-  const colGold = new THREE.Color(0xE8C252);
+  const bokehColors = [0x818CF8, 0xF0ABFC, 0xA78BFA, 0x93C5FD, 0xC4B5FD];
+  const bokehGeo = new THREE.SphereGeometry(1, 8, 8);
+  const bokehMats = [];
+  for (let i = 0; i < 25; i++) {
+    const bp = (i / 25 + (Math.sin(i * 7.3) * 0.5 + 0.5) * 0.06) % 1;
+    const fi = Math.min(Math.floor(bp * tubeSegments), tubeSegments - 1);
+    const center = splineSamples[fi].clone();
+    const n = frenetFrames.normals[fi];
+    const bn = frenetFrames.binormals[fi];
+    const angle = (i / 25) * Math.PI * 2 + i * 1.7;
+    const dist = 0.9 + (Math.sin(i * 3.1) * 0.5 + 0.5) * 0.8;
+    const size = 0.15 + (Math.sin(i * 5.7) * 0.5 + 0.5) * 0.25;
+    const pos = center.clone()
+      .addScaledVector(n, Math.cos(angle) * dist)
+      .addScaledVector(bn, Math.sin(angle) * dist);
+    const mat = new THREE.MeshBasicMaterial({
+      color: bokehColors[i % bokehColors.length],
+      transparent: true, opacity: 0.12 + (Math.sin(i * 2.3) * 0.5 + 0.5) * 0.08,
+      fog: true
+    });
+    bokehMats.push(mat);
+    const mesh = new THREE.Mesh(bokehGeo, mat);
+    mesh.position.copy(pos);
+    mesh.scale.setScalar(size);
+    scene.add(mesh);
+  }
+
+  const colEntry = new THREE.Color(0x818CF8);
+  const colMid = new THREE.Color(0x6366F1);
+  const colDeep = new THREE.Color(0x4F46E5);
+  const colGold = new THREE.Color(0x7C3AED);
   const _gradColor = new THREE.Color();
 
   const stageColors = [
-    { ribbon: new THREE.Color(0xD4AF37), wall: new THREE.Color(0x3A2A15), fog: new THREE.Color(0x0D0904) },
-    { ribbon: new THREE.Color(0xFFD700), wall: new THREE.Color(0x3E2E18), fog: new THREE.Color(0x0F0A05) },
-    { ribbon: new THREE.Color(0xE8C252), wall: new THREE.Color(0x422F16), fog: new THREE.Color(0x110B06) },
-    { ribbon: new THREE.Color(0xCD853F), wall: new THREE.Color(0x351F0C), fog: new THREE.Color(0x0E0903) },
-    { ribbon: new THREE.Color(0xB8860B), wall: new THREE.Color(0x2E1E0C), fog: new THREE.Color(0x0C0802) },
+    { ribbon: new THREE.Color(0x6366F1), wall: new THREE.Color(0x9888C0), fog: new THREE.Color(0xE8E4F0) },
+    { ribbon: new THREE.Color(0x818CF8), wall: new THREE.Color(0xA090D0), fog: new THREE.Color(0xE4E0F0) },
+    { ribbon: new THREE.Color(0x7C3AED), wall: new THREE.Color(0xA898D8), fog: new THREE.Color(0xE0DCF0) },
+    { ribbon: new THREE.Color(0x6D28D9), wall: new THREE.Color(0x9080C0), fog: new THREE.Color(0xE4E0EA) },
+    { ribbon: new THREE.Color(0x4F46E5), wall: new THREE.Color(0x8878B0), fog: new THREE.Color(0xE8E4E8) },
   ];
   const _stageWall = new THREE.Color();
   const _stageFog = new THREE.Color();
 
-  const tunnelLight = new THREE.PointLight(0xFFCC66, 2.0, 8, 1.2);
+  const tunnelLight = new THREE.PointLight(0xB4A0FF, 2.5, 8, 1.2);
   scene.add(tunnelLight);
-  const trailLight = new THREE.PointLight(0xFFAA44, 1.0, 5, 1.5);
+  const trailLight = new THREE.PointLight(0x8B5CF6, 1.2, 5, 1.5);
   scene.add(trailLight);
-  const dirLight = new THREE.DirectionalLight(0xFFF0DD, 0.3);
+  const dirLight = new THREE.DirectionalLight(0xE0D4FF, 0.4);
   dirLight.position.set(0, 1, 0);
   scene.add(dirLight);
   const _lightPos = new THREE.Vector3();
   const isMobile = window.innerWidth <= 768;
 
-  const numFibers = isMobile ? 120 : 250;
+  const numFibers = isMobile ? 200 : 500;
   const minSpan = 0.08;
   const maxSpan = 0.35;
   const fiberWidth = 0.003;
@@ -1755,14 +1787,14 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
     vertexColors: true, side: THREE.DoubleSide,
     transparent: true, opacity: 1.0, fog: true, depthWrite: false,
     roughness: 0.2, metalness: 0.6,
-    emissive: new THREE.Color(0xD4AF37), emissiveIntensity: 0.35
+    emissive: new THREE.Color(0x6366F1), emissiveIntensity: 0.5
   });
   const flowLines = [];
   const _flC = new THREE.Vector3();
   const _flN = new THREE.Vector3();
   const _flBn = new THREE.Vector3();
 
-  const ambLight = new THREE.AmbientLight(0xF5DEB3, 0.15);
+  const ambLight = new THREE.AmbientLight(0xE0D4FF, 0.6);
   scene.add(ambLight);
 
   function seededRandom(seed) {
@@ -1905,7 +1937,7 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.1;
+  renderer.toneMappingExposure = 1.4;
 
   function whResize() {
     const w = whCanvas.parentElement.offsetWidth;
@@ -2064,7 +2096,8 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
     renderer.render(scene, camera);
   }
 
-  window.addEventListener('pagehide', () => {
+  window.addEventListener('pagehide', (event) => {
+    if (event.persisted) return;
     stopLoop();
     whObs.disconnect();
     window.removeEventListener('resize', whResize);
@@ -2074,6 +2107,8 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
     flowMat.dispose();
     particleGeo.dispose();
     particleMat.dispose();
+    bokehGeo.dispose();
+    bokehMats.forEach(m => m.dispose());
     renderer.dispose();
   }, { once: true });
 }
