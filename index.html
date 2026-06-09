@@ -87,10 +87,14 @@ nav.scrolled {
   background: var(--paper);
 }
 .nav-wordmark {
-  font-family: var(--font-heading);
-  font-size: 1.5rem;
-  color: var(--ink);
+  display: flex;
+  align-items: center;
   text-decoration: none;
+}
+.nav-wordmark img {
+  height: 36px;
+  width: auto;
+  mix-blend-mode: multiply;
 }
 .yc-badge {
   display: inline-flex;
@@ -780,7 +784,7 @@ footer span {
 
 <!-- Nav -->
 <nav id="mainNav">
-  <a href="#" class="nav-wordmark">Rational</a>
+  <a href="#" class="nav-wordmark"><img src="Rational Graphics/Logo.png" alt="Rational"></a>
   <a href="mailto:founders@rational.work" class="btn-cta">Book a Demo</a>
 </nav>
 
