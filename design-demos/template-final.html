@@ -18,9 +18,9 @@
   --ink: #1A1714;
   --paper: #FAF7F2;
   --cream: #F3EDE4;
-  --warm: #C4883A;
-  --warm-soft: rgba(196,136,58,0.08);
-  --warm-glow: rgba(196,136,58,0.2);
+  --warm: #6366F1;
+  --warm-soft: rgba(99,102,241,0.08);
+  --warm-glow: rgba(99,102,241,0.2);
   --t1: #5C5650;
   --t2: #8A8279;
   --t3: #B8B0A6;
@@ -664,7 +664,7 @@ section {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(circle 300px at var(--mx, 50%) var(--my, 50%), rgba(196,136,58,0.08), transparent);
+  background: radial-gradient(circle 300px at var(--mx, 50%) var(--my, 50%), rgba(99,102,241,0.08), transparent);
 }
 .cta-corner {
   position: absolute;
@@ -1426,8 +1426,8 @@ footer span {
         const cx = blob.x * blobCanvas.width + Math.sin(t * 0.3 + blob.phase) * 30;
         const cy = blob.y * blobCanvas.height + Math.cos(t * 0.2 + blob.phase) * 20;
         const gradient = blobCtx.createRadialGradient(cx, cy, 0, cx, cy, blob.r);
-        gradient.addColorStop(0, 'rgba(196, 136, 58, 0.06)');
-        gradient.addColorStop(1, 'rgba(196, 136, 58, 0)');
+        gradient.addColorStop(0, 'rgba(99, 102, 241, 0.06)');
+        gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
         blobCtx.fillStyle = gradient;
         blobCtx.beginPath();
         blobCtx.arc(cx, cy, blob.r, 0, Math.PI * 2);
