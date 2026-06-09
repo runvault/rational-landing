@@ -488,13 +488,21 @@ section {
   top: 0;
   height: 100vh;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 #wormholeCanvas {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   z-index: 1;
+}
+.wh-canvas-area {
+  position: relative;
+  flex: 1;
+  min-height: 0;
 }
 .wh-stages {
   position: absolute;
@@ -547,15 +555,11 @@ section {
   text-shadow: 0 1px 4px rgba(0,0,0,0.3);
 }
 .wh-header {
-  position: absolute;
-  top: 3vh;
-  left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
+  position: relative;
   z-index: 3;
-  width: 100%;
-  padding: 0 var(--margin);
-  pointer-events: none;
+  text-align: center;
+  padding: clamp(2.5rem, 5vh, 4rem) var(--margin) clamp(1.5rem, 3vh, 2.5rem);
+  flex-shrink: 0;
 }
 @media (max-width: 768px) {
   .wormhole-section { height: 500vh; }
@@ -910,47 +914,49 @@ footer span {
 <!-- Wormhole Loop -->
 <section class="wormhole-section" id="rationalLoop">
   <div class="wh-sticky">
-    <canvas id="wormholeCanvas"></canvas>
-    <div class="wh-stages">
-      <div class="wh-stage" data-stage="0">
-        <div class="wh-stage-content">
-          <span class="wh-stage-num">01</span>
-          <h3>Signal detected</h3>
-          <p>Your tools generate hundreds of signals daily. Emails, deadlines, status changes, capacity shifts. Rational catches every one.</p>
-        </div>
-      </div>
-      <div class="wh-stage" data-stage="1">
-        <div class="wh-stage-content">
-          <span class="wh-stage-num">02</span>
-          <h3>Context loaded</h3>
-          <p>Rational pulls the full picture: client history, team capacity, preferences, and priorities. Nothing gets missed.</p>
-        </div>
-      </div>
-      <div class="wh-stage" data-stage="2">
-        <div class="wh-stage-content">
-          <span class="wh-stage-num">03</span>
-          <h3>Best action determined</h3>
-          <p>Every option is scored. Williams: 92% fit — industry match, reviewed Cornerstone last 2 years, Tuesday AM available.</p>
-        </div>
-      </div>
-      <div class="wh-stage" data-stage="3">
-        <div class="wh-stage-content">
-          <span class="wh-stage-num">04</span>
-          <h3>Team coordinated</h3>
-          <p>The right person gets the right task through their preferred channel. No chasing. No dropped balls.</p>
-        </div>
-      </div>
-      <div class="wh-stage" data-stage="4">
-        <div class="wh-stage-content">
-          <span class="wh-stage-num">05</span>
-          <h3>Knowledge compounded</h3>
-          <p>Every correction becomes permanent. Week 4 is measurably sharper than week 1. Your firm's intelligence grows forever.</p>
-        </div>
-      </div>
-    </div>
     <div class="wh-header">
       <p class="section-label">The Rational Loop</p>
       <h2 class="section-heading">Observe. Reason. Act. Improve.</h2>
+    </div>
+    <div class="wh-canvas-area">
+      <canvas id="wormholeCanvas"></canvas>
+      <div class="wh-stages">
+        <div class="wh-stage" data-stage="0">
+          <div class="wh-stage-content">
+            <span class="wh-stage-num">01</span>
+            <h3>Signal detected</h3>
+            <p>Your tools generate hundreds of signals daily. Emails, deadlines, status changes, capacity shifts. Rational catches every one.</p>
+          </div>
+        </div>
+        <div class="wh-stage" data-stage="1">
+          <div class="wh-stage-content">
+            <span class="wh-stage-num">02</span>
+            <h3>Context loaded</h3>
+            <p>Rational pulls the full picture: client history, team capacity, preferences, and priorities. Nothing gets missed.</p>
+          </div>
+        </div>
+        <div class="wh-stage" data-stage="2">
+          <div class="wh-stage-content">
+            <span class="wh-stage-num">03</span>
+            <h3>Best action determined</h3>
+            <p>Every option is scored. Williams: 92% fit — industry match, reviewed Cornerstone last 2 years, Tuesday AM available.</p>
+          </div>
+        </div>
+        <div class="wh-stage" data-stage="3">
+          <div class="wh-stage-content">
+            <span class="wh-stage-num">04</span>
+            <h3>Team coordinated</h3>
+            <p>The right person gets the right task through their preferred channel. No chasing. No dropped balls.</p>
+          </div>
+        </div>
+        <div class="wh-stage" data-stage="4">
+          <div class="wh-stage-content">
+            <span class="wh-stage-num">05</span>
+            <h3>Knowledge compounded</h3>
+            <p>Every correction becomes permanent. Week 4 is measurably sharper than week 1. Your firm's intelligence grows forever.</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
