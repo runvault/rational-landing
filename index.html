@@ -1,91 +1,2073 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rational</title>
-  <meta name="description" content="AI systems for industries where getting it wrong isn't an option.">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>R</text></svg>">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Droid+Serif:wght@400;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rational — The Intelligence Layer for Professional Services</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@300;400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script type="importmap">
+{ "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.171.0/examples/jsm/"
+}}
+</script>
+<style>
+:root {
+  --ink: #1A1714;
+  --paper: #FAF7F2;
+  --cream: #F3EDE4;
+  --warm: #6366F1;
+  --warm-soft: rgba(99,102,241,0.08);
+  --warm-glow: rgba(99,102,241,0.2);
+  --t1: #5C5650;
+  --t2: #8A8279;
+  --t3: #B8B0A6;
+  --t4: #DDD6CC;
+  --t5: #EDE8E0;
+  --font-heading: 'Instrument Sans', 'Inter', sans-serif;
+  --font-body: 'Instrument Sans', 'Inter', sans-serif;
+  --margin: max(1.2rem, 3vw);
+  --ease: cubic-bezier(0.25, 1, 0.5, 1);
+}
 
-    html, body {
-      height: 100%;
-    }
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+h1, h2, h3, h4, h5, h6 { font-weight: 400; }
+strong, b { font-weight: 500; }
+html { scroll-behavior: smooth; }
 
-    body {
-      font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #ffffff;
-      color: #111;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 2rem;
-      -webkit-font-smoothing: antialiased;
-    }
+body {
+  font-family: var(--font-body);
+  font-weight: 300;
+  background: #fff;
+  color: var(--ink);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
 
-    .logo {
-      font-family: 'Droid Serif', Georgia, serif;
-      font-size: 1.5rem;
-      font-weight: 400;
-      letter-spacing: 0.02em;
-      margin-bottom: 3rem;
-      color: #111;
-    }
+/* ===== PROGRESS BAR ===== */
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: var(--warm);
+  z-index: 10001;
+  width: 0%;
+  opacity: 0;
+  transition: width 0.1s linear, opacity 0.3s ease;
+}
+.progress-bar.visible { opacity: 1; }
 
-    main {
-      max-width: 600px;
-    }
+/* ===== GRAIN OVERLAY ===== */
+.grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.grain.active { opacity: 0.25; }
 
-    h1 {
-      font-size: clamp(2rem, 5vw, 2.5rem);
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      line-height: 1.2;
-      margin-bottom: 1rem;
-    }
+/* ===== NAV ===== */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  padding: 1rem var(--margin);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: transparent;
+  transition: background 0.4s var(--ease);
+}
+nav.scrolled {
+  background: var(--paper);
+}
+.nav-wordmark {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  color: var(--ink);
+  text-decoration: none;
+}
+.yc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  pointer-events: auto;
+}
+.yc-logo {
+  width: 24px;
+  height: 24px;
+  background: #F26522;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: #fff;
+  line-height: 1;
+}
+.yc-text {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+.btn-cta {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: #fff;
+  background: #6366F1;
+  border: none;
+  padding: 0.6rem 1.4rem;
+  border-radius: 0;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.3s var(--ease), transform 0.2s var(--ease);
+}
+.btn-cta:hover {
+  background: #4F46E5;
+  transform: translateY(-1px);
+}
 
-    p {
-      font-size: clamp(1rem, 2.5vw, 1.125rem);
-      font-weight: 400;
-      color: #555;
-      line-height: 1.6;
-    }
+/* ===== HERO — SCROLL CLIP-PATH ===== */
+.hero {
+  position: relative;
+  height: calc(1500px + 100vh);
+  background: #fff;
+}
+.hero-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #fff;
+}
+.hero-image {
+  position: absolute;
+  inset: 0;
+  background-image: url('https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=2000&q=80');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 170%;
+  clip-path: polygon(20% 22%, 80% 22%, 80% 78%, 20% 78%);
+  will-change: clip-path, background-size;
+}
+.hero-text {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  pointer-events: none;
+  padding: 0 var(--margin);
+}
+.hero-headline {
+  font-family: var(--font-heading);
+  font-size: clamp(2.8rem, 7vw, 5.5rem);
+  line-height: 1.1;
+  color: var(--ink);
+  margin-bottom: 1rem;
+}
+.hero-headline .char {
+  display: inline-block;
+  opacity: 0;
+  filter: blur(6px);
+  transform: translateY(8px);
+  animation: charReveal 0.6s var(--ease) forwards;
+}
+@keyframes charReveal {
+  to { opacity: 1; filter: blur(0); transform: translateY(0); }
+}
+.hero-subtitle {
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  color: var(--t1);
+  max-width: 500px;
+  margin: 0 auto;
+}
 
-    .download-link {
-      display: inline-block;
-      margin-top: 2rem;
-      padding: 0.75rem 1.5rem;
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: #111;
-      text-decoration: none;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      transition: all 0.2s ease;
-    }
+/* ===== SOCIAL PROOF PILL ===== */
+.social-proof-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--paper);
+  border: 1px solid var(--t4);
+  border-radius: 50px;
+  padding: 0.35rem 1rem 0.35rem 0.4rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.pill-avatars {
+  display: flex;
+}
+.pill-avatars .pill-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--paper);
+  margin-left: -6px;
+  object-fit: cover;
+}
+.pill-avatars .pill-avatar:first-child { margin-left: 0; }
+.pill-text {
+  font-size: 0.75rem;
+  color: var(--t2);
+}
+.pill-text strong {
+  color: var(--ink);
+  font-weight: 400;
+}
 
-    .download-link:hover {
-      background: #111;
-      color: #fff;
-      border-color: #111;
-    }
-  </style>
+/* ===== CANVAS BLOBS ===== */
+.blob-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ===== STATS BAND ===== */
+.stats {
+  position: relative;
+  padding: 5rem var(--margin);
+  display: flex;
+  justify-content: center;
+  gap: clamp(2rem, 6vw, 6rem);
+  flex-wrap: wrap;
+}
+.stat {
+  text-align: center;
+  opacity: 0;
+  transform: translateY(20px);
+}
+.stat-number {
+  font-family: var(--font-heading);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  color: var(--ink);
+}
+.stat-label {
+  font-size: 0.85rem;
+  color: var(--t2);
+  margin-top: 0.3rem;
+}
+
+/* ===== MARQUEE ===== */
+.marquee-section {
+  padding: 2rem 0;
+  overflow: hidden;
+  border-top: 1px solid var(--t5);
+  border-bottom: 1px solid var(--t5);
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  gap: 3rem;
+  padding: 0.8rem 0;
+}
+.marquee-track.left { animation: marqueeLeft 30s linear infinite; }
+.marquee-track.right { animation: marqueeRight 30s linear infinite; }
+@keyframes marqueeLeft {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes marqueeRight {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+.marquee-item {
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  color: var(--t3);
+  white-space: nowrap;
+}
+.marquee-wrapper {
+  position: relative;
+}
+.marquee-wrapper::before,
+.marquee-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 80px;
+  z-index: 2;
+  pointer-events: none;
+}
+.marquee-wrapper::before {
+  left: 0;
+  background: linear-gradient(to right, var(--paper), transparent);
+}
+.marquee-wrapper::after {
+  right: 0;
+  background: linear-gradient(to left, var(--paper), transparent);
+}
+
+/* ===== SECTION SHARED ===== */
+section {
+  position: relative;
+  z-index: 1;
+}
+.section-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 6rem var(--margin);
+}
+.section-label {
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--t3);
+  margin-bottom: 1rem;
+}
+.section-heading {
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+}
+.section-body {
+  font-size: 1.05rem;
+  color: var(--t1);
+  line-height: 1.7;
+  max-width: 600px;
+}
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  filter: blur(4px);
+  transition: opacity 0.8s var(--ease), transform 0.8s var(--ease), filter 0.8s var(--ease);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+/* ===== APPROACH SECTION ===== */
+.approach-section {
+  position: relative;
+  height: calc(800px + 100vh);
+  background: var(--paper);
+}
+.approach-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.approach-content {
+  position: relative;
+  z-index: 2;
+  padding: clamp(3rem, 6vh, 5rem) var(--margin) 1.5rem;
+  text-align: center;
+  width: 100%;
+}
+.approach-headline {
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 3.2vw, 3.2rem);
+  line-height: 1.3;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.approach-headline em {
+  color: #6366F1;
+  font-style: normal;
+}
+.approach-image-wrap {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  will-change: clip-path;
+  border-radius: 4px;
+  width: 100%;
+  max-width: 75%;
+  align-self: center;
+}
+.approach-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: var(--ink);
+}
+.approach-diagram {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+.approach-flow {
+  width: 100%;
+  max-width: 640px;
+  height: 100%;
+  max-height: 460px;
+  overflow: visible;
+}
+.approach-flow .route {
+  fill: none;
+  stroke: rgba(255,255,255,0.6);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+}
+.approach-flow .route-draw {
+  fill: none;
+  stroke: rgba(255,255,255,0.85);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-dasharray: 2000;
+  stroke-dashoffset: 2000;
+  transition: stroke-dashoffset 2.5s cubic-bezier(0.42, 0, 0.58, 1);
+}
+.approach-diagram.is-visible .route-draw {
+  stroke-dashoffset: 0;
+}
+.approach-flow .node-sq {
+  fill: #fff;
+}
+.approach-flow .node-sq-outline {
+  fill: none;
+  stroke: rgba(255,255,255,0.7);
+  stroke-width: 1.2;
+}
+.approach-flow .node-center {
+  fill: #fff;
+}
+.approach-flow .node-label {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 400;
+  fill: rgba(255,255,255,0.95);
+  letter-spacing: -0.01em;
+}
+.approach-flow .route-hidden {
+  fill: none;
+  stroke: none;
+}
+.approach-flow .node-dot-sm {
+  fill: rgba(255,255,255,0.7);
+}
+.approach-flow .particle {
+  fill: #fff;
+}
+@media (prefers-reduced-motion: reduce) {
+  .approach-flow .route-draw { stroke-dashoffset: 0; transition: none; }
+  .approach-flow .particle { display: none; }
+}
+@media (max-width: 768px) {
+  .approach-section { height: calc(500px + 100vh); }
+  .approach-headline { font-size: clamp(1.8rem, 7vw, 2.6rem); }
+  .approach-flow .node-label { font-size: 11px; }
+}
+
+
+/* ===== WORMHOLE LOOP ===== */
+.wormhole-section {
+  height: 500vh;
+  position: relative;
+  background: var(--paper);
+}
+.wh-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+#wormholeCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+.wh-canvas-area {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  background: #FFFFFF;
+}
+.wh-stages {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+.wh-stage {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.wh-stage.active {
+  opacity: 1;
+}
+.wh-stage-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #1E1B4B;
+  text-align: center;
+  padding: 2rem;
+  background: rgba(255,255,255,0.7);
+  pointer-events: none;
+  transform: translateY(12px) scale(0.97);
+  transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.wh-stage.active .wh-stage-content {
+  transform: translateY(0) scale(1);
+}
+.wh-stage-num {
+  font-family: var(--font-heading);
+  font-size: clamp(3rem, 6vw, 5rem);
+  font-weight: 300;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+  opacity: 0.75;
+  color: #6366F1;
+}
+.wh-stage-content h3 {
+  font-family: var(--font-heading);
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  font-weight: 400;
+  margin-bottom: 0.8rem;
+  color: #1E1B4B;
+  text-shadow: none;
+}
+.wh-stage-content p {
+  font-size: clamp(0.9rem, 1.1vw, 1.1rem);
+  max-width: 520px;
+  line-height: 1.7;
+  opacity: 0.9;
+  color: #312E81;
+  text-shadow: none;
+}
+.wh-header {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  padding: clamp(2.5rem, 5vh, 4rem) var(--margin) clamp(1.5rem, 3vh, 2.5rem);
+  flex-shrink: 0;
+}
+.wormhole-section .section-label { color: #4F46E5; }
+.wormhole-section .section-heading { color: #1E1B4B; }
+@media (max-width: 768px) {
+  .wormhole-section { height: 500vh; }
+}
+
+/* ===== OUTCOMES 2x2 GRID ===== */
+.outcomes-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--t4);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 3rem;
+}
+.outcome-cell {
+  background: var(--cream);
+  padding: 2.5rem 2rem;
+  text-align: center;
+}
+.outcome-number {
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+.outcome-label {
+  font-size: 0.85rem;
+  color: var(--t2);
+}
+@media (max-width: 768px) {
+  .outcomes-grid { grid-template-columns: 1fr; }
+}
+
+
+/* ===== TRUST STRIP ===== */
+.trust {
+  border-top: 1px solid var(--t5);
+  border-bottom: 1px solid var(--t5);
+}
+.trust-inner {
+  display: flex;
+  justify-content: center;
+  gap: clamp(2rem, 5vw, 5rem);
+  flex-wrap: wrap;
+  padding: 3rem var(--margin);
+}
+.trust-item {
+  font-size: 0.8rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--t2);
+}
+
+
+/* ===== CTA MEGA ===== */
+.cta-mega {
+  position: relative;
+  background: var(--ink);
+  overflow: hidden;
+  padding: 8rem var(--margin);
+  text-align: center;
+}
+.cta-mega::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(255,255,255,0.03) 10px,
+    rgba(255,255,255,0.03) 11px
+  );
+  pointer-events: none;
+}
+.cta-glow {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 400px;
+  background: radial-gradient(ellipse, var(--warm-glow) 0%, transparent 70%);
+  pointer-events: none;
+  opacity: 0.6;
+}
+.cta-mouse-gradient {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle 300px at var(--mx, 50%) var(--my, 50%), rgba(99,102,241,0.08), transparent);
+}
+.cta-corner {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: var(--warm);
+  animation: cornerPulse 3s ease-in-out infinite;
+}
+.cta-corner:nth-child(1) { top: 2rem; left: 2rem; animation-delay: 0s; }
+.cta-corner:nth-child(2) { top: 2rem; right: 2rem; animation-delay: 0.75s; }
+.cta-corner:nth-child(3) { bottom: 2rem; left: 2rem; animation-delay: 1.5s; }
+.cta-corner:nth-child(4) { bottom: 2rem; right: 2rem; animation-delay: 2.25s; }
+@keyframes cornerPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.5; }
+}
+.cta-content {
+  position: relative;
+  z-index: 2;
+}
+.cta-heading {
+  font-family: var(--font-heading);
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  color: var(--paper);
+  margin-bottom: 2rem;
+  line-height: 1.2;
+}
+.cta-btn {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 400;
+  color: #fff;
+  background: #6366F1;
+  border: none;
+  padding: 1rem 2.5rem;
+  border-radius: 0;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.3s var(--ease), transform 0.2s var(--ease);
+}
+.cta-btn:hover {
+  background: #4F46E5;
+  transform: translateY(-2px);
+}
+.cta-note {
+  font-size: 0.8rem;
+  color: var(--t3);
+  margin-top: 1rem;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  padding: 3rem var(--margin);
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--t3);
+  border-top: 1px solid var(--t5);
+}
+footer span {
+  font-family: var(--font-heading);
+  color: var(--ink);
+  font-size: 1rem;
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  .hero-image {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%) !important;
+    background-size: cover !important;
+  }
+  .hero-headline .char {
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+    animation: none !important;
+  }
+  .marquee-track { animation: none !important; }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+  }
+  .cta-corner { animation: none !important; }
+  .flow-node { transition: none !important; }
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+  .hero-image {
+    clip-path: polygon(25% 28%, 75% 28%, 75% 72%, 25% 72%);
+    background-image: url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80');
+  }
+  .hero-headline { font-size: clamp(2rem, 8vw, 3rem); }
+  .flow-connector { width: 2px; height: 24px; }
+}
+</style>
 </head>
 <body>
-  <div class="logo">Rational</div>
-  <main>
-    <h1>AI that earns trust.</h1>
-    <p>Rational builds intelligent systems to complement industries where human expertise is of utmost value.</p>
-  </main>
+
+<!-- Grain Overlay -->
+<svg class="grain" xmlns="http://www.w3.org/2000/svg">
+  <filter id="noiseFilter">
+    <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/>
+    <feColorMatrix type="saturate" values="0"/>
+  </filter>
+  <rect width="100%" height="100%" filter="url(#noiseFilter)"/>
+</svg>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- Nav -->
+<nav id="mainNav">
+  <a href="#" class="nav-wordmark">Rational</a>
+  <a href="mailto:founders@rational.work" class="btn-cta">Book a Demo</a>
+</nav>
+
+<!-- Hero — Scroll Clip-Path -->
+<section class="hero" id="heroSection">
+  <div class="hero-sticky">
+    <div class="hero-image" id="heroImage"></div>
+    <div class="hero-text" id="heroText">
+      <div class="yc-badge">
+        <span class="yc-logo">Y</span>
+        <span class="yc-text">Backed by Y Combinator</span>
+      </div>
+      <h1 class="hero-headline" id="heroHeadline"></h1>
+      <p class="hero-subtitle">AI employees that coordinate your firm's work, remember every client preference, and get better every week. Onboarded in 48 hours.</p>
+      <div class="social-proof-pill" id="socialPill" style="margin-top: 1.2rem; margin-bottom: 0;">
+        <div class="pill-avatars">
+          <img src="https://i.pravatar.cc/80?img=32" width="20" height="20" alt="" class="pill-avatar">
+          <img src="https://i.pravatar.cc/80?img=47" width="20" height="20" alt="" class="pill-avatar">
+          <img src="https://i.pravatar.cc/80?img=12" width="20" height="20" alt="" class="pill-avatar">
+          <img src="https://i.pravatar.cc/80?img=25" width="20" height="20" alt="" class="pill-avatar">
+        </div>
+        <p class="pill-text">Trusted by <strong>600+</strong> F&amp;A teams worldwide</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div style="background: var(--paper);">
+<!-- Stats Band -->
+<section class="stats" id="statsSection">
+  <canvas class="blob-canvas" id="blobCanvas"></canvas>
+  <div class="stat reveal">
+    <div class="stat-number" data-target="340" data-suffix="K">0</div>
+    <div class="stat-label">Annual shortfall in F&amp;A professionals</div>
+  </div>
+  <div class="stat reveal" style="transition-delay: 100ms;">
+    <div class="stat-number" data-target="60" data-suffix="%">0</div>
+    <div class="stat-label">of firm labor is coordination, not client work</div>
+  </div>
+  <div class="stat reveal" style="transition-delay: 200ms;">
+    <div class="stat-number" data-target="73" data-suffix="%">0</div>
+    <div class="stat-label">of F&amp;A work gets outsourced</div>
+  </div>
+</section>
+
+<!-- Dual Marquee -->
+<section class="marquee-section">
+  <div class="marquee-wrapper">
+    <div class="marquee-track left">
+      <span class="marquee-item">ENGAGEMENT ROUTING</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">DOCUMENT COLLECTION</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">CLIENT FOLLOW-UPS</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">DEADLINE TRACKING</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">REVIEWER ASSIGNMENT</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">ESCALATION HANDLING</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">ENGAGEMENT ROUTING</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">DOCUMENT COLLECTION</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">CLIENT FOLLOW-UPS</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">DEADLINE TRACKING</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">REVIEWER ASSIGNMENT</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">ESCALATION HANDLING</span>
+      <span class="marquee-item">&bull;</span>
+    </div>
+  </div>
+  <div class="marquee-wrapper" style="margin-top: 0.5rem;">
+    <div class="marquee-track right">
+      <span class="marquee-item">QUICKBOOKS</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">XERO</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">NETSUITE</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">CANOPY</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">KARBON</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">BILL.COM</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">SAGE</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">TAXDOME</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">QUICKBOOKS</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">XERO</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">NETSUITE</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">CANOPY</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">KARBON</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">BILL.COM</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">SAGE</span>
+      <span class="marquee-item">&bull;</span>
+      <span class="marquee-item">TAXDOME</span>
+      <span class="marquee-item">&bull;</span>
+    </div>
+  </div>
+</section>
+
+<!-- Approach Section -->
+<section class="approach-section" id="approachSection">
+  <div class="approach-sticky">
+    <div class="approach-content" id="approachContent">
+      <p class="section-label">The Approach</p>
+      <h2 class="approach-headline">
+        Knowledge has become a commodity.<br>
+        <em>We take action.</em>
+      </h2>
+    </div>
+    <div class="approach-image-wrap">
+      <canvas class="approach-bg" id="halftoneCanvas"></canvas>
+      <div class="approach-diagram" id="approachDiagram">
+      <svg class="approach-flow" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="particleGlow" x="-100%" y="-100%" width="300%" height="300%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <g class="routes-group"></g>
+        <g class="nodes-group"></g>
+        <g class="particles-group"></g>
+      </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Wormhole Loop -->
+<section class="wormhole-section" id="rationalLoop">
+  <div class="wh-sticky">
+    <div class="wh-header">
+      <p class="section-label">The Rational Loop</p>
+      <h2 class="section-heading">Observe. Reason. Act. Improve.</h2>
+    </div>
+    <div class="wh-canvas-area">
+      <canvas id="wormholeCanvas"></canvas>
+      <div class="wh-stages">
+        <div class="wh-stage" data-stage="0">
+          <div class="wh-stage-content">
+            <span class="wh-stage-num">01</span>
+            <h3>Signal detected</h3>
+            <p>Your tools generate hundreds of signals daily. Emails, deadlines, status changes, capacity shifts. Rational catches every one.</p>
+          </div>
+        </div>
+        <div class="wh-stage" data-stage="1">
+          <div class="wh-stage-content">
+            <span class="wh-stage-num">02</span>
+            <h3>Context loaded</h3>
+            <p>Rational pulls the full picture: client history, team capacity, preferences, and priorities. Nothing gets missed.</p>
+          </div>
+        </div>
+        <div class="wh-stage" data-stage="2">
+          <div class="wh-stage-content">
+            <span class="wh-stage-num">03</span>
+            <h3>Best action determined</h3>
+            <p>Every option is scored. Williams: 92% fit — industry match, reviewed Cornerstone last 2 years, Tuesday AM available.</p>
+          </div>
+        </div>
+        <div class="wh-stage" data-stage="3">
+          <div class="wh-stage-content">
+            <span class="wh-stage-num">04</span>
+            <h3>Team coordinated</h3>
+            <p>The right person gets the right task through their preferred channel. No chasing. No dropped balls.</p>
+          </div>
+        </div>
+        <div class="wh-stage" data-stage="4">
+          <div class="wh-stage-content">
+            <span class="wh-stage-num">05</span>
+            <h3>Knowledge compounded</h3>
+            <p>Every correction becomes permanent. Week 4 is measurably sharper than week 1. Your firm's intelligence grows forever.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Outcomes -->
+<section>
+  <div class="section-inner">
+    <div class="reveal" style="text-align: center;">
+      <p class="section-label">Impact</p>
+      <h2 class="section-heading">What changes after 90 days.</h2>
+    </div>
+    <div class="outcomes-grid reveal" style="transition-delay: 150ms;">
+      <div class="outcome-cell">
+        <div class="outcome-number" data-target="4" data-suffix=".2 hrs">0</div>
+        <div class="outcome-label">of coordination handled in 60 seconds</div>
+      </div>
+      <div class="outcome-cell">
+        <div class="outcome-number" data-target="247" data-suffix="">0</div>
+        <div class="outcome-label">Engagements coordinated simultaneously</div>
+      </div>
+      <div class="outcome-cell">
+        <div class="outcome-number" data-target="3" data-suffix="x">0</div>
+        <div class="outcome-label">More revenue per employee</div>
+      </div>
+      <div class="outcome-cell">
+        <div class="outcome-number" data-target="92" data-suffix="%">0</div>
+        <div class="outcome-label">Reduction in coordination overhead</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Trust Strip -->
+<section class="trust">
+  <div class="trust-inner">
+    <span class="trust-item reveal">SOC 2 Type II</span>
+    <span class="trust-item reveal" style="transition-delay: 50ms;">Bank-Grade Encryption</span>
+    <span class="trust-item reveal" style="transition-delay: 100ms;">Works With Your Stack</span>
+    <span class="trust-item reveal" style="transition-delay: 150ms;">Human-in-the-Loop Always</span>
+  </div>
+</section>
+
+
+<!-- CTA Mega -->
+<section class="cta-mega" id="ctaMega">
+  <div class="cta-corner"></div>
+  <div class="cta-corner"></div>
+  <div class="cta-corner"></div>
+  <div class="cta-corner"></div>
+  <div class="cta-glow"></div>
+  <div class="cta-mouse-gradient" id="ctaMouseGradient"></div>
+  <div class="cta-content">
+    <h2 class="cta-heading reveal">Your firm's coordination layer<br>starts here.</h2>
+    <a href="mailto:founders@rational.work" class="cta-btn reveal" style="transition-delay: 100ms;" id="book-demo">Book a Demo</a>
+  </div>
+</section>
+
+</div>
+<!-- Footer -->
+<footer>
+  <span>Rational</span>
+  <p style="margin-top: 0.5rem;">&copy; 2026 Rational, Inc. All rights reserved.</p>
+</footer>
+
+<script>
+(function() {
+  'use strict';
+
+  // ===== HERO HEADLINE CHAR-BY-CHAR ANIMATION =====
+  const headlineText = 'Your perfect next hire.';
+  const headlineEl = document.getElementById('heroHeadline');
+  headlineText.split('').forEach((char, i) => {
+    const span = document.createElement('span');
+    span.className = 'char';
+    span.textContent = char === ' ' ? ' ' : char;
+    span.style.animationDelay = `${i * 35}ms`;
+    headlineEl.appendChild(span);
+  });
+
+  // ===== SMOOTH SCROLL CLIP-PATH HERO =====
+  const heroSection = document.getElementById('heroSection');
+  const heroImage = document.getElementById('heroImage');
+  const heroText = document.getElementById('heroText');
+  const isMobile = window.innerWidth <= 768;
+  const clipX = isMobile ? 25 : 20;
+  const clipY = isMobile ? 28 : 22;
+
+  function updateHero() {
+    const rect = heroSection.getBoundingClientRect();
+    const scrollDistance = 1500;
+    const scrolled = -rect.top;
+    const progress = Math.max(0, Math.min(1, scrolled / scrollDistance));
+
+    // Interpolate clip-path
+    const x1 = lerp(clipX, 0, progress);
+    const y1 = lerp(clipY, 0, progress);
+    const x2 = lerp(100 - clipX, 100, progress);
+    const y2 = lerp(100 - clipY, 100, progress);
+    heroImage.style.clipPath = `polygon(${x1}% ${y1}%, ${x2}% ${y1}%, ${x2}% ${y2}%, ${x1}% ${y2}%)`;
+
+    // Interpolate background-size
+    const bgSize = lerp(170, 100, progress);
+    heroImage.style.backgroundSize = `${bgSize}%`;
+
+    // Fade text — only disappear once image fully zoomed out
+    const textOpacity = progress < 0.75 ? 1 : progress > 1 ? 0 : 1 - ((progress - 0.75) / 0.25);
+    heroText.style.opacity = textOpacity;
+
+    return progress;
+  }
+
+  function lerp(a, b, t) {
+    return a + (b - a) * t;
+  }
+
+  let loopActive = false;
+
+  // ===== NAV TRANSITION =====
+  const mainNav = document.getElementById('mainNav');
+  const grainEl = document.querySelector('.grain');
+  const creamSections = document.querySelectorAll('.approach-section');
+  function updateNav(heroProgress) {
+    if (heroProgress > 0.9) {
+      mainNav.classList.add('scrolled');
+      grainEl.classList.add('active');
+      const navBottom = mainNav.getBoundingClientRect().bottom;
+      let onCream = false;
+      creamSections.forEach(s => {
+        const r = s.getBoundingClientRect();
+        if (r.top < navBottom && r.bottom > navBottom) onCream = true;
+      });
+      mainNav.style.background = onCream ? 'var(--cream)' : 'var(--paper)';
+    } else {
+      mainNav.classList.remove('scrolled');
+      grainEl.classList.remove('active');
+      mainNav.style.background = '';
+    }
+  }
+
+  // ===== PROGRESS BAR =====
+  const progressBar = document.getElementById('progressBar');
+  function updateProgress(heroProgress) {
+    if (heroProgress >= 1) {
+      progressBar.classList.add('visible');
+      const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
+      const remaining = document.body.scrollHeight - heroBottom - window.innerHeight;
+      const pastHero = window.scrollY - heroBottom;
+      const pct = Math.max(0, Math.min(100, (pastHero / remaining) * 100));
+      progressBar.style.width = pct + '%';
+    } else {
+      progressBar.classList.remove('visible');
+      progressBar.style.width = '0%';
+    }
+  }
+
+
+  // ===== SCROLL HANDLER =====
+  function onScroll() {
+    const heroProgress = updateHero();
+    updateNav(heroProgress);
+    updateProgress(heroProgress);
+    if (typeof updateApproach === 'function') updateApproach();
+    if (typeof updateWormholeScroll === 'function') updateWormholeScroll();
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  requestAnimationFrame(onScroll);
+
+  // ===== INTERSECTION OBSERVER FOR REVEALS =====
+  const reveals = document.querySelectorAll('.reveal');
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      entry.target.classList.toggle('visible', entry.isIntersecting);
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+  reveals.forEach(el => revealObserver.observe(el));
+
+  // ===== ANIMATED COUNTERS =====
+  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+  function animateCounter(el) {
+    const target = parseInt(el.getAttribute('data-target'));
+    const suffix = el.getAttribute('data-suffix') || '';
+    const prefix = el.getAttribute('data-prefix') || '';
+    if (target === 0) { el.textContent = prefix || '0'; return; }
+    const duration = 1500;
+    const start = performance.now();
+    function tick(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const value = Math.round(easeOutCubic(progress) * target);
+      el.textContent = prefix + value + (suffix ? suffix : '');
+      if (progress < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  const counterEls = document.querySelectorAll('[data-target]');
+  const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        animateCounter(entry.target);
+      } else {
+        entry.target.textContent = '0';
+      }
+    });
+  }, { threshold: 0.5 });
+  counterEls.forEach(el => counterObserver.observe(el));
+
+
+  // ===== APPROACH SECTION — REVERSE ZOOM + DIAGRAM =====
+  const approachSection = document.getElementById('approachSection');
+  const approachContent = document.getElementById('approachContent');
+  const approachDiagram = document.getElementById('approachDiagram');
+  const approachImageWrap = document.querySelector('.approach-image-wrap');
+
+  const approachObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) approachDiagram.classList.add('is-visible');
+    });
+  }, { threshold: 0.3 });
+  approachObserver.observe(approachDiagram);
+
+  function updateApproach() {
+    const rect = approachSection.getBoundingClientRect();
+    const scrollDistance = 800;
+    const scrolled = -rect.top;
+    const progress = Math.max(0, Math.min(1, scrolled / scrollDistance));
+
+    if (window._halftoneState) window._halftoneState.zoom = lerp(1.1, 1.6, progress);
+
+    const insetX = lerp(18, 0, progress);
+    const insetY = lerp(12, 0, progress);
+    approachImageWrap.style.clipPath = 'inset(' + insetY + '% ' + insetX + '% ' + insetY + '% ' + insetX + '%)';
+
+    const textDrift = progress * -30;
+    const textOpacity = progress < 0.7 ? 1 : 1 - ((progress - 0.7) / 0.3);
+    approachContent.style.transform = 'translateY(' + textDrift + 'px)';
+    approachContent.style.opacity = textOpacity;
+  }
+
+  function buildDiagram() {
+    const svg = document.querySelector('.approach-flow');
+    const W = 640, H = 460;
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+    const lx = W * 0.10, cx = W * 0.50, rx = W * 0.90;
+    const r1 = H * 0.12, r2 = H * 0.37, r3 = H * 0.63, r4 = H * 0.88;
+    const my = H * 0.50;
+
+    const routeDefs = [
+      { id: 'route-1', vis: true,  d: 'M'+lx+','+r1+' C'+(lx+100)+','+r1+' '+(cx-60)+','+(my-15)+' '+cx+','+my+' C'+(cx+60)+','+(my+15)+' '+(rx-100)+','+r4+' '+rx+','+r4 },
+      { id: 'route-2', vis: true,  d: 'M'+lx+','+r4+' C'+(lx+100)+','+r4+' '+(cx-60)+','+(my+15)+' '+cx+','+my+' C'+(cx+60)+','+(my-15)+' '+(rx-100)+','+r1+' '+rx+','+r1 },
+      { id: 'route-3', vis: true,  d: 'M'+lx+','+r2+' C'+(lx+90)+','+r2+' '+(cx-50)+','+(my-8)+' '+cx+','+my+' C'+(cx+50)+','+(my+8)+' '+(rx-90)+','+r3+' '+rx+','+r3 },
+      { id: 'route-4', vis: true,  d: 'M'+lx+','+r3+' C'+(lx+90)+','+r3+' '+(cx-50)+','+(my+8)+' '+cx+','+my+' C'+(cx+50)+','+(my-8)+' '+(rx-90)+','+r2+' '+rx+','+r2 },
+      { id: 'transit-1', vis: false, d: 'M'+lx+','+r1+' C'+(lx+90)+','+r1+' '+(cx-50)+','+(my-10)+' '+cx+','+my+' C'+(cx+50)+','+(my+10)+' '+(rx-90)+','+r3+' '+rx+','+r3 },
+      { id: 'transit-2', vis: false, d: 'M'+lx+','+r2+' C'+(lx+90)+','+r2+' '+(cx-50)+','+my+' '+cx+','+my+' C'+(cx+50)+','+my+' '+(rx-90)+','+r4+' '+rx+','+r4 },
+      { id: 'transit-3', vis: false, d: 'M'+lx+','+r3+' C'+(lx+90)+','+r3+' '+(cx-50)+','+(my+10)+' '+cx+','+my+' C'+(cx+50)+','+(my-10)+' '+(rx-90)+','+r1+' '+rx+','+r1 },
+    ];
+
+    const routesG = svg.querySelector('.routes-group');
+    const nodesG = svg.querySelector('.nodes-group');
+    routesG.innerHTML = '';
+    nodesG.innerHTML = '';
+
+    routeDefs.forEach(r => {
+      if (r.vis) {
+        const bg = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        bg.setAttribute('d', r.d);
+        bg.classList.add('route');
+        routesG.appendChild(bg);
+      }
+      const fg = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      fg.setAttribute('d', r.d);
+      fg.setAttribute('id', r.id);
+      fg.classList.add(r.vis ? 'route-draw' : 'route-hidden');
+      routesG.appendChild(fg);
+    });
+
+    const hubR = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    hubR.setAttribute('x', cx - 7); hubR.setAttribute('y', my - 7);
+    hubR.setAttribute('width', 14); hubR.setAttribute('height', 14);
+    hubR.setAttribute('rx', 2);
+    hubR.classList.add('node-center');
+    nodesG.appendChild(hubR);
+
+    const nodes = [
+      { x: lx, y: r1, label: 'Signals',   side: 'left',  filled: true },
+      { x: lx, y: r2, label: 'Data',      side: 'left',  filled: true },
+      { x: lx, y: r3, label: 'Analysis',  side: 'left',  filled: true },
+      { x: lx, y: r4, label: 'Learning',  side: 'left',  filled: true },
+      { x: rx, y: r1, label: 'Context',   side: 'right', filled: true },
+      { x: rx, y: r2, label: 'Strategy',  side: 'right', filled: true },
+      { x: rx, y: r3, label: 'Action',    side: 'right', filled: true },
+      { x: rx, y: r4, label: 'Outcome',   side: 'right', filled: true },
+    ];
+
+    nodes.forEach(n => {
+      const sq = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      sq.setAttribute('x', n.x - 4); sq.setAttribute('y', n.y - 4);
+      sq.setAttribute('width', 8); sq.setAttribute('height', 8);
+      sq.setAttribute('rx', 1.5);
+      sq.classList.add(n.filled ? 'node-sq' : 'node-sq-outline');
+      nodesG.appendChild(sq);
+
+      const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      txt.classList.add('node-label');
+      txt.textContent = n.label;
+      if (n.side === 'left') {
+        txt.setAttribute('x', n.x - 12);
+        txt.setAttribute('y', n.y + 4);
+        txt.setAttribute('text-anchor', 'end');
+      } else {
+        txt.setAttribute('x', n.x + 12);
+        txt.setAttribute('y', n.y + 4);
+      }
+      nodesG.appendChild(txt);
+    });
+
+    return routeDefs;
+  }
+
+  let diagramRoutes = buildDiagram();
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => { diagramRoutes = buildDiagram(); }, 200);
+  });
+
+  function spawnParticle(svg, routeId, dir) {
+    const path = svg.querySelector('#' + routeId);
+    if (!path) return;
+    const len = path.getTotalLength();
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('r', '4');
+    circle.setAttribute('filter', 'url(#particleGlow)');
+    circle.classList.add('particle');
+    const group = svg.querySelector('.particles-group');
+    group.appendChild(circle);
+
+    const duration = 3500;
+    const start = performance.now();
+    function tick(now) {
+      const t = Math.min((now - start) / duration, 1);
+      if (t >= 1) { circle.remove(); return; }
+      const eased = t * t;
+      const dist = dir === 'fwd' ? eased * len : (1 - eased) * len;
+      const pt = path.getPointAtLength(dist);
+      circle.setAttribute('cx', pt.x);
+      circle.setAttribute('cy', pt.y);
+      let op;
+      if (t < 0.05) op = t / 0.05;
+      else if (t > 0.9) op = (1 - t) / 0.1;
+      else op = 1;
+      circle.setAttribute('opacity', op);
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function initParticles() {
+    const svg = document.querySelector('.approach-flow');
+    const sequence = [
+      { route: 'route-1',   dir: 'fwd' },
+      { route: 'route-3',   dir: 'fwd' },
+      { route: 'transit-1', dir: 'rev' },
+      { route: 'route-2',   dir: 'fwd' },
+      { route: 'route-4',   dir: 'rev' },
+      { route: 'transit-2', dir: 'fwd' },
+      { route: 'route-1',   dir: 'rev' },
+      { route: 'route-3',   dir: 'rev' },
+      { route: 'transit-3', dir: 'fwd' },
+      { route: 'route-2',   dir: 'rev' },
+      { route: 'route-4',   dir: 'fwd' },
+      { route: 'transit-1', dir: 'fwd' },
+    ];
+    let counter = 0;
+    setInterval(() => {
+      const entry = sequence[counter % sequence.length];
+      spawnParticle(svg, entry.route, entry.dir);
+      counter++;
+    }, 800);
+  }
+
+  const particleObserver = new IntersectionObserver(entries => {
+    if (entries.some(e => e.isIntersecting)) {
+      initParticles();
+      particleObserver.disconnect();
+    }
+  }, { threshold: 0.2 });
+  particleObserver.observe(approachSection);
+
+
+  // ===== WORMHOLE LOOP — STAGE VISIBILITY =====
+  const whSection = document.getElementById('rationalLoop');
+  const whStages = [...document.querySelectorAll('.wh-stage')];
+  const whCanvas = document.getElementById('wormholeCanvas');
+
+  const whObserver = new IntersectionObserver(entries => {
+    loopActive = entries.some(e => e.isIntersecting);
+  }, { rootMargin: '200px 0px' });
+  whObserver.observe(whSection);
+
+  function updateWormholeScroll() {
+    if (!loopActive) return;
+    const rect = whSection.getBoundingClientRect();
+    const scrollable = whSection.offsetHeight - window.innerHeight;
+    if (scrollable <= 0) return;
+    const progress = Math.max(0, Math.min(1, -rect.top / scrollable));
+    if (whCanvas) whCanvas.dataset.progress = progress.toFixed(5);
+  }
+
+
+
+  // ===== CTA MOUSE-FOLLOW GRADIENT =====
+  const ctaMega = document.getElementById('ctaMega');
+  const ctaMouseGradient = document.getElementById('ctaMouseGradient');
+  ctaMega.addEventListener('mousemove', (e) => {
+    const rect = ctaMega.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    ctaMouseGradient.style.setProperty('--mx', x + '%');
+    ctaMouseGradient.style.setProperty('--my', y + '%');
+  });
+
+  // ===== CANVAS BLOBS =====
+  const blobCanvas = document.getElementById('blobCanvas');
+  const blobCtx = blobCanvas.getContext('2d');
+  let blobsVisible = false;
+  const blobs = [
+    { x: 0.2, y: 0.3, r: 180, phase: 0 },
+    { x: 0.7, y: 0.5, r: 140, phase: 2 },
+    { x: 0.5, y: 0.7, r: 160, phase: 4 }
+  ];
+
+  function resizeBlobCanvas() {
+    const parent = blobCanvas.parentElement;
+    blobCanvas.width = parent.offsetWidth;
+    blobCanvas.height = parent.offsetHeight;
+  }
+  resizeBlobCanvas();
+  window.addEventListener('resize', resizeBlobCanvas);
+
+  const blobObserver = new IntersectionObserver((entries) => {
+    blobsVisible = entries[0].isIntersecting;
+  }, { threshold: 0 });
+  blobObserver.observe(blobCanvas);
+
+  function drawBlobs(time) {
+    if (blobsVisible) {
+      blobCtx.clearRect(0, 0, blobCanvas.width, blobCanvas.height);
+      blobs.forEach(blob => {
+        const t = time * 0.001;
+        const cx = blob.x * blobCanvas.width + Math.sin(t * 0.3 + blob.phase) * 30;
+        const cy = blob.y * blobCanvas.height + Math.cos(t * 0.2 + blob.phase) * 20;
+        const gradient = blobCtx.createRadialGradient(cx, cy, 0, cx, cy, blob.r);
+        gradient.addColorStop(0, 'rgba(99, 102, 241, 0.06)');
+        gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
+        blobCtx.fillStyle = gradient;
+        blobCtx.beginPath();
+        blobCtx.arc(cx, cy, blob.r, 0, Math.PI * 2);
+        blobCtx.fill();
+      });
+    }
+    requestAnimationFrame(drawBlobs);
+  }
+  requestAnimationFrame(drawBlobs);
+
+})();
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+const canvas = document.getElementById('halftoneCanvas');
+if (canvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: false, antialias: false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.NoToneMapping;
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x1A1714);
+  const camera = new THREE.OrthographicCamera(-0.5, 0.5, 0.5, -0.5, 0.1, 10);
+  camera.position.z = 1;
+
+  const loader = new THREE.TextureLoader();
+  const texture = loader.load(
+    'https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?auto=format&fit=crop&w=2000&q=80',
+    () => { dirty = true; }
+  );
+  texture.colorSpace = THREE.SRGBColorSpace;
+
+  const planeMat = new THREE.ShaderMaterial({
+    uniforms: {
+      map: { value: texture },
+      texelSize: { value: new THREE.Vector2(4.0 / 2000, 4.0 / 1333) },
+      brightness: { value: 0.38 },
+      saturation: { value: 0.45 },
+      zoom: { value: 1.1 },
+    },
+    vertexShader: `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform sampler2D map;
+      uniform vec2 texelSize;
+      uniform float brightness;
+      uniform float saturation;
+      uniform float zoom;
+      varying vec2 vUv;
+      void main() {
+        vec2 uv = (vUv - 0.5) / zoom + 0.5;
+        vec4 c = texture2D(map, uv) * 0.36;
+        c += texture2D(map, uv + vec2(texelSize.x, 0.0)) * 0.16;
+        c += texture2D(map, uv - vec2(texelSize.x, 0.0)) * 0.16;
+        c += texture2D(map, uv + vec2(0.0, texelSize.y)) * 0.16;
+        c += texture2D(map, uv - vec2(0.0, texelSize.y)) * 0.16;
+        c.rgb *= brightness;
+        float gray = dot(c.rgb, vec3(0.299, 0.587, 0.114));
+        c.rgb = mix(vec3(gray), c.rgb, saturation);
+        gl_FragColor = c;
+      }
+    `,
+  });
+
+  const plane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), planeMat);
+  scene.add(plane);
+
+  const halftoneShader = {
+    uniforms: {
+      tDiffuse: { value: null },
+      resolution: { value: new THREE.Vector2() },
+      uLightGridSize: { value: 55.0 },
+      uLightWidth: { value: 0.06 },
+      uLightShape: { value: 0 },
+      uLightColor: { value: new THREE.Color('#dcdcdc') },
+      uDarkGridSize: { value: 55.0 },
+      uDarkWidth: { value: 0.11 },
+      uDarkShape: { value: 1 },
+      uDarkColor: { value: new THREE.Color('#2a2a2a') },
+      uRotationJitter: { value: 1.2 },
+      uTime: { value: 0.0 },
+      uRotateSpeed: { value: 0.3 },
+    },
+    vertexShader: `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform sampler2D tDiffuse;
+      uniform vec2 resolution;
+      uniform float uLightGridSize;
+      uniform float uLightWidth;
+      uniform int uLightShape;
+      uniform vec3 uLightColor;
+      uniform float uDarkGridSize;
+      uniform float uDarkWidth;
+      uniform int uDarkShape;
+      uniform vec3 uDarkColor;
+      uniform float uRotationJitter;
+      uniform float uTime;
+      uniform float uRotateSpeed;
+      varying vec2 vUv;
+
+      float shapeSDF(vec2 p, int shape) {
+        if (shape == 0) return length(p);
+        vec2 d = abs(p);
+        return max(min(d.x, d.y), max(d.x, d.y) - 0.35);
+      }
+
+      void main() {
+        vec4 inputColor = texture2D(tDiffuse, vUv);
+        float baseRotation = uTime * uRotateSpeed;
+        vec2 aspect = vec2(resolution.x / resolution.y, 1.0);
+
+        vec2 lightGrid = vUv * aspect * uLightGridSize;
+        vec2 lightCell = floor(lightGrid);
+        vec2 lightCellOrigin = lightCell / (aspect * uLightGridSize);
+        vec4 lightSamp = texture2D(tDiffuse, lightCellOrigin + 0.5 / (aspect * uLightGridSize));
+        float lightLuma = dot(lightSamp.rgb, vec3(0.2126, 0.7152, 0.0722));
+
+        vec2 lj = 0.2 * (fract(sin(vec2(dot(lightCell, vec2(127.1, 311.7)), dot(lightCell, vec2(269.5, 183.3)))) * 43758.5453) - 0.5);
+        float la = baseRotation + uRotationJitter * (fract(sin(dot(lightCell, vec2(78.233, 45.164))) * 43758.5453) - 0.5);
+        float lca = cos(la); float lsa = sin(la);
+        vec2 lc = fract(lightGrid) - 0.5 - lj;
+        vec2 lr = vec2(lca * lc.x + lsa * lc.y, -lsa * lc.x + lca * lc.y);
+
+        float ml = smoothstep(0.05, 0.5, lightLuma);
+        float tl = uLightWidth * ml;
+        float sl = 1.0 - smoothstep(tl - 0.01, tl + 0.01, shapeSDF(lr, uLightShape));
+
+        vec2 dkUv = vUv + 2.0 / resolution;
+        vec2 darkGrid = dkUv * aspect * uDarkGridSize;
+        vec2 darkCell = floor(darkGrid);
+        vec2 darkCellOrigin = darkCell / (aspect * uDarkGridSize);
+        vec4 darkSamp = texture2D(tDiffuse, darkCellOrigin + 0.5 / (aspect * uDarkGridSize));
+        float darkLuma = dot(darkSamp.rgb, vec3(0.2126, 0.7152, 0.0722));
+
+        vec2 dj = 0.08 * (fract(sin(vec2(dot(darkCell, vec2(127.1, 311.7)), dot(darkCell, vec2(269.5, 183.3)))) * 43758.5453) - 0.5);
+        float da = 25.0 + baseRotation + uRotationJitter * (fract(sin(dot(darkCell, vec2(78.233, 45.164))) * 43758.5453) - 0.5);
+        float dca = cos(da); float dsa = sin(da);
+        vec2 dc = fract(darkGrid) - 0.5 - dj;
+        vec2 dr = vec2(dca * dc.x + dsa * dc.y, -dsa * dc.x + dca * dc.y);
+
+        float md = smoothstep(0.4, 0.0, darkLuma);
+        float td = uDarkWidth * md;
+        float sd = 1.0 - smoothstep(td - 0.01, td + 0.01, shapeSDF(dr, uDarkShape));
+
+        vec3 color = mix(inputColor.rgb, uDarkColor, sd);
+        color = mix(color, uLightColor, sl);
+        gl_FragColor = vec4(color, 1.0);
+      }
+    `,
+  };
+
+  const composer = new EffectComposer(renderer);
+  composer.addPass(new RenderPass(scene, camera));
+  const halftonePass = new ShaderPass(halftoneShader);
+  composer.addPass(halftonePass);
+  composer.addPass(new OutputPass());
+
+  let dirty = true;
+  let visible = false;
+
+  function resize() {
+    const w = canvas.parentElement.offsetWidth;
+    const h = canvas.parentElement.offsetHeight;
+    if (w === 0 || h === 0) return;
+    renderer.setSize(w, h);
+    composer.setSize(w, h);
+    halftonePass.uniforms.resolution.value.set(w, h);
+    dirty = true;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const obs = new IntersectionObserver(entries => {
+    visible = entries[0].isIntersecting;
+    if (visible) dirty = true;
+  }, { threshold: 0 });
+  obs.observe(canvas);
+
+  window._halftoneState = { zoom: 1.1 };
+
+  window.addEventListener('scroll', () => { if (visible) dirty = true; }, { passive: true });
+
+  function animate() {
+    requestAnimationFrame(animate);
+    if (!visible) return;
+    planeMat.uniforms.zoom.value = window._halftoneState.zoom;
+    halftonePass.uniforms.uTime.value = performance.now() * 0.001;
+    composer.render();
+  }
+  animate();
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+
+const whCanvas = document.getElementById('wormholeCanvas');
+if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const curvePath = [
+    10.136184463414924, -1.374508746897471, 10.384881573913269,
+    9.1152593889854714, -1.374508746897471, 8.5846792797570011,
+    9.0669355709754882, -1.0665123466336568, 5.8937771631608156,
+    10.151040177840205, -0.65913653144937956, 3.4340491740541346,
+    10.806779203170416, 1.8859391007298545, 0.46855774212986023,
+    10.761433540147586, 2.8724172201359197, -1.2811838605587311,
+    9.6195923104445065, 2.8724172201359197, -3.2833099941904766,
+    6.9763020889151646, 2.7659257976905427, -4.7591958908830172,
+    6.0461277891353697, 1.0727045302089879, -6.6638740164090482,
+    7.3472235778544794, -1.8228856326635698, -9.0685043046185623,
+    7.226367212900791, -1.8228856326635698, -10.499536640855691,
+    5.8354566696263914, -1.8228856326635698, -12.039219379199908,
+    3.6532357452141353, -0.20463983570573391, -13.87695442281038,
+    -0.30169589630131455, 1.5965000671484342, -14.879986418947327,
+    -2.8925694230502157, 2.2971364614427481, -13.892095587598131,
+    -4.537672295357936, 4.5863515759659208, -12.140831652074551,
+    -6.1287913464117594, 5.9653814634119815, -8.9776527318875896,
+    -6.0120301606452813, 4.4081161943855998, -6.712084358394045,
+    -5.2138252159038974, 2.820894808418279, -4.4532820412085607,
+    -2.3424712835109611, 2.2032065005086259, -3.0788773693500198,
+    -0.0076956453915433265, 1.8931797788880202, -1.6577070662471063,
+    -0.24767503988481437, 2.8845808465856684, 0.073915859214221724,
+    -2.2174044353598896, 4.2415524507318576, 2.215992718290742,
+    -3.4526531678364756, 3.0615192023340851, 4.7922404932096558,
+    -3.7356278971556445, 1.4054080369354316, 7.8432021841434629,
+    -3.4003734463804118, 1.1924069108769393, 9.2464090886227073,
+    -1.8851803760476225, 1.5269331003449989, 10.306083896408374,
+    0.01071077144031829, 2.1101821577522295, 10.490880699847727,
+    0.42562058195647001, 2.2759939598834387, 11.613129436580291,
+    0.096405262182225115, 0.032317784084054391, 16.223455375061565,
+    2.3458797884520433, 0.38907275257695584, 19.91188266079584,
+    5.7018400098488771, 1.73337964747396, 20.615481586999959,
+    7.9720939736751824, 1.73337964747396, 19.303399329816457,
+    9.8672362721095652, 0.090083018057025177, 16.893338541618121,
+    11.225959519544134, -1.374508746897471, 14.279002555560753,
+    11.288646925965876, -1.374508746897471, 11.926359497447137,
+    10.136184463414924, -1.374508746897471, 10.384881573913269
+  ];
+
+  const points = [];
+  for (let p = 0; p < curvePath.length; p += 3) {
+    points.push(new THREE.Vector3(curvePath[p], curvePath[p + 1], curvePath[p + 2]));
+  }
+  const spline = new THREE.CatmullRomCurve3(points);
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xFFFFFF);
+
+  const camera = new THREE.PerspectiveCamera(95, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+  const tubeSegments = 222;
+  const tubeGeo = new THREE.TubeGeometry(spline, tubeSegments, 0.65, 32, true);
+
+  const wallMat = new THREE.MeshBasicMaterial({
+    color: 0xFFFFFF,
+    side: THREE.BackSide,
+    fog: false,
+    transparent: true,
+    opacity: 0.05,
+    polygonOffset: true,
+    polygonOffsetFactor: 1,
+    polygonOffsetUnits: 1
+  });
+  const tubeWall = new THREE.Mesh(tubeGeo, wallMat);
+  scene.add(tubeWall);
+
+  const frenetFrames = spline.computeFrenetFrames(tubeSegments, true);
+
+  const splineSamples = [];
+  for (let i = 0; i <= tubeSegments; i++) {
+    splineSamples.push(spline.getPointAt(i / tubeSegments));
+  }
+
+  const bokehMats = [];
+
+  const colEntry = new THREE.Color(0x818CF8);
+  const colMid = new THREE.Color(0x6366F1);
+  const colDeep = new THREE.Color(0x4F46E5);
+  const colGold = new THREE.Color(0x7C3AED);
+  const _gradColor = new THREE.Color();
+
+  const stageColors = [
+    { ribbon: new THREE.Color(0x6366F1), wall: new THREE.Color(0x9888C0), fog: new THREE.Color(0xE8E4F0) },
+    { ribbon: new THREE.Color(0x818CF8), wall: new THREE.Color(0xA090D0), fog: new THREE.Color(0xE4E0F0) },
+    { ribbon: new THREE.Color(0x7C3AED), wall: new THREE.Color(0xA898D8), fog: new THREE.Color(0xE0DCF0) },
+    { ribbon: new THREE.Color(0x6D28D9), wall: new THREE.Color(0x9080C0), fog: new THREE.Color(0xE4E0EA) },
+    { ribbon: new THREE.Color(0x4F46E5), wall: new THREE.Color(0x8878B0), fog: new THREE.Color(0xE8E4E8) },
+  ];
+  const _stageWall = new THREE.Color();
+  const _stageFog = new THREE.Color();
+
+  const tunnelLight = new THREE.PointLight(0xFFFFFF, 2.0, 8, 1.2);
+  scene.add(tunnelLight);
+  const trailLight = new THREE.PointLight(0xFFFFFF, 1.0, 5, 1.5);
+  scene.add(trailLight);
+  const dirLight = new THREE.DirectionalLight(0xFFFFFF, 0.5);
+  dirLight.position.set(0, 1, 0);
+  scene.add(dirLight);
+  const _lightPos = new THREE.Vector3();
+  const isMobile = window.innerWidth <= 768;
+
+  const numFibers = isMobile ? 300 : 600;
+  const minSpan = 0.08;
+  const maxSpan = 0.35;
+  const fiberWidth = 0.003;
+  const flowRadius = 0.635;
+  const endFade = 0.15;
+  const flowMat = new THREE.MeshBasicMaterial({
+    vertexColors: true, side: THREE.DoubleSide,
+    transparent: true, opacity: 1.0, fog: false, depthWrite: false
+  });
+  const flowLines = [];
+  const _flC = new THREE.Vector3();
+  const _flN = new THREE.Vector3();
+  const _flBn = new THREE.Vector3();
+
+  const ambLight = new THREE.AmbientLight(0xFFFFFF, 0.8);
+  scene.add(ambLight);
+
+  function seededRandom(seed) {
+    let s = seed;
+    return function() {
+      s = (s * 16807 + 0) % 2147483647;
+      return (s - 1) / 2147483646;
+    };
+  }
+  const rng = seededRandom(42);
+
+  let totalFlowVerts = 0;
+  let totalFlowTris = 0;
+  for (let i = 0; i < numFibers; i++) {
+    const angle = (i / numFibers) * Math.PI * 2 + (rng() - 0.5) * 0.4;
+    const baseStart = (i * 0.618033988 + rng() * 0.03) % 1;
+    const span = minSpan + rng() * (maxSpan - minSpan);
+    const ptsPerFiber = Math.max(12, Math.round(span * 80));
+    const vertexOffset = totalFlowVerts;
+    totalFlowVerts += (ptsPerFiber + 1) * 2;
+    totalFlowTris += ptsPerFiber * 6;
+    flowLines.push({
+      cosA: Math.cos(angle) * flowRadius,
+      sinA: Math.sin(angle) * flowRadius,
+      circCosBase: -Math.sin(angle),
+      circSinBase: Math.cos(angle),
+      baseStart, span, ptsPerFiber, vertexOffset
+    });
+  }
+
+  const flowPositions = new Float32Array(totalFlowVerts * 3);
+  const flowColors = new Float32Array(totalFlowVerts * 4);
+  const flowIndices = totalFlowVerts > 65535
+    ? new Uint32Array(totalFlowTris) : new Uint16Array(totalFlowTris);
+  let idxCursor = 0;
+  for (let i = 0; i < numFibers; i++) {
+    const fl = flowLines[i];
+    for (let j = 0; j < fl.ptsPerFiber; j++) {
+      const a = fl.vertexOffset + j * 2;
+      flowIndices[idxCursor++] = a;
+      flowIndices[idxCursor++] = a + 2;
+      flowIndices[idxCursor++] = a + 1;
+      flowIndices[idxCursor++] = a + 1;
+      flowIndices[idxCursor++] = a + 2;
+      flowIndices[idxCursor++] = a + 3;
+    }
+  }
+
+  const flowGeo = new THREE.BufferGeometry();
+  flowGeo.setAttribute('position', new THREE.BufferAttribute(flowPositions, 3));
+  flowGeo.setAttribute('color', new THREE.BufferAttribute(flowColors, 4));
+  flowGeo.setIndex(new THREE.BufferAttribute(flowIndices, 1));
+  const flowMesh = new THREE.Mesh(flowGeo, flowMat);
+  flowMesh.renderOrder = 1;
+  flowMesh.frustumCulled = false;
+  scene.add(flowMesh);
+
+  const numParticles = 80;
+  const particleFiberStride = Math.max(1, Math.floor(numFibers / (numParticles / 2)));
+  const particlePositions = new Float32Array(numParticles * 3);
+  const particleColors = new Float32Array(numParticles * 3);
+  const particleGeo = new THREE.BufferGeometry();
+  particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+  particleGeo.setAttribute('color', new THREE.BufferAttribute(particleColors, 3));
+  const particleMat = new THREE.PointsMaterial({
+    size: 0.012, vertexColors: true, transparent: true, opacity: 0.7,
+    blending: THREE.AdditiveBlending, depthWrite: false, fog: false
+  });
+  const particleSystem = new THREE.Points(particleGeo, particleMat);
+  scene.add(particleSystem);
+
+  function updateFlowLines(scrollP, time) {
+    const flowOffset = scrollP * 0.6 + time * 0.000018;
+    const pArr = flowGeo.attributes.position.array;
+    const cArr = flowGeo.attributes.color.array;
+    let pIdx = 0;
+    for (let i = 0; i < numFibers; i++) {
+      const fl = flowLines[i];
+      const animStart = ((fl.baseStart + flowOffset) % 1 + 1) % 1;
+      for (let j = 0; j <= fl.ptsPerFiber; j++) {
+        const t = j / fl.ptsPerFiber;
+        const lp = ((animStart + t * fl.span) % 1 + 1) % 1;
+        const scaled = lp * tubeSegments;
+        const fi = Math.floor(scaled) % tubeSegments;
+        const fi1 = fi + 1;
+        const frac = scaled - Math.floor(scaled);
+        _flC.copy(splineSamples[fi]).lerp(splineSamples[fi1], frac);
+        _flN.copy(frenetFrames.normals[fi]).lerp(frenetFrames.normals[fi1], frac);
+        _flBn.copy(frenetFrames.binormals[fi]).lerp(frenetFrames.binormals[fi1], frac);
+
+        const sx = _flC.x + _flN.x * fl.cosA + _flBn.x * fl.sinA;
+        const sy = _flC.y + _flN.y * fl.cosA + _flBn.y * fl.sinA;
+        const sz = _flC.z + _flN.z * fl.cosA + _flBn.z * fl.sinA;
+        const cx = _flN.x * fl.circCosBase * fiberWidth + _flBn.x * fl.circSinBase * fiberWidth;
+        const cy = _flN.y * fl.circCosBase * fiberWidth + _flBn.y * fl.circSinBase * fiberWidth;
+        const cz = _flN.z * fl.circCosBase * fiberWidth + _flBn.z * fl.circSinBase * fiberWidth;
+        const pidx = (fl.vertexOffset + j * 2) * 3;
+        pArr[pidx]     = sx + cx; pArr[pidx + 1] = sy + cy; pArr[pidx + 2] = sz + cz;
+        pArr[pidx + 3] = sx - cx; pArr[pidx + 4] = sy - cy; pArr[pidx + 5] = sz - cz;
+
+        let alpha = 1.0;
+        if (t < endFade) alpha = t / endFade;
+        else if (t > 1 - endFade) alpha = (1 - t) / endFade;
+        alpha = alpha * alpha;
+
+        if (lp < 0.5) {
+          _gradColor.copy(colEntry).lerp(colMid, lp * 2);
+        } else {
+          _gradColor.copy(colMid).lerp(colDeep, (lp - 0.5) * 2);
+        }
+        const ci = (fl.vertexOffset + j * 2) * 4;
+        cArr[ci]     = cArr[ci + 4] = _gradColor.r;
+        cArr[ci + 1] = cArr[ci + 5] = _gradColor.g;
+        cArr[ci + 2] = cArr[ci + 6] = _gradColor.b;
+        cArr[ci + 3] = cArr[ci + 7] = alpha;
+
+        if (pIdx < numParticles && i % particleFiberStride === 0 && (j === 0 || j === fl.ptsPerFiber)) {
+          const scatter = 0.015;
+          const st = Math.sin(time * 0.001 + i + j) * scatter;
+          particlePositions[pIdx * 3]     = sx + st;
+          particlePositions[pIdx * 3 + 1] = sy + st * 0.7;
+          particlePositions[pIdx * 3 + 2] = sz + st;
+          const sparkAlpha = 0.3 + 0.7 * Math.abs(Math.sin(time * 0.003 + i * 0.5));
+          particleColors[pIdx * 3]     = _gradColor.r * sparkAlpha;
+          particleColors[pIdx * 3 + 1] = _gradColor.g * sparkAlpha;
+          particleColors[pIdx * 3 + 2] = _gradColor.b * sparkAlpha;
+          pIdx++;
+        }
+      }
+    }
+    flowGeo.attributes.position.needsUpdate = true;
+    flowGeo.attributes.color.needsUpdate = true;
+    particleGeo.attributes.position.needsUpdate = true;
+    particleGeo.attributes.color.needsUpdate = true;
+  }
+
+  const stageWaypoints = [0.08, 0.20, 0.32, 0.44, 0.56];
+
+  const renderer = new THREE.WebGLRenderer({ canvas: whCanvas, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.NoToneMapping;
+
+  function whResize() {
+    const w = whCanvas.parentElement.offsetWidth;
+    const h = whCanvas.parentElement.offsetHeight;
+    if (w === 0 || h === 0) return;
+    renderer.setSize(w, h);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  whResize();
+  window.addEventListener('resize', whResize);
+
+  let whVisible = false;
+  let whRaf = 0;
+
+  function startLoop() {
+    if (!whRaf) {
+      lastWhT = 0;
+      whRaf = requestAnimationFrame(whAnimate);
+    }
+  }
+  function stopLoop() {
+    if (whRaf) { cancelAnimationFrame(whRaf); whRaf = 0; }
+  }
+
+  const whObs = new IntersectionObserver(entries => {
+    const next = entries[0].isIntersecting;
+    if (next === whVisible) return;
+    whVisible = next;
+    if (whVisible) startLoop(); else stopLoop();
+  }, { threshold: 0 });
+  whObs.observe(whCanvas);
+
+  let activeStage = -1;
+  const whStages = [...document.querySelectorAll('.wh-stage')];
+  const numSegs = stageWaypoints.length;
+  const segLen = 1 / numSegs;
+  const travelFrac = 0.70;
+
+  function remapWithEasing(scroll) {
+    const seg = Math.min(Math.floor(scroll / segLen), numSegs - 1);
+    const segP = (scroll - seg * segLen) / segLen;
+    const prevWP = seg === 0 ? 0 : stageWaypoints[seg - 1];
+    const currWP = stageWaypoints[seg];
+    if (segP <= travelFrac) {
+      const t = segP / travelFrac;
+      const eased = t < 0.5
+        ? 8 * t * t * t * t
+        : 1 - Math.pow(-2 * t + 2, 4) / 2;
+      return prevWP + (currWP - prevWP) * eased;
+    }
+    return currWP;
+  }
+
+  function circularDist(a, b) {
+    const d = Math.abs(a - b);
+    return Math.min(d, 1 - d);
+  }
+
+  function lerpCircular(a, b, alpha) {
+    let delta = b - a;
+    if (delta > 0.5) delta -= 1;
+    if (delta < -0.5) delta += 1;
+    return ((a + delta * alpha) % 1 + 1) % 1;
+  }
+
+  const _fNormal = new THREE.Vector3();
+  const _fTangent = new THREE.Vector3();
+  const _rollQuat = new THREE.Quaternion();
+  const _camUp = new THREE.Vector3();
+  const _camPos = new THREE.Vector3();
+  const _camLookAt = new THREE.Vector3();
+
+  function getFrameAt(p) {
+    const scaled = p * tubeSegments;
+    const i0 = Math.floor(scaled) % tubeSegments;
+    const i1 = i0 + 1;
+    const f = scaled - Math.floor(scaled);
+    _fNormal.copy(frenetFrames.normals[i0]).lerp(frenetFrames.normals[i1], f).normalize();
+    spline.getTangentAt(p, _fTangent).normalize();
+  }
+
+  function updateCamera(p, t) {
+    spline.getPointAt(p, _camPos);
+    spline.getPointAt((p + 0.03) % 1, _camLookAt);
+    getFrameAt(p);
+    const roll = Math.sin(p * Math.PI * 2 + t * 0.0001) * 0.06;
+    _rollQuat.setFromAxisAngle(_fTangent, roll);
+    _camUp.copy(_fNormal).applyQuaternion(_rollQuat).normalize();
+    camera.position.copy(_camPos);
+    camera.up.copy(_camUp);
+    camera.lookAt(_camLookAt);
+  }
+
+  let lastWhT = 0;
+  let smoothedP = 0;
+  let smoothedPReady = false;
+
+  function whAnimate(t) {
+    whRaf = requestAnimationFrame(whAnimate);
+
+    const dt = lastWhT ? Math.min((t - lastWhT) / 1000, 0.1) : 0;
+    lastWhT = t;
+
+    const scrollProgress = Number(whCanvas.dataset.progress || 0);
+    const targetP = remapWithEasing(scrollProgress);
+    if (!smoothedPReady) {
+      smoothedP = targetP;
+      smoothedPReady = true;
+    } else {
+      let dampRate = 8;
+      const nearestDist = Math.min(...stageWaypoints.map(wp => circularDist(targetP, wp)));
+      if (nearestDist < 0.025) {
+        dampRate = 2.5;
+      } else if (nearestDist < 0.05) {
+        dampRate = 2.5 + 5.5 * ((nearestDist - 0.025) / 0.025);
+      }
+      smoothedP = lerpCircular(smoothedP, targetP, 1 - Math.exp(-dampRate * dt));
+    }
+    const drift = Math.sin(t * 0.0003) * 0.008;
+    const p = ((smoothedP + drift) % 1 + 1) % 1;
+
+    updateCamera(p, t);
+    spline.getPointAt((p + 0.12) % 1, _lightPos);
+    tunnelLight.position.copy(_lightPos);
+    spline.getPointAt(((p - 0.08) % 1 + 1) % 1, _lightPos);
+    trailLight.position.copy(_lightPos);
+    dirLight.position.copy(_camPos).add(_fNormal);
+
+    updateFlowLines(smoothedP, t);
+
+    stageWaypoints.forEach((wp, i) => {
+      const dist = circularDist(p, wp);
+      if (activeStage === i && dist > 0.055) {
+        activeStage = -1;
+      } else if (activeStage === -1 && dist < 0.035) {
+        activeStage = i;
+      }
+    });
+    whStages.forEach((el, i) => {
+      const isActive = activeStage === i;
+      el.classList.toggle('active', isActive);
+      el.style.opacity = isActive ? '1' : '0';
+    });
+
+    renderer.render(scene, camera);
+  }
+
+  window.addEventListener('pagehide', (event) => {
+    if (event.persisted) return;
+    stopLoop();
+    whObs.disconnect();
+    window.removeEventListener('resize', whResize);
+    tubeGeo.dispose();
+    wallMat.dispose();
+    flowGeo.dispose();
+    flowMat.dispose();
+    particleGeo.dispose();
+    particleMat.dispose();
+    bokehGeo.dispose();
+    bokehMats.forEach(m => m.dispose());
+    renderer.dispose();
+  }, { once: true });
+}
+</script>
 </body>
 </html>

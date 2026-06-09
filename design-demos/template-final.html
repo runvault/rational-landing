@@ -505,7 +505,7 @@ section {
   position: relative;
   flex: 1;
   min-height: 0;
-  background: #F0F0F8;
+  background: #FFFFFF;
 }
 .wh-stages {
   position: absolute;
@@ -813,16 +813,16 @@ footer span {
 <section class="stats" id="statsSection">
   <canvas class="blob-canvas" id="blobCanvas"></canvas>
   <div class="stat reveal">
-    <div class="stat-number" data-target="125" data-suffix="M hrs">0</div>
-    <div class="stat-label">Annual shortfall in accounting</div>
+    <div class="stat-number" data-target="340" data-suffix="K">0</div>
+    <div class="stat-label">Annual shortfall in F&amp;A professionals</div>
   </div>
   <div class="stat reveal" style="transition-delay: 100ms;">
     <div class="stat-number" data-target="60" data-suffix="%">0</div>
     <div class="stat-label">of firm labor is coordination, not client work</div>
   </div>
   <div class="stat reveal" style="transition-delay: 200ms;">
-    <div class="stat-number" data-target="73" data-suffix=" days">0</div>
-    <div class="stat-label">Average time to fill a CPA role</div>
+    <div class="stat-number" data-target="73" data-suffix="%">0</div>
+    <div class="stat-label">of F&amp;A work gets outsourced</div>
   </div>
 </section>
 
@@ -991,8 +991,8 @@ footer span {
         <div class="outcome-label">Engagements coordinated simultaneously</div>
       </div>
       <div class="outcome-cell">
-        <div class="outcome-number" data-target="0" data-prefix="" data-suffix="">0</div>
-        <div class="outcome-label">Knowledge lost to turnover</div>
+        <div class="outcome-number" data-target="3" data-suffix="x">0</div>
+        <div class="outcome-label">More revenue per employee</div>
       </div>
       <div class="outcome-cell">
         <div class="outcome-number" data-target="92" data-suffix="%">0</div>
@@ -1691,25 +1691,19 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
   const spline = new THREE.CatmullRomCurve3(points);
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xF0F0F8);
-  const baseFogColor = new THREE.Color(0xE8E4F0);
-  scene.fog = new THREE.FogExp2(baseFogColor, 0.08);
+  scene.background = new THREE.Color(0xFFFFFF);
 
   const camera = new THREE.PerspectiveCamera(95, window.innerWidth / window.innerHeight, 0.1, 1000);
 
   const tubeSegments = 222;
   const tubeGeo = new THREE.TubeGeometry(spline, tubeSegments, 0.65, 32, true);
 
-  const wallMat = new THREE.MeshStandardMaterial({
-    color: 0x9888C0,
+  const wallMat = new THREE.MeshBasicMaterial({
+    color: 0xFFFFFF,
     side: THREE.BackSide,
-    fog: true,
+    fog: false,
     transparent: true,
-    opacity: 0.35,
-    metalness: 0.05,
-    roughness: 0.85,
-    emissive: new THREE.Color(0x6355A0),
-    emissiveIntensity: 0.06,
+    opacity: 0.05,
     polygonOffset: true,
     polygonOffsetFactor: 1,
     polygonOffsetUnits: 1
@@ -1724,32 +1718,7 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
     splineSamples.push(spline.getPointAt(i / tubeSegments));
   }
 
-  const bokehColors = [0x818CF8, 0xF0ABFC, 0xA78BFA, 0x93C5FD, 0xC4B5FD];
-  const bokehGeo = new THREE.SphereGeometry(1, 8, 8);
   const bokehMats = [];
-  for (let i = 0; i < 25; i++) {
-    const bp = (i / 25 + (Math.sin(i * 7.3) * 0.5 + 0.5) * 0.06) % 1;
-    const fi = Math.min(Math.floor(bp * tubeSegments), tubeSegments - 1);
-    const center = splineSamples[fi].clone();
-    const n = frenetFrames.normals[fi];
-    const bn = frenetFrames.binormals[fi];
-    const angle = (i / 25) * Math.PI * 2 + i * 1.7;
-    const dist = 0.9 + (Math.sin(i * 3.1) * 0.5 + 0.5) * 0.8;
-    const size = 0.15 + (Math.sin(i * 5.7) * 0.5 + 0.5) * 0.25;
-    const pos = center.clone()
-      .addScaledVector(n, Math.cos(angle) * dist)
-      .addScaledVector(bn, Math.sin(angle) * dist);
-    const mat = new THREE.MeshBasicMaterial({
-      color: bokehColors[i % bokehColors.length],
-      transparent: true, opacity: 0.12 + (Math.sin(i * 2.3) * 0.5 + 0.5) * 0.08,
-      fog: true
-    });
-    bokehMats.push(mat);
-    const mesh = new THREE.Mesh(bokehGeo, mat);
-    mesh.position.copy(pos);
-    mesh.scale.setScalar(size);
-    scene.add(mesh);
-  }
 
   const colEntry = new THREE.Color(0x818CF8);
   const colMid = new THREE.Color(0x6366F1);
@@ -1767,34 +1736,32 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
   const _stageWall = new THREE.Color();
   const _stageFog = new THREE.Color();
 
-  const tunnelLight = new THREE.PointLight(0xB4A0FF, 2.5, 8, 1.2);
+  const tunnelLight = new THREE.PointLight(0xFFFFFF, 2.0, 8, 1.2);
   scene.add(tunnelLight);
-  const trailLight = new THREE.PointLight(0x8B5CF6, 1.2, 5, 1.5);
+  const trailLight = new THREE.PointLight(0xFFFFFF, 1.0, 5, 1.5);
   scene.add(trailLight);
-  const dirLight = new THREE.DirectionalLight(0xE0D4FF, 0.4);
+  const dirLight = new THREE.DirectionalLight(0xFFFFFF, 0.5);
   dirLight.position.set(0, 1, 0);
   scene.add(dirLight);
   const _lightPos = new THREE.Vector3();
   const isMobile = window.innerWidth <= 768;
 
-  const numFibers = isMobile ? 200 : 500;
+  const numFibers = isMobile ? 300 : 600;
   const minSpan = 0.08;
   const maxSpan = 0.35;
   const fiberWidth = 0.003;
   const flowRadius = 0.635;
   const endFade = 0.15;
-  const flowMat = new THREE.MeshStandardMaterial({
+  const flowMat = new THREE.MeshBasicMaterial({
     vertexColors: true, side: THREE.DoubleSide,
-    transparent: true, opacity: 1.0, fog: true, depthWrite: false,
-    roughness: 0.2, metalness: 0.6,
-    emissive: new THREE.Color(0x6366F1), emissiveIntensity: 0.5
+    transparent: true, opacity: 1.0, fog: false, depthWrite: false
   });
   const flowLines = [];
   const _flC = new THREE.Vector3();
   const _flN = new THREE.Vector3();
   const _flBn = new THREE.Vector3();
 
-  const ambLight = new THREE.AmbientLight(0xE0D4FF, 0.6);
+  const ambLight = new THREE.AmbientLight(0xFFFFFF, 0.8);
   scene.add(ambLight);
 
   function seededRandom(seed) {
@@ -1861,7 +1828,7 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
   particleGeo.setAttribute('color', new THREE.BufferAttribute(particleColors, 3));
   const particleMat = new THREE.PointsMaterial({
     size: 0.012, vertexColors: true, transparent: true, opacity: 0.7,
-    blending: THREE.AdditiveBlending, depthWrite: false, fog: true
+    blending: THREE.AdditiveBlending, depthWrite: false, fog: false
   });
   const particleSystem = new THREE.Points(particleGeo, particleMat);
   scene.add(particleSystem);
@@ -1936,8 +1903,7 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
   const renderer = new THREE.WebGLRenderer({ canvas: whCanvas, antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.4;
+  renderer.toneMapping = THREE.NoToneMapping;
 
   function whResize() {
     const w = whCanvas.parentElement.offsetWidth;
@@ -2066,16 +2032,6 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
     spline.getPointAt(((p - 0.08) % 1 + 1) % 1, _lightPos);
     trailLight.position.copy(_lightPos);
     dirLight.position.copy(_camPos).add(_fNormal);
-
-    const stageF = Math.min(p / 0.56, 1) * (stageColors.length - 1);
-    const si = Math.min(Math.floor(stageF), stageColors.length - 2);
-    const sf = stageF - si;
-    _stageWall.copy(stageColors[si].wall).lerp(stageColors[si + 1].wall, sf);
-    _stageFog.copy(stageColors[si].fog).lerp(stageColors[si + 1].fog, sf);
-    wallMat.color.copy(_stageWall);
-    scene.fog.color.copy(_stageFog);
-    scene.background.copy(_stageFog);
-    flowMat.emissive.copy(stageColors[si].ribbon).lerp(stageColors[si + 1].ribbon, sf);
 
     updateFlowLines(smoothedP, t);
 
