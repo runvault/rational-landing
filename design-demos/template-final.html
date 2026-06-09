@@ -1699,29 +1699,44 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
     splineSamples.push(spline.getPointAt(i / tubeSegments));
   }
 
+  const colEntry = new THREE.Color(0x8B7D5E);
+  const colMid = new THREE.Color(0xB87333);
+  const colDeep = new THREE.Color(0x4A3728);
+  const colGold = new THREE.Color(0xD4A855);
+  const _gradColor = new THREE.Color();
+
+  const tunnelLight = new THREE.PointLight(0xD4A855, 1.2, 3, 1.5);
+  scene.add(tunnelLight);
+  const _lightPos = new THREE.Vector3();
+
   const numFlowLines = 100;
   const lineSpan = 0.45;
   const ptsPerLine = 40;
   const flowRadius = 0.635;
-  const ribbonHalf = 0.018;
-  const flowMat = new THREE.MeshBasicMaterial({
-    color: 0x8B7D5E, side: THREE.DoubleSide,
-    transparent: true, opacity: 0.55, fog: true, depthWrite: false
+  const ribbonBase = 0.016;
+  const flowMat = new THREE.MeshStandardMaterial({
+    vertexColors: true, side: THREE.DoubleSide,
+    transparent: true, opacity: 0.6, fog: true, depthWrite: false,
+    roughness: 0.7, metalness: 0.1
   });
   const flowLines = [];
   const _flC = new THREE.Vector3();
   const _flN = new THREE.Vector3();
   const _flBn = new THREE.Vector3();
 
+  const ambLight = new THREE.AmbientLight(0xFAF7F2, 0.4);
+  scene.add(ambLight);
+
   for (let i = 0; i < numFlowLines; i++) {
     const angle = (i / numFlowLines) * Math.PI * 2;
     const cosA = Math.cos(angle) * flowRadius;
     const sinA = Math.sin(angle) * flowRadius;
-    const circCos = -Math.sin(angle) * ribbonHalf;
-    const circSin = Math.cos(angle) * ribbonHalf;
+    const circCosBase = -Math.sin(angle);
+    const circSinBase = Math.cos(angle);
     const baseStart = (i * 0.618) % 1;
     const numVerts = (ptsPerLine + 1) * 2;
     const positions = new Float32Array(numVerts * 3);
+    const colors = new Float32Array(numVerts * 3);
     const indices = [];
     for (let j = 0; j < ptsPerLine; j++) {
       const a = j * 2, b = j * 2 + 1, c = (j + 1) * 2, d = (j + 1) * 2 + 1;
@@ -1729,20 +1744,23 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
     }
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     geo.setIndex(indices);
     const mesh = new THREE.Mesh(geo, flowMat);
     mesh.renderOrder = 1;
     mesh.frustumCulled = false;
     scene.add(mesh);
-    flowLines.push({ geo, cosA, sinA, circCos, circSin, baseStart, posAttr: geo.attributes.position });
+    flowLines.push({ geo, cosA, sinA, circCosBase, circSinBase, baseStart,
+      posAttr: geo.attributes.position, colAttr: geo.attributes.color });
   }
 
   function updateFlowLines(scrollP, time) {
-    const flowOffset = scrollP * 1.5 + time * 0.00004;
+    const flowOffset = scrollP * 1.5 + time * 0.00006;
     for (let i = 0; i < numFlowLines; i++) {
       const fl = flowLines[i];
       const animStart = ((fl.baseStart + flowOffset) % 1 + 1) % 1;
-      const arr = fl.posAttr.array;
+      const pArr = fl.posAttr.array;
+      const cArr = fl.colAttr.array;
       for (let j = 0; j <= ptsPerLine; j++) {
         const lp = ((animStart + (j / ptsPerLine) * lineSpan) % 1 + 1) % 1;
         const scaled = lp * tubeSegments;
@@ -1752,17 +1770,33 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
         _flC.copy(splineSamples[fi]).lerp(splineSamples[fi1], frac);
         _flN.copy(frenetFrames.normals[fi]).lerp(frenetFrames.normals[fi1], frac);
         _flBn.copy(frenetFrames.binormals[fi]).lerp(frenetFrames.binormals[fi1], frac);
+
+        const widthMod = ribbonBase * (0.7 + 0.3 * Math.sin(lp * Math.PI * 5 + i * 0.5));
+        const cCos = fl.circCosBase * widthMod;
+        const cSin = fl.circSinBase * widthMod;
+
         const sx = _flC.x + _flN.x * fl.cosA + _flBn.x * fl.sinA;
         const sy = _flC.y + _flN.y * fl.cosA + _flBn.y * fl.sinA;
         const sz = _flC.z + _flN.z * fl.cosA + _flBn.z * fl.sinA;
-        const cx = _flN.x * fl.circCos + _flBn.x * fl.circSin;
-        const cy = _flN.y * fl.circCos + _flBn.y * fl.circSin;
-        const cz = _flN.z * fl.circCos + _flBn.z * fl.circSin;
+        const cx = _flN.x * cCos + _flBn.x * cSin;
+        const cy = _flN.y * cCos + _flBn.y * cSin;
+        const cz = _flN.z * cCos + _flBn.z * cSin;
         const idx = j * 6;
-        arr[idx]     = sx + cx; arr[idx + 1] = sy + cy; arr[idx + 2] = sz + cz;
-        arr[idx + 3] = sx - cx; arr[idx + 4] = sy - cy; arr[idx + 5] = sz - cz;
+        pArr[idx]     = sx + cx; pArr[idx + 1] = sy + cy; pArr[idx + 2] = sz + cz;
+        pArr[idx + 3] = sx - cx; pArr[idx + 4] = sy - cy; pArr[idx + 5] = sz - cz;
+
+        if (lp < 0.5) {
+          _gradColor.copy(colEntry).lerp(colMid, lp * 2);
+        } else {
+          _gradColor.copy(colMid).lerp(colDeep, (lp - 0.5) * 2);
+        }
+        const ci = j * 6;
+        cArr[ci] = cArr[ci + 3] = _gradColor.r;
+        cArr[ci + 1] = cArr[ci + 4] = _gradColor.g;
+        cArr[ci + 2] = cArr[ci + 5] = _gradColor.b;
       }
       fl.posAttr.needsUpdate = true;
+      fl.colAttr.needsUpdate = true;
     }
   }
 
@@ -1911,6 +1945,8 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
     const p = ((smoothedP + drift) % 1 + 1) % 1;
 
     updateCamera(p, t);
+    spline.getPointAt((p + 0.12) % 1, _lightPos);
+    tunnelLight.position.copy(_lightPos);
     updateFlowLines(smoothedP, t);
 
     stageWaypoints.forEach((wp, i) => {
