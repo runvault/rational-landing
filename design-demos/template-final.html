@@ -505,7 +505,7 @@ section {
   position: relative;
   flex: 1;
   min-height: 0;
-  background: #1A1208;
+  background: #0A0806;
 }
 .wh-stages {
   position: absolute;
@@ -1686,25 +1686,25 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
   const spline = new THREE.CatmullRomCurve3(points);
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x1A1208);
-  const baseFogColor = new THREE.Color(0x2A1F10);
-  scene.fog = new THREE.FogExp2(baseFogColor, 0.22);
+  scene.background = new THREE.Color(0x0A0806);
+  const baseFogColor = new THREE.Color(0x0D0904);
+  scene.fog = new THREE.FogExp2(baseFogColor, 0.18);
 
-  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const camera = new THREE.PerspectiveCamera(95, window.innerWidth / window.innerHeight, 0.1, 1000);
 
   const tubeSegments = 222;
-  const tubeGeo = new THREE.TubeGeometry(spline, tubeSegments, 0.65, 16, true);
+  const tubeGeo = new THREE.TubeGeometry(spline, tubeSegments, 0.65, 32, true);
 
   const wallMat = new THREE.MeshStandardMaterial({
-    color: 0xB87333,
+    color: 0x3A2A15,
     side: THREE.BackSide,
     fog: true,
     transparent: true,
-    opacity: 0.85,
-    metalness: 0.9,
-    roughness: 0.25,
-    emissive: new THREE.Color(0x4A2810),
-    emissiveIntensity: 0.12,
+    opacity: 0.15,
+    metalness: 0.7,
+    roughness: 0.4,
+    emissive: new THREE.Color(0x1A0E05),
+    emissiveIntensity: 0.04,
     polygonOffset: true,
     polygonOffsetFactor: 1,
     polygonOffsetUnits: 1
@@ -1726,79 +1726,125 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
   const _gradColor = new THREE.Color();
 
   const stageColors = [
-    { ribbon: new THREE.Color(0xD4AF37), wall: new THREE.Color(0xB87333), fog: new THREE.Color(0x2A1F10) },
-    { ribbon: new THREE.Color(0xFFD700), wall: new THREE.Color(0xCD7F32), fog: new THREE.Color(0x30220E) },
-    { ribbon: new THREE.Color(0xE8C252), wall: new THREE.Color(0xC97B2A), fog: new THREE.Color(0x352612) },
-    { ribbon: new THREE.Color(0xCD853F), wall: new THREE.Color(0xA0522D), fog: new THREE.Color(0x2E1E0C) },
-    { ribbon: new THREE.Color(0xB8860B), wall: new THREE.Color(0x8B5E3C), fog: new THREE.Color(0x261808) },
+    { ribbon: new THREE.Color(0xD4AF37), wall: new THREE.Color(0x3A2A15), fog: new THREE.Color(0x0D0904) },
+    { ribbon: new THREE.Color(0xFFD700), wall: new THREE.Color(0x3E2E18), fog: new THREE.Color(0x0F0A05) },
+    { ribbon: new THREE.Color(0xE8C252), wall: new THREE.Color(0x422F16), fog: new THREE.Color(0x110B06) },
+    { ribbon: new THREE.Color(0xCD853F), wall: new THREE.Color(0x351F0C), fog: new THREE.Color(0x0E0903) },
+    { ribbon: new THREE.Color(0xB8860B), wall: new THREE.Color(0x2E1E0C), fog: new THREE.Color(0x0C0802) },
   ];
   const _stageWall = new THREE.Color();
   const _stageFog = new THREE.Color();
 
-  const tunnelLight = new THREE.PointLight(0xFFCC66, 3.0, 6, 1.2);
+  const tunnelLight = new THREE.PointLight(0xFFCC66, 2.0, 8, 1.2);
   scene.add(tunnelLight);
-  const trailLight = new THREE.PointLight(0xFFAA44, 1.5, 5, 1.5);
+  const trailLight = new THREE.PointLight(0xFFAA44, 1.0, 5, 1.5);
   scene.add(trailLight);
-  const dirLight = new THREE.DirectionalLight(0xFFF0DD, 0.6);
+  const dirLight = new THREE.DirectionalLight(0xFFF0DD, 0.3);
   dirLight.position.set(0, 1, 0);
   scene.add(dirLight);
   const _lightPos = new THREE.Vector3();
+  const isMobile = window.innerWidth <= 768;
 
-  const numFlowLines = 100;
-  const lineSpan = 0.45;
-  const ptsPerLine = 40;
+  const numFibers = isMobile ? 120 : 250;
+  const minSpan = 0.08;
+  const maxSpan = 0.35;
+  const fiberWidth = 0.003;
   const flowRadius = 0.635;
-  const ribbonBase = 0.016;
+  const endFade = 0.15;
   const flowMat = new THREE.MeshStandardMaterial({
     vertexColors: true, side: THREE.DoubleSide,
-    transparent: true, opacity: 0.85, fog: true, depthWrite: false,
-    roughness: 0.3, metalness: 0.5,
-    emissive: new THREE.Color(0xD4AF37), emissiveIntensity: 0.25
+    transparent: true, opacity: 1.0, fog: true, depthWrite: false,
+    roughness: 0.2, metalness: 0.6,
+    emissive: new THREE.Color(0xD4AF37), emissiveIntensity: 0.35
   });
   const flowLines = [];
   const _flC = new THREE.Vector3();
   const _flN = new THREE.Vector3();
   const _flBn = new THREE.Vector3();
 
-  const ambLight = new THREE.AmbientLight(0xF5DEB3, 0.35);
+  const ambLight = new THREE.AmbientLight(0xF5DEB3, 0.15);
   scene.add(ambLight);
 
-  for (let i = 0; i < numFlowLines; i++) {
-    const angle = (i / numFlowLines) * Math.PI * 2;
-    const cosA = Math.cos(angle) * flowRadius;
-    const sinA = Math.sin(angle) * flowRadius;
-    const circCosBase = -Math.sin(angle);
-    const circSinBase = Math.cos(angle);
-    const baseStart = (i * 0.618) % 1;
-    const numVerts = (ptsPerLine + 1) * 2;
-    const positions = new Float32Array(numVerts * 3);
-    const colors = new Float32Array(numVerts * 3);
-    const indices = [];
-    for (let j = 0; j < ptsPerLine; j++) {
-      const a = j * 2, b = j * 2 + 1, c = (j + 1) * 2, d = (j + 1) * 2 + 1;
-      indices.push(a, c, b, b, c, d);
-    }
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-    geo.setIndex(indices);
-    const mesh = new THREE.Mesh(geo, flowMat);
-    mesh.renderOrder = 1;
-    mesh.frustumCulled = false;
-    scene.add(mesh);
-    flowLines.push({ geo, cosA, sinA, circCosBase, circSinBase, baseStart,
-      posAttr: geo.attributes.position, colAttr: geo.attributes.color });
+  function seededRandom(seed) {
+    let s = seed;
+    return function() {
+      s = (s * 16807 + 0) % 2147483647;
+      return (s - 1) / 2147483646;
+    };
   }
+  const rng = seededRandom(42);
+
+  let totalFlowVerts = 0;
+  let totalFlowTris = 0;
+  for (let i = 0; i < numFibers; i++) {
+    const angle = (i / numFibers) * Math.PI * 2 + (rng() - 0.5) * 0.4;
+    const baseStart = (i * 0.618033988 + rng() * 0.03) % 1;
+    const span = minSpan + rng() * (maxSpan - minSpan);
+    const ptsPerFiber = Math.max(12, Math.round(span * 80));
+    const vertexOffset = totalFlowVerts;
+    totalFlowVerts += (ptsPerFiber + 1) * 2;
+    totalFlowTris += ptsPerFiber * 6;
+    flowLines.push({
+      cosA: Math.cos(angle) * flowRadius,
+      sinA: Math.sin(angle) * flowRadius,
+      circCosBase: -Math.sin(angle),
+      circSinBase: Math.cos(angle),
+      baseStart, span, ptsPerFiber, vertexOffset
+    });
+  }
+
+  const flowPositions = new Float32Array(totalFlowVerts * 3);
+  const flowColors = new Float32Array(totalFlowVerts * 4);
+  const flowIndices = totalFlowVerts > 65535
+    ? new Uint32Array(totalFlowTris) : new Uint16Array(totalFlowTris);
+  let idxCursor = 0;
+  for (let i = 0; i < numFibers; i++) {
+    const fl = flowLines[i];
+    for (let j = 0; j < fl.ptsPerFiber; j++) {
+      const a = fl.vertexOffset + j * 2;
+      flowIndices[idxCursor++] = a;
+      flowIndices[idxCursor++] = a + 2;
+      flowIndices[idxCursor++] = a + 1;
+      flowIndices[idxCursor++] = a + 1;
+      flowIndices[idxCursor++] = a + 2;
+      flowIndices[idxCursor++] = a + 3;
+    }
+  }
+
+  const flowGeo = new THREE.BufferGeometry();
+  flowGeo.setAttribute('position', new THREE.BufferAttribute(flowPositions, 3));
+  flowGeo.setAttribute('color', new THREE.BufferAttribute(flowColors, 4));
+  flowGeo.setIndex(new THREE.BufferAttribute(flowIndices, 1));
+  const flowMesh = new THREE.Mesh(flowGeo, flowMat);
+  flowMesh.renderOrder = 1;
+  flowMesh.frustumCulled = false;
+  scene.add(flowMesh);
+
+  const numParticles = 80;
+  const particleFiberStride = Math.max(1, Math.floor(numFibers / (numParticles / 2)));
+  const particlePositions = new Float32Array(numParticles * 3);
+  const particleColors = new Float32Array(numParticles * 3);
+  const particleGeo = new THREE.BufferGeometry();
+  particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+  particleGeo.setAttribute('color', new THREE.BufferAttribute(particleColors, 3));
+  const particleMat = new THREE.PointsMaterial({
+    size: 0.012, vertexColors: true, transparent: true, opacity: 0.7,
+    blending: THREE.AdditiveBlending, depthWrite: false, fog: true
+  });
+  const particleSystem = new THREE.Points(particleGeo, particleMat);
+  scene.add(particleSystem);
 
   function updateFlowLines(scrollP, time) {
     const flowOffset = scrollP * 0.6 + time * 0.000018;
-    for (let i = 0; i < numFlowLines; i++) {
+    const pArr = flowGeo.attributes.position.array;
+    const cArr = flowGeo.attributes.color.array;
+    let pIdx = 0;
+    for (let i = 0; i < numFibers; i++) {
       const fl = flowLines[i];
       const animStart = ((fl.baseStart + flowOffset) % 1 + 1) % 1;
-      const pArr = fl.posAttr.array;
-      const cArr = fl.colAttr.array;
-      for (let j = 0; j <= ptsPerLine; j++) {
-        const lp = ((animStart + (j / ptsPerLine) * lineSpan) % 1 + 1) % 1;
+      for (let j = 0; j <= fl.ptsPerFiber; j++) {
+        const t = j / fl.ptsPerFiber;
+        const lp = ((animStart + t * fl.span) % 1 + 1) % 1;
         const scaled = lp * tubeSegments;
         const fi = Math.floor(scaled) % tubeSegments;
         const fi1 = fi + 1;
@@ -1807,60 +1853,53 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
         _flN.copy(frenetFrames.normals[fi]).lerp(frenetFrames.normals[fi1], frac);
         _flBn.copy(frenetFrames.binormals[fi]).lerp(frenetFrames.binormals[fi1], frac);
 
-        const widthMod = ribbonBase * (0.7 + 0.3 * Math.sin(lp * Math.PI * 5 + i * 0.5));
-        const cCos = fl.circCosBase * widthMod;
-        const cSin = fl.circSinBase * widthMod;
-
         const sx = _flC.x + _flN.x * fl.cosA + _flBn.x * fl.sinA;
         const sy = _flC.y + _flN.y * fl.cosA + _flBn.y * fl.sinA;
         const sz = _flC.z + _flN.z * fl.cosA + _flBn.z * fl.sinA;
-        const cx = _flN.x * cCos + _flBn.x * cSin;
-        const cy = _flN.y * cCos + _flBn.y * cSin;
-        const cz = _flN.z * cCos + _flBn.z * cSin;
-        const idx = j * 6;
-        pArr[idx]     = sx + cx; pArr[idx + 1] = sy + cy; pArr[idx + 2] = sz + cz;
-        pArr[idx + 3] = sx - cx; pArr[idx + 4] = sy - cy; pArr[idx + 5] = sz - cz;
+        const cx = _flN.x * fl.circCosBase * fiberWidth + _flBn.x * fl.circSinBase * fiberWidth;
+        const cy = _flN.y * fl.circCosBase * fiberWidth + _flBn.y * fl.circSinBase * fiberWidth;
+        const cz = _flN.z * fl.circCosBase * fiberWidth + _flBn.z * fl.circSinBase * fiberWidth;
+        const pidx = (fl.vertexOffset + j * 2) * 3;
+        pArr[pidx]     = sx + cx; pArr[pidx + 1] = sy + cy; pArr[pidx + 2] = sz + cz;
+        pArr[pidx + 3] = sx - cx; pArr[pidx + 4] = sy - cy; pArr[pidx + 5] = sz - cz;
+
+        let alpha = 1.0;
+        if (t < endFade) alpha = t / endFade;
+        else if (t > 1 - endFade) alpha = (1 - t) / endFade;
+        alpha = alpha * alpha;
 
         if (lp < 0.5) {
           _gradColor.copy(colEntry).lerp(colMid, lp * 2);
         } else {
           _gradColor.copy(colMid).lerp(colDeep, (lp - 0.5) * 2);
         }
-        const ci = j * 6;
-        cArr[ci] = cArr[ci + 3] = _gradColor.r;
-        cArr[ci + 1] = cArr[ci + 4] = _gradColor.g;
-        cArr[ci + 2] = cArr[ci + 5] = _gradColor.b;
-      }
-      fl.posAttr.needsUpdate = true;
-      fl.colAttr.needsUpdate = true;
-    }
-  }
+        const ci = (fl.vertexOffset + j * 2) * 4;
+        cArr[ci]     = cArr[ci + 4] = _gradColor.r;
+        cArr[ci + 1] = cArr[ci + 5] = _gradColor.g;
+        cArr[ci + 2] = cArr[ci + 6] = _gradColor.b;
+        cArr[ci + 3] = cArr[ci + 7] = alpha;
 
-  const numBoxes = 55;
-  const boxSize = 0.075;
-  const boxGeo = new THREE.BoxGeometry(boxSize, boxSize, boxSize);
-  const boxEdges = new THREE.EdgesGeometry(boxGeo, 0.2);
-  const boxMats = [];
-  for (let i = 0; i < numBoxes; i++) {
-    const bp = (i / numBoxes + Math.random() * 0.1) % 1;
-    const pos = spline.getPointAt(bp);
-    pos.x += Math.random() - 0.4;
-    pos.z += Math.random() - 0.4;
-    const color = new THREE.Color().setHSL(0.08 + bp * 0.1, 0.3, 0.45);
-    const mat = new THREE.LineBasicMaterial({ color });
-    boxMats.push(mat);
-    const boxLines = new THREE.LineSegments(boxEdges, mat);
-    boxLines.position.copy(pos);
-    boxLines.rotation.set(
-      Math.random() * Math.PI,
-      Math.random() * Math.PI,
-      Math.random() * Math.PI
-    );
-    scene.add(boxLines);
+        if (pIdx < numParticles && i % particleFiberStride === 0 && (j === 0 || j === fl.ptsPerFiber)) {
+          const scatter = 0.015;
+          const st = Math.sin(time * 0.001 + i + j) * scatter;
+          particlePositions[pIdx * 3]     = sx + st;
+          particlePositions[pIdx * 3 + 1] = sy + st * 0.7;
+          particlePositions[pIdx * 3 + 2] = sz + st;
+          const sparkAlpha = 0.3 + 0.7 * Math.abs(Math.sin(time * 0.003 + i * 0.5));
+          particleColors[pIdx * 3]     = _gradColor.r * sparkAlpha;
+          particleColors[pIdx * 3 + 1] = _gradColor.g * sparkAlpha;
+          particleColors[pIdx * 3 + 2] = _gradColor.b * sparkAlpha;
+          pIdx++;
+        }
+      }
+    }
+    flowGeo.attributes.position.needsUpdate = true;
+    flowGeo.attributes.color.needsUpdate = true;
+    particleGeo.attributes.position.needsUpdate = true;
+    particleGeo.attributes.color.needsUpdate = true;
   }
 
   const stageWaypoints = [0.08, 0.20, 0.32, 0.44, 0.56];
-  const isMobile = window.innerWidth <= 768;
 
   const renderer = new THREE.WebGLRenderer({ canvas: whCanvas, antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
@@ -2031,11 +2070,10 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
     window.removeEventListener('resize', whResize);
     tubeGeo.dispose();
     wallMat.dispose();
-    flowLines.forEach(fl => fl.geo.dispose());
+    flowGeo.dispose();
     flowMat.dispose();
-    boxGeo.dispose();
-    boxEdges.dispose();
-    boxMats.forEach(m => m.dispose());
+    particleGeo.dispose();
+    particleMat.dispose();
     renderer.dispose();
   }, { once: true });
 }
