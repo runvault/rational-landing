@@ -369,11 +369,12 @@ section {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  padding: 0 var(--margin);
 }
 .approach-content {
   position: relative;
   z-index: 2;
-  padding: clamp(3rem, 6vh, 5rem) var(--margin) 1.5rem;
+  padding: clamp(3rem, 6vh, 5rem) 0 1.5rem;
   text-align: left;
   width: 100%;
 }
@@ -393,7 +394,6 @@ section {
   flex: 1;
   overflow: hidden;
   will-change: clip-path;
-  margin: 0 var(--margin);
   border-radius: 4px;
 }
 .approach-bg {
