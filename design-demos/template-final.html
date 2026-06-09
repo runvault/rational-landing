@@ -6,7 +6,13 @@
 <title>Rational — The Intelligence Layer for Professional Services</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@300;400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script type="importmap">
+{ "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.171.0/examples/jsm/"
+}}
+</script>
 <style>
 :root {
   --ink: #1A1714;
@@ -20,17 +26,20 @@
   --t3: #B8B0A6;
   --t4: #DDD6CC;
   --t5: #EDE8E0;
-  --font-heading: 'DM Serif Display', serif;
-  --font-body: 'Inter', sans-serif;
+  --font-heading: 'Instrument Sans', 'Inter', sans-serif;
+  --font-body: 'Instrument Sans', 'Inter', sans-serif;
   --margin: max(1.2rem, 3vw);
   --ease: cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+h1, h2, h3, h4, h5, h6 { font-weight: 400; }
+strong, b { font-weight: 500; }
 html { scroll-behavior: smooth; }
 
 body {
   font-family: var(--font-body);
+  font-weight: 300;
   background: #fff;
   color: var(--ink);
   line-height: 1.6;
@@ -98,26 +107,26 @@ nav.scrolled {
   align-items: center;
   justify-content: center;
   font-family: var(--font-body);
-  font-weight: 700;
+  font-weight: 500;
   font-size: 0.85rem;
   color: #fff;
   line-height: 1;
 }
 .yc-text {
   font-size: 0.8rem;
-  font-weight: 500;
+  font-weight: 400;
   color: #fff;
   letter-spacing: -0.01em;
 }
 .btn-cta {
   font-family: var(--font-body);
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--paper);
   background: var(--ink);
   border: none;
   padding: 0.6rem 1.4rem;
-  border-radius: 4px;
+  border-radius: 0;
   cursor: pointer;
   text-decoration: none;
   transition: background 0.3s var(--ease), transform 0.2s var(--ease);
@@ -215,7 +224,7 @@ nav.scrolled {
 }
 .pill-text strong {
   color: var(--ink);
-  font-weight: 600;
+  font-weight: 400;
 }
 
 /* ===== CANVAS BLOBS ===== */
@@ -279,7 +288,7 @@ nav.scrolled {
 }
 .marquee-item {
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 400;
   letter-spacing: 0.12em;
   color: var(--t3);
   white-space: nowrap;
@@ -317,7 +326,7 @@ section {
 }
 .section-label {
   font-size: 0.7rem;
-  font-weight: 600;
+  font-weight: 400;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--t3);
@@ -347,287 +356,209 @@ section {
   filter: blur(0);
 }
 
-/* ===== SIGNAL OVERLOAD SECTION ===== */
-.signal-section {
+/* ===== APPROACH SECTION ===== */
+.approach-section {
   position: relative;
-  background: var(--cream);
-  overflow: hidden;
-  min-height: 520px;
+  height: calc(800px + 100vh);
+  background: var(--paper);
 }
-.signal-content {
-  position: relative;
-  z-index: 2;
-  text-align: center;
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 6rem var(--margin);
-}
-.signal-stats {
-  display: flex;
-  justify-content: center;
-  gap: clamp(2rem, 6vw, 5rem);
-  margin-top: 3rem;
-}
-.signal-stat-num {
-  font-family: var(--font-heading);
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  color: var(--warm);
-  line-height: 1;
-}
-.signal-stat-label {
-  font-size: 0.85rem;
-  color: var(--t2);
-  margin-top: 0.4rem;
-  max-width: 160px;
-}
-@media (max-width: 768px) {
-  .signal-stats { flex-direction: column; align-items: center; gap: 2rem; }
-}
-
-
-/* ===== RATIONAL LOOP — SCROLL TIMELINE + PENTAGON ===== */
-.flow-section {
-  height: 600vh;
-  background: #fff;
-  position: relative;
-  overflow: clip;
-}
-.loop-sticky {
+.approach-sticky {
   position: sticky;
   top: 0;
-  height: 100svh;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.approach-content {
+  position: relative;
+  z-index: 2;
+  padding: clamp(3rem, 6vh, 5rem) var(--margin) 1.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: left;
+  width: 100%;
+}
+.approach-headline {
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 3.2vw, 3.2rem);
+  line-height: 1.3;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.approach-headline em {
+  color: var(--warm);
+  font-style: normal;
+}
+.approach-image-wrap {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  will-change: clip-path;
+}
+.approach-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: var(--ink);
+}
+.approach-diagram {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+.approach-flow {
+  width: 100%;
+  max-width: 640px;
+  height: 100%;
+  max-height: 460px;
+  overflow: visible;
+}
+.approach-flow .route {
+  fill: none;
+  stroke: rgba(255,255,255,0.6);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+}
+.approach-flow .route-draw {
+  fill: none;
+  stroke: rgba(255,255,255,0.85);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-dasharray: 2000;
+  stroke-dashoffset: 2000;
+  transition: stroke-dashoffset 2.5s cubic-bezier(0.42, 0, 0.58, 1);
+}
+.approach-diagram.is-visible .route-draw {
+  stroke-dashoffset: 0;
+}
+.approach-flow .node-sq {
+  fill: #fff;
+}
+.approach-flow .node-sq-outline {
+  fill: none;
+  stroke: rgba(255,255,255,0.7);
+  stroke-width: 1.2;
+}
+.approach-flow .node-center {
+  fill: #fff;
+}
+.approach-flow .node-label {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 400;
+  fill: rgba(255,255,255,0.95);
+  letter-spacing: -0.01em;
+}
+.approach-flow .route-hidden {
+  fill: none;
+  stroke: none;
+}
+.approach-flow .node-dot-sm {
+  fill: rgba(255,255,255,0.7);
+}
+.approach-flow .particle {
+  fill: #fff;
+}
+@media (prefers-reduced-motion: reduce) {
+  .approach-flow .route-draw { stroke-dashoffset: 0; transition: none; }
+  .approach-flow .particle { display: none; }
+}
+@media (max-width: 768px) {
+  .approach-section { height: calc(500px + 100vh); }
+  .approach-headline { font-size: clamp(1.8rem, 7vw, 2.6rem); }
+  .approach-flow .node-label { font-size: 11px; }
+}
+
+
+/* ===== WORMHOLE LOOP ===== */
+.wormhole-section {
+  height: 500vh;
+  position: relative;
+  background: var(--paper);
+}
+.wh-sticky {
+  position: sticky;
+  top: 0;
   height: 100vh;
   overflow: hidden;
 }
-.loop-header {
+#wormholeCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+.wh-stages {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+.wh-stage {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.wh-stage.active {
+  opacity: 1;
+}
+.wh-stage-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  text-align: center;
+  padding: 2rem;
+  background: rgba(0,0,0,0.45);
+  pointer-events: none;
+}
+.wh-stage-num {
+  font-family: var(--font-heading);
+  font-size: clamp(3rem, 6vw, 5rem);
+  font-weight: 300;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+  opacity: 0.7;
+}
+.wh-stage-content h3 {
+  font-family: var(--font-heading);
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  font-weight: 400;
+  margin-bottom: 0.8rem;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+.wh-stage-content p {
+  font-size: clamp(0.9rem, 1.1vw, 1.1rem);
+  max-width: 520px;
+  line-height: 1.7;
+  opacity: 0.9;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+.wh-header {
   position: absolute;
   top: 3vh;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
-  z-index: 4;
+  z-index: 3;
   width: 100%;
   padding: 0 var(--margin);
   pointer-events: none;
 }
-.loop-timeline {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-}
-.loop-panel {
-  position: absolute;
-  top: 14vh;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  align-items: stretch;
-  opacity: 0;
-  will-change: opacity, transform;
-}
-.loop-panel[data-side="left"] { flex-direction: row; }
-.loop-panel[data-side="right"] { flex-direction: row-reverse; }
-.loop-card {
-  width: 35%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 3rem clamp(1.5rem, 3vw, 3rem);
-  background: #fff;
-  border: 1px solid var(--t5);
-  position: relative;
-  z-index: 2;
-}
-.loop-card-number {
-  font-family: var(--font-heading);
-  font-size: clamp(3rem, 6vw, 5rem);
-  color: var(--t4);
-  line-height: 1;
-  margin-bottom: 0.5rem;
-}
-.loop-panel.is-active .loop-card-number { color: var(--warm); }
-.loop-card-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: var(--warm-soft);
-  border: 1.5px solid var(--warm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1rem;
-}
-.loop-card-icon svg {
-  width: 20px;
-  height: 20px;
-  stroke: var(--warm);
-  fill: none;
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.loop-card-title {
-  font-family: var(--font-heading);
-  font-size: 1.4rem;
-  color: var(--ink);
-  margin-bottom: 0.6rem;
-}
-.loop-card-desc {
-  font-size: 0.95rem;
-  color: var(--t1);
-  line-height: 1.7;
-  max-width: 380px;
-}
-.loop-image {
-  width: 65%;
-  position: relative;
-  overflow: hidden;
-}
-.loop-image-bg {
-  position: absolute;
-  inset: -8%;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  will-change: transform;
-}
-
-/* Orbital pentagon */
-.loop-orbital {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transform: scale(0.85);
-  pointer-events: none;
-  will-change: opacity, transform;
-}
-.loop-orbital.is-visible {
-  opacity: 1;
-  transform: scale(1);
-  pointer-events: auto;
-}
-.orbit-core {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: radial-gradient(circle, var(--warm) 0%, rgba(196,136,58,0.3) 60%, transparent 100%);
-  position: absolute;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.orbit-core-inner {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: var(--cream);
-}
-.orbit-core-ring {
-  position: absolute;
-  border-radius: 50%;
-  border: 1px solid var(--warm-glow);
-  animation: corePulse 3s ease-in-out infinite;
-}
-.orbit-core-ring:nth-child(1) { width: 72px; height: 72px; inset: -8px; }
-.orbit-core-ring:nth-child(2) { width: 92px; height: 92px; inset: -18px; animation-delay: 1s; }
-.orbit-core-ring:nth-child(3) { width: 112px; height: 112px; inset: -28px; animation-delay: 2s; }
-@keyframes corePulse {
-  0%, 100% { opacity: 0.4; transform: scale(1); }
-  50% { opacity: 0.15; transform: scale(1.12); }
-}
-.orbit-stage {
-  position: absolute;
-  width: min(500px, 80vw);
-  height: min(500px, 80vw);
-}
-.orbit-ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 1px solid var(--t4);
-}
-.orbit-rotor {
-  position: absolute;
-  inset: 0;
-  animation: orbitSpin 48s linear infinite;
-}
-@keyframes orbitSpin { to { transform: rotate(360deg); } }
-.orbit-node {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 2;
-}
-.orbit-node-inner {
-  animation: orbitSpinReverse 48s linear infinite;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-}
-@keyframes orbitSpinReverse { to { transform: rotate(-360deg); } }
-.orbit-node-circle {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: #fff;
-  border: 1.5px solid var(--t4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: border-color 0.3s var(--ease), box-shadow 0.3s var(--ease), transform 0.3s var(--ease);
-}
-.orbit-node-circle svg {
-  width: 20px;
-  height: 20px;
-  stroke: var(--t2);
-  fill: none;
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.orbit-node:hover .orbit-node-circle {
-  border-color: var(--warm);
-  box-shadow: 0 0 0 4px var(--warm-glow);
-  transform: scale(1.1);
-}
-.orbit-node:hover .orbit-node-circle svg { stroke: var(--warm); }
-.orbit-node-label {
-  font-size: 0.7rem;
-  font-weight: 500;
-  color: var(--t2);
-  white-space: nowrap;
-  text-align: center;
-  transition: color 0.3s var(--ease);
-}
-.orbit-node:hover .orbit-node-label { color: var(--ink); }
-.orbit-summary-label {
-  position: absolute;
-  bottom: -3rem;
-  left: 50%;
-  transform: translateX(-50%);
-  font-family: var(--font-heading);
-  font-size: 1.1rem;
-  color: var(--ink);
-  white-space: nowrap;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .orbit-rotor, .orbit-node-inner, .orbit-core-ring { animation: none !important; }
-}
 @media (max-width: 768px) {
-  .flow-section { height: 400vh; }
-  .loop-sticky { height: 100svh; height: 100vh; }
-  .loop-card { width: 50%; padding: 2rem 1.2rem; }
-  .loop-image { width: 50%; }
-  .orbit-stage { width: min(300px, 80vw); height: min(300px, 80vw); }
-  .orbit-rotor, .orbit-node-inner { animation: none; }
-  .orbit-node-label { font-size: 0.6rem; }
+  .wormhole-section { height: 500vh; }
 }
 
 /* ===== OUTCOMES 2x2 GRID ===== */
@@ -674,7 +605,7 @@ section {
 }
 .trust-item {
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: 400;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--t2);
@@ -748,12 +679,12 @@ section {
   display: inline-block;
   font-family: var(--font-body);
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--ink);
   background: var(--warm);
   border: none;
   padding: 1rem 2.5rem;
-  border-radius: 5px;
+  border-radius: 0;
   cursor: pointer;
   text-decoration: none;
   transition: background 0.3s var(--ease), transform 0.2s var(--ease);
@@ -946,142 +877,80 @@ footer span {
   </div>
 </section>
 
-<!-- Signal Overload Section -->
-<section class="signal-section" id="signalSection">
-  <div class="signal-content reveal">
-    <p class="section-label">The Problem</p>
-    <h2 class="section-heading">A dozen tools. Hundreds of clients.<br>The bottleneck: your team.</h2>
-    <div class="signal-stats">
-      <div>
-        <div class="signal-stat-num">60%</div>
-        <div class="signal-stat-label">of firm labor is coordination, not client work</div>
-      </div>
-      <div>
-        <div class="signal-stat-num">300K</div>
-        <div class="signal-stat-label">accounting roles sit unfilled nationwide</div>
-      </div>
-      <div>
-        <div class="signal-stat-num">72 days</div>
-        <div class="signal-stat-label">average to fill a single accounting position</div>
+<!-- Approach Section -->
+<section class="approach-section" id="approachSection">
+  <div class="approach-sticky">
+    <div class="approach-content" id="approachContent">
+      <p class="section-label">The Approach</p>
+      <h2 class="approach-headline">
+        Knowledge has become a commodity.<br>
+        <em>We take action.</em>
+      </h2>
+    </div>
+    <div class="approach-image-wrap">
+      <canvas class="approach-bg" id="halftoneCanvas"></canvas>
+      <div class="approach-diagram" id="approachDiagram">
+      <svg class="approach-flow" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="particleGlow" x="-100%" y="-100%" width="300%" height="300%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <g class="routes-group"></g>
+        <g class="nodes-group"></g>
+        <g class="particles-group"></g>
+      </svg>
       </div>
     </div>
   </div>
 </section>
 
 
-<!-- Rational Loop — Scroll Timeline + Pentagon -->
-<section class="flow-section" id="rationalLoop">
-  <div class="loop-sticky">
-    <div class="loop-header">
+<!-- Wormhole Loop -->
+<section class="wormhole-section" id="rationalLoop">
+  <div class="wh-sticky">
+    <canvas id="wormholeCanvas"></canvas>
+    <div class="wh-stages">
+      <div class="wh-stage" data-stage="0">
+        <div class="wh-stage-content">
+          <span class="wh-stage-num">01</span>
+          <h3>Signal detected</h3>
+          <p>Your tools generate hundreds of signals daily. Emails, deadlines, status changes, capacity shifts. Rational catches every one.</p>
+        </div>
+      </div>
+      <div class="wh-stage" data-stage="1">
+        <div class="wh-stage-content">
+          <span class="wh-stage-num">02</span>
+          <h3>Context loaded</h3>
+          <p>Rational pulls the full picture: client history, team capacity, preferences, and priorities. Nothing gets missed.</p>
+        </div>
+      </div>
+      <div class="wh-stage" data-stage="2">
+        <div class="wh-stage-content">
+          <span class="wh-stage-num">03</span>
+          <h3>Best action determined</h3>
+          <p>Every option is scored. Williams: 92% fit — industry match, reviewed Cornerstone last 2 years, Tuesday AM available.</p>
+        </div>
+      </div>
+      <div class="wh-stage" data-stage="3">
+        <div class="wh-stage-content">
+          <span class="wh-stage-num">04</span>
+          <h3>Team coordinated</h3>
+          <p>The right person gets the right task through their preferred channel. No chasing. No dropped balls.</p>
+        </div>
+      </div>
+      <div class="wh-stage" data-stage="4">
+        <div class="wh-stage-content">
+          <span class="wh-stage-num">05</span>
+          <h3>Knowledge compounded</h3>
+          <p>Every correction becomes permanent. Week 4 is measurably sharper than week 1. Your firm's intelligence grows forever.</p>
+        </div>
+      </div>
+    </div>
+    <div class="wh-header">
       <p class="section-label">The Rational Loop</p>
       <h2 class="section-heading">Observe. Reason. Act. Improve.</h2>
-    </div>
-
-    <div class="loop-timeline" id="loopTimeline">
-      <article class="loop-panel" data-stage="0" data-side="left">
-        <div class="loop-card">
-          <div class="loop-card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/></svg></div>
-          <div class="loop-card-number">01</div>
-          <h3 class="loop-card-title">Signal detected</h3>
-          <p class="loop-card-desc">Your tools generate hundreds of signals daily. Emails, deadlines, status changes, capacity shifts. Rational catches every one.</p>
-        </div>
-        <div class="loop-image"><div class="loop-image-bg" style="background-image:url('https://images.unsplash.com/photo-1596526131083-e8c633c948d2?auto=format&fit=crop&w=1600&q=80')"></div></div>
-      </article>
-
-      <article class="loop-panel" data-stage="1" data-side="right">
-        <div class="loop-card">
-          <div class="loop-card-icon"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div>
-          <div class="loop-card-number">02</div>
-          <h3 class="loop-card-title">Context loaded</h3>
-          <p class="loop-card-desc">Rational pulls the full picture: client history, team capacity, preferences, and priorities. Nothing gets missed.</p>
-        </div>
-        <div class="loop-image"><div class="loop-image-bg" style="background-image:url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1600&q=80')"></div></div>
-      </article>
-
-      <article class="loop-panel" data-stage="2" data-side="left">
-        <div class="loop-card">
-          <div class="loop-card-icon"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg></div>
-          <div class="loop-card-number">03</div>
-          <h3 class="loop-card-title">Best action determined</h3>
-          <p class="loop-card-desc">Every option is scored. Williams: 92% fit — industry match, reviewed Cornerstone last 2 years, Tuesday AM available.</p>
-        </div>
-        <div class="loop-image"><div class="loop-image-bg" style="background-image:url('https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1600&q=80')"></div></div>
-      </article>
-
-      <article class="loop-panel" data-stage="3" data-side="right">
-        <div class="loop-card">
-          <div class="loop-card-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg></div>
-          <div class="loop-card-number">04</div>
-          <h3 class="loop-card-title">Team coordinated</h3>
-          <p class="loop-card-desc">The right person gets the right task through their preferred channel. No chasing. No dropped balls.</p>
-        </div>
-        <div class="loop-image"><div class="loop-image-bg" style="background-image:url('https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=1600&q=80')"></div></div>
-      </article>
-
-      <article class="loop-panel" data-stage="4" data-side="left">
-        <div class="loop-card">
-          <div class="loop-card-icon"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
-          <div class="loop-card-number">05</div>
-          <h3 class="loop-card-title">Knowledge compounded</h3>
-          <p class="loop-card-desc">Every correction becomes permanent. Week 4 is measurably sharper than week 1. Your firm's intelligence grows forever.</p>
-        </div>
-        <div class="loop-image"><div class="loop-image-bg" style="background-image:url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1600&q=80')"></div></div>
-      </article>
-    </div>
-
-    <div class="loop-orbital" id="loopOrbital">
-      <div class="orbit-stage" id="orbitStage">
-        <div class="orbit-ring"></div>
-        <div class="orbit-rotor" id="orbitRotor">
-          <div class="orbit-node" data-orbit="0">
-            <div class="orbit-node-inner">
-              <div class="orbit-node-circle">
-                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/></svg>
-              </div>
-              <span class="orbit-node-label">Signal detected</span>
-            </div>
-          </div>
-          <div class="orbit-node" data-orbit="1">
-            <div class="orbit-node-inner">
-              <div class="orbit-node-circle">
-                <svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
-              </div>
-              <span class="orbit-node-label">Context loaded</span>
-            </div>
-          </div>
-          <div class="orbit-node" data-orbit="2">
-            <div class="orbit-node-inner">
-              <div class="orbit-node-circle">
-                <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
-              </div>
-              <span class="orbit-node-label">Best action</span>
-            </div>
-          </div>
-          <div class="orbit-node" data-orbit="3">
-            <div class="orbit-node-inner">
-              <div class="orbit-node-circle">
-                <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
-              </div>
-              <span class="orbit-node-label">Team coordinated</span>
-            </div>
-          </div>
-          <div class="orbit-node" data-orbit="4">
-            <div class="orbit-node-inner">
-              <div class="orbit-node-circle">
-                <svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-              </div>
-              <span class="orbit-node-label">Knowledge compounded</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="orbit-core">
-        <div class="orbit-core-ring"></div>
-        <div class="orbit-core-ring"></div>
-        <div class="orbit-core-ring"></div>
-        <div class="orbit-core-inner"></div>
-      </div>
-      <div class="orbit-summary-label">The Rational Loop</div>
     </div>
   </div>
 </section>
@@ -1137,7 +1006,6 @@ footer span {
   <div class="cta-content">
     <h2 class="cta-heading reveal">Your firm's coordination layer<br>starts here.</h2>
     <a href="mailto:founders@rational.work" class="cta-btn reveal" style="transition-delay: 100ms;" id="book-demo">Book a Demo</a>
-    <p class="cta-note reveal" style="transition-delay: 200ms;">No commitment. No credit card. Just a conversation.</p>
   </div>
 </section>
 
@@ -1204,7 +1072,7 @@ footer span {
   // ===== NAV TRANSITION =====
   const mainNav = document.getElementById('mainNav');
   const grainEl = document.querySelector('.grain');
-  const creamSections = document.querySelectorAll('.signal-section');
+  const creamSections = document.querySelectorAll('.approach-section');
   function updateNav(heroProgress) {
     if (heroProgress > 0.9) {
       mainNav.classList.add('scrolled');
@@ -1245,10 +1113,11 @@ footer span {
     const heroProgress = updateHero();
     updateNav(heroProgress);
     updateProgress(heroProgress);
-    if (typeof updateLoopScroll === 'function') updateLoopScroll();
+    if (typeof updateApproach === 'function') updateApproach();
+    if (typeof updateWormholeScroll === 'function') updateWormholeScroll();
   }
   window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
+  requestAnimationFrame(onScroll);
 
   // ===== INTERSECTION OBSERVER FOR REVEALS =====
   const reveals = document.querySelectorAll('.reveal');
@@ -1292,155 +1161,208 @@ footer span {
   counterEls.forEach(el => counterObserver.observe(el));
 
 
-  // ===== RATIONAL LOOP — SCROLL TIMELINE + PENTAGON =====
-  const loopSection = document.getElementById('rationalLoop');
-  const loopTimeline = document.getElementById('loopTimeline');
-  const loopOrbital = document.getElementById('loopOrbital');
-  const loopPanels = [...document.querySelectorAll('.loop-panel')];
-  const orbitNodes = [...document.querySelectorAll('.orbit-node')];
+  // ===== APPROACH SECTION — REVERSE ZOOM + DIAGRAM =====
+  const approachSection = document.getElementById('approachSection');
+  const approachContent = document.getElementById('approachContent');
+  const approachDiagram = document.getElementById('approachDiagram');
+  const approachImageWrap = document.querySelector('.approach-image-wrap');
 
-  const loopObserver = new IntersectionObserver(entries => {
+  const approachObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) approachDiagram.classList.add('is-visible');
+    });
+  }, { threshold: 0.3 });
+  approachObserver.observe(approachDiagram);
+
+  function updateApproach() {
+    const rect = approachSection.getBoundingClientRect();
+    const scrollDistance = 800;
+    const scrolled = -rect.top;
+    const progress = Math.max(0, Math.min(1, scrolled / scrollDistance));
+
+    if (window._halftoneState) window._halftoneState.zoom = lerp(1.1, 1.6, progress);
+
+    const insetX = lerp(18, 0, progress);
+    const insetY = lerp(12, 0, progress);
+    approachImageWrap.style.clipPath = 'inset(' + insetY + '% ' + insetX + '% ' + insetY + '% ' + insetX + '%)';
+
+    const textDrift = progress * -30;
+    const textOpacity = progress < 0.7 ? 1 : 1 - ((progress - 0.7) / 0.3);
+    approachContent.style.transform = 'translateY(' + textDrift + 'px)';
+    approachContent.style.opacity = textOpacity;
+  }
+
+  function buildDiagram() {
+    const svg = document.querySelector('.approach-flow');
+    const W = 640, H = 460;
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+    const lx = W * 0.10, cx = W * 0.50, rx = W * 0.90;
+    const r1 = H * 0.12, r2 = H * 0.37, r3 = H * 0.63, r4 = H * 0.88;
+    const my = H * 0.50;
+
+    const routeDefs = [
+      { id: 'route-1', vis: true,  d: 'M'+lx+','+r1+' C'+(lx+100)+','+r1+' '+(cx-60)+','+(my-15)+' '+cx+','+my+' C'+(cx+60)+','+(my+15)+' '+(rx-100)+','+r4+' '+rx+','+r4 },
+      { id: 'route-2', vis: true,  d: 'M'+lx+','+r4+' C'+(lx+100)+','+r4+' '+(cx-60)+','+(my+15)+' '+cx+','+my+' C'+(cx+60)+','+(my-15)+' '+(rx-100)+','+r1+' '+rx+','+r1 },
+      { id: 'route-3', vis: true,  d: 'M'+lx+','+r2+' C'+(lx+90)+','+r2+' '+(cx-50)+','+(my-8)+' '+cx+','+my+' C'+(cx+50)+','+(my+8)+' '+(rx-90)+','+r3+' '+rx+','+r3 },
+      { id: 'route-4', vis: true,  d: 'M'+lx+','+r3+' C'+(lx+90)+','+r3+' '+(cx-50)+','+(my+8)+' '+cx+','+my+' C'+(cx+50)+','+(my-8)+' '+(rx-90)+','+r2+' '+rx+','+r2 },
+      { id: 'transit-1', vis: false, d: 'M'+lx+','+r1+' C'+(lx+90)+','+r1+' '+(cx-50)+','+(my-10)+' '+cx+','+my+' C'+(cx+50)+','+(my+10)+' '+(rx-90)+','+r3+' '+rx+','+r3 },
+      { id: 'transit-2', vis: false, d: 'M'+lx+','+r2+' C'+(lx+90)+','+r2+' '+(cx-50)+','+my+' '+cx+','+my+' C'+(cx+50)+','+my+' '+(rx-90)+','+r4+' '+rx+','+r4 },
+      { id: 'transit-3', vis: false, d: 'M'+lx+','+r3+' C'+(lx+90)+','+r3+' '+(cx-50)+','+(my+10)+' '+cx+','+my+' C'+(cx+50)+','+(my-10)+' '+(rx-90)+','+r1+' '+rx+','+r1 },
+    ];
+
+    const routesG = svg.querySelector('.routes-group');
+    const nodesG = svg.querySelector('.nodes-group');
+    routesG.innerHTML = '';
+    nodesG.innerHTML = '';
+
+    routeDefs.forEach(r => {
+      if (r.vis) {
+        const bg = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        bg.setAttribute('d', r.d);
+        bg.classList.add('route');
+        routesG.appendChild(bg);
+      }
+      const fg = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      fg.setAttribute('d', r.d);
+      fg.setAttribute('id', r.id);
+      fg.classList.add(r.vis ? 'route-draw' : 'route-hidden');
+      routesG.appendChild(fg);
+    });
+
+    const hubR = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    hubR.setAttribute('x', cx - 7); hubR.setAttribute('y', my - 7);
+    hubR.setAttribute('width', 14); hubR.setAttribute('height', 14);
+    hubR.setAttribute('rx', 2);
+    hubR.classList.add('node-center');
+    nodesG.appendChild(hubR);
+
+    const nodes = [
+      { x: lx, y: r1, label: 'Signals',   side: 'left',  filled: true },
+      { x: lx, y: r2, label: 'Data',      side: 'left',  filled: true },
+      { x: lx, y: r3, label: 'Analysis',  side: 'left',  filled: true },
+      { x: lx, y: r4, label: 'Learning',  side: 'left',  filled: true },
+      { x: rx, y: r1, label: 'Context',   side: 'right', filled: true },
+      { x: rx, y: r2, label: 'Strategy',  side: 'right', filled: true },
+      { x: rx, y: r3, label: 'Action',    side: 'right', filled: true },
+      { x: rx, y: r4, label: 'Outcome',   side: 'right', filled: true },
+    ];
+
+    nodes.forEach(n => {
+      const sq = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      sq.setAttribute('x', n.x - 4); sq.setAttribute('y', n.y - 4);
+      sq.setAttribute('width', 8); sq.setAttribute('height', 8);
+      sq.setAttribute('rx', 1.5);
+      sq.classList.add(n.filled ? 'node-sq' : 'node-sq-outline');
+      nodesG.appendChild(sq);
+
+      const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      txt.classList.add('node-label');
+      txt.textContent = n.label;
+      if (n.side === 'left') {
+        txt.setAttribute('x', n.x - 12);
+        txt.setAttribute('y', n.y + 4);
+        txt.setAttribute('text-anchor', 'end');
+      } else {
+        txt.setAttribute('x', n.x + 12);
+        txt.setAttribute('y', n.y + 4);
+      }
+      nodesG.appendChild(txt);
+    });
+
+    return routeDefs;
+  }
+
+  let diagramRoutes = buildDiagram();
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => { diagramRoutes = buildDiagram(); }, 200);
+  });
+
+  function spawnParticle(svg, routeId, dir) {
+    const path = svg.querySelector('#' + routeId);
+    if (!path) return;
+    const len = path.getTotalLength();
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('r', '4');
+    circle.setAttribute('filter', 'url(#particleGlow)');
+    circle.classList.add('particle');
+    const group = svg.querySelector('.particles-group');
+    group.appendChild(circle);
+
+    const duration = 3500;
+    const start = performance.now();
+    function tick(now) {
+      const t = Math.min((now - start) / duration, 1);
+      if (t >= 1) { circle.remove(); return; }
+      const eased = t * t;
+      const dist = dir === 'fwd' ? eased * len : (1 - eased) * len;
+      const pt = path.getPointAtLength(dist);
+      circle.setAttribute('cx', pt.x);
+      circle.setAttribute('cy', pt.y);
+      let op;
+      if (t < 0.05) op = t / 0.05;
+      else if (t > 0.9) op = (1 - t) / 0.1;
+      else op = 1;
+      circle.setAttribute('opacity', op);
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function initParticles() {
+    const svg = document.querySelector('.approach-flow');
+    const sequence = [
+      { route: 'route-1',   dir: 'fwd' },
+      { route: 'route-3',   dir: 'fwd' },
+      { route: 'transit-1', dir: 'rev' },
+      { route: 'route-2',   dir: 'fwd' },
+      { route: 'route-4',   dir: 'rev' },
+      { route: 'transit-2', dir: 'fwd' },
+      { route: 'route-1',   dir: 'rev' },
+      { route: 'route-3',   dir: 'rev' },
+      { route: 'transit-3', dir: 'fwd' },
+      { route: 'route-2',   dir: 'rev' },
+      { route: 'route-4',   dir: 'fwd' },
+      { route: 'transit-1', dir: 'fwd' },
+    ];
+    let counter = 0;
+    setInterval(() => {
+      const entry = sequence[counter % sequence.length];
+      spawnParticle(svg, entry.route, entry.dir);
+      counter++;
+    }, 800);
+  }
+
+  const particleObserver = new IntersectionObserver(entries => {
+    if (entries.some(e => e.isIntersecting)) {
+      initParticles();
+      particleObserver.disconnect();
+    }
+  }, { threshold: 0.2 });
+  particleObserver.observe(approachSection);
+
+
+  // ===== WORMHOLE LOOP — STAGE VISIBILITY =====
+  const whSection = document.getElementById('rationalLoop');
+  const whStages = [...document.querySelectorAll('.wh-stage')];
+  const whCanvas = document.getElementById('wormholeCanvas');
+
+  const whObserver = new IntersectionObserver(entries => {
     loopActive = entries.some(e => e.isIntersecting);
   }, { rootMargin: '200px 0px' });
-  loopObserver.observe(loopSection);
+  whObserver.observe(whSection);
 
-  function smoothstep(edge0, edge1, x) {
-    const t = Math.max(0, Math.min(1, (x - edge0) / (edge1 - edge0)));
-    return t * t * (3 - 2 * t);
-  }
-
-  function clamp(v, min, max) {
-    return Math.max(min, Math.min(max, v));
-  }
-
-  function updateLoopScroll() {
+  function updateWormholeScroll() {
     if (!loopActive) return;
-    const rect = loopSection.getBoundingClientRect();
-    const scrollable = loopSection.offsetHeight - window.innerHeight;
+    const rect = whSection.getBoundingClientRect();
+    const scrollable = whSection.offsetHeight - window.innerHeight;
     if (scrollable <= 0) return;
-    const raw = clamp(-rect.top / scrollable, 0, 1);
-
-    const timelineProgress = clamp(raw / 0.82, 0, 1);
-    const orbitalRaw = clamp((raw - 0.78) / 0.22, 0, 1);
-    const orbitalProgress = smoothstep(0, 1, orbitalRaw);
-
-    const count = loopPanels.length;
-    loopPanels.forEach((panel, i) => {
-      const card = panel.querySelector('.loop-card');
-      const img = panel.querySelector('.loop-image');
-      const imgBg = panel.querySelector('.loop-image-bg');
-      const stageStart = i / count;
-      const stageEnd = (i + 1) / count;
-      const local = clamp((timelineProgress - stageStart) / (stageEnd - stageStart), 0, 1);
-
-      const isVisible = local > 0.005 && local < 0.995 && timelineProgress <= stageEnd + 0.01;
-      const fadeIn = smoothstep(0, 0.20, local);
-      const fadeOut = 1 - smoothstep(0.80, 1, local);
-      const panelOpacity = isVisible ? Math.min(fadeIn, fadeOut) : 0;
-
-      panel.style.opacity = panelOpacity;
-      panel.classList.toggle('is-active', isVisible && local > 0.20 && local < 0.80);
-
-      if (panelOpacity <= 0) {
-        card.style.transform = '';
-        card.style.clipPath = '';
-        panel.style.filter = '';
-        if (img) img.style.transform = '';
-        if (img) img.style.clipPath = '';
-        if (imgBg) imgBg.style.transform = '';
-        return;
-      }
-
-      const enter = smoothstep(0, 0.30, local);
-      const exit = smoothstep(0.70, 1, local);
-
-      const exitDrift = exit > 0 ? lerp(0, -12, exit) : 0;
-
-      switch (i) {
-        case 0: {
-          const ty = lerp(40, 0, enter) + exitDrift;
-          card.style.transform = 'translateY(' + ty + 'px)';
-          if (img) img.style.transform = 'translateY(' + (ty * 0.5) + 'px)';
-          if (imgBg) imgBg.style.transform = 'scale(' + lerp(1.06, 1.0, local) + ')';
-          break;
-        }
-
-        case 1: {
-          const sc = lerp(1.06, 1, enter);
-          const bl = lerp(6, 0, enter);
-          panel.style.filter = bl > 0.3 ? 'blur(' + bl + 'px)' : '';
-          card.style.transform = 'scale(' + sc + ') translateY(' + exitDrift + 'px)';
-          if (img) img.style.transform = 'scale(' + sc + ') translateY(' + exitDrift + 'px)';
-          if (imgBg) imgBg.style.transform = 'scale(' + lerp(1.04, 1.0, local) + ')';
-          if (exit > 0) {
-            const ebl = lerp(0, 4, exit);
-            panel.style.filter = ebl > 0.3 ? 'blur(' + ebl + 'px)' : '';
-          }
-          break;
-        }
-
-        case 2: {
-          const ty = lerp(80, 0, enter) + exitDrift;
-          card.style.transform = 'translateY(' + ty + 'px)';
-          if (img) img.style.transform = 'translateY(' + (ty * 0.6) + 'px)';
-          if (imgBg) {
-            const px = lerp(42, 55, local);
-            imgBg.style.transform = 'scale(1.05)';
-            imgBg.style.backgroundPosition = px + '% center';
-          }
-          break;
-        }
-
-        case 3: {
-          if (enter < 1) {
-            const rev = lerp(50, 0, enter);
-            panel.style.clipPath = 'inset(' + rev + '% ' + rev + '% ' + rev + '% ' + rev + '%)';
-          } else {
-            panel.style.clipPath = '';
-          }
-          if (imgBg) imgBg.style.transform = 'scale(' + lerp(1.0, 1.05, local) + ')';
-          card.style.transform = 'translateY(' + exitDrift + 'px)';
-          if (img) img.style.transform = 'translateY(' + exitDrift + 'px)';
-          break;
-        }
-
-        case 4: {
-          const bright = lerp(0.8, 1, enter);
-          panel.style.filter = bright < 0.99 ? 'brightness(' + bright + ')' : '';
-          card.style.transform = 'translateY(' + exitDrift + 'px)';
-          if (img) img.style.transform = 'translateY(' + exitDrift + 'px)';
-          if (imgBg) {
-            const sc = lerp(1.08, 1.0, local);
-            imgBg.style.transform = 'scale(' + sc + ')';
-          }
-          break;
-        }
-      }
-    });
-
-    loopTimeline.style.opacity = 1 - orbitalProgress;
-    loopTimeline.style.transform = 'translateY(' + (orbitalProgress * -30) + 'px)';
-    loopOrbital.classList.toggle('is-visible', orbitalProgress > 0.05);
-    loopOrbital.style.opacity = orbitalProgress;
-    loopOrbital.style.transform = 'scale(' + (0.85 + orbitalProgress * 0.15) + ')';
+    const progress = Math.max(0, Math.min(1, -rect.top / scrollable));
+    if (whCanvas) whCanvas.dataset.progress = progress.toFixed(5);
   }
 
-  function positionPentagonNodes() {
-    const stage = document.getElementById('orbitStage');
-    if (!stage) return;
-    const size = stage.getBoundingClientRect().width;
-    const radius = size * 0.42;
-
-    orbitNodes.forEach((node, i) => {
-      const angle = (-90 + i * 72) * Math.PI / 180;
-      const x = Math.cos(angle) * radius;
-      const y = Math.sin(angle) * radius;
-      node.style.transform = 'translate(calc(-50% + ' + x + 'px), calc(-50% + ' + y + 'px))';
-    });
-  }
-
-  positionPentagonNodes();
-  window.addEventListener('resize', positionPentagonNodes);
 
 
   // ===== CTA MOUSE-FOLLOW GRADIENT =====
@@ -1498,6 +1420,530 @@ footer span {
   requestAnimationFrame(drawBlobs);
 
 })();
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+const canvas = document.getElementById('halftoneCanvas');
+if (canvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: false, antialias: false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.NoToneMapping;
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x1A1714);
+  const camera = new THREE.OrthographicCamera(-0.5, 0.5, 0.5, -0.5, 0.1, 10);
+  camera.position.z = 1;
+
+  const loader = new THREE.TextureLoader();
+  const texture = loader.load(
+    'https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?auto=format&fit=crop&w=2000&q=80',
+    () => { dirty = true; }
+  );
+  texture.colorSpace = THREE.SRGBColorSpace;
+
+  const planeMat = new THREE.ShaderMaterial({
+    uniforms: {
+      map: { value: texture },
+      texelSize: { value: new THREE.Vector2(4.0 / 2000, 4.0 / 1333) },
+      brightness: { value: 0.38 },
+      saturation: { value: 0.45 },
+      zoom: { value: 1.1 },
+    },
+    vertexShader: `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform sampler2D map;
+      uniform vec2 texelSize;
+      uniform float brightness;
+      uniform float saturation;
+      uniform float zoom;
+      varying vec2 vUv;
+      void main() {
+        vec2 uv = (vUv - 0.5) / zoom + 0.5;
+        vec4 c = texture2D(map, uv) * 0.36;
+        c += texture2D(map, uv + vec2(texelSize.x, 0.0)) * 0.16;
+        c += texture2D(map, uv - vec2(texelSize.x, 0.0)) * 0.16;
+        c += texture2D(map, uv + vec2(0.0, texelSize.y)) * 0.16;
+        c += texture2D(map, uv - vec2(0.0, texelSize.y)) * 0.16;
+        c.rgb *= brightness;
+        float gray = dot(c.rgb, vec3(0.299, 0.587, 0.114));
+        c.rgb = mix(vec3(gray), c.rgb, saturation);
+        gl_FragColor = c;
+      }
+    `,
+  });
+
+  const plane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), planeMat);
+  scene.add(plane);
+
+  const halftoneShader = {
+    uniforms: {
+      tDiffuse: { value: null },
+      resolution: { value: new THREE.Vector2() },
+      uLightGridSize: { value: 55.0 },
+      uLightWidth: { value: 0.06 },
+      uLightShape: { value: 0 },
+      uLightColor: { value: new THREE.Color('#dcdcdc') },
+      uDarkGridSize: { value: 55.0 },
+      uDarkWidth: { value: 0.11 },
+      uDarkShape: { value: 1 },
+      uDarkColor: { value: new THREE.Color('#2a2a2a') },
+      uRotationJitter: { value: 1.2 },
+      uTime: { value: 0.0 },
+      uRotateSpeed: { value: 0.3 },
+    },
+    vertexShader: `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform sampler2D tDiffuse;
+      uniform vec2 resolution;
+      uniform float uLightGridSize;
+      uniform float uLightWidth;
+      uniform int uLightShape;
+      uniform vec3 uLightColor;
+      uniform float uDarkGridSize;
+      uniform float uDarkWidth;
+      uniform int uDarkShape;
+      uniform vec3 uDarkColor;
+      uniform float uRotationJitter;
+      uniform float uTime;
+      uniform float uRotateSpeed;
+      varying vec2 vUv;
+
+      float shapeSDF(vec2 p, int shape) {
+        if (shape == 0) return length(p);
+        vec2 d = abs(p);
+        return max(min(d.x, d.y), max(d.x, d.y) - 0.35);
+      }
+
+      void main() {
+        vec4 inputColor = texture2D(tDiffuse, vUv);
+        float baseRotation = uTime * uRotateSpeed;
+        vec2 aspect = vec2(resolution.x / resolution.y, 1.0);
+
+        vec2 lightGrid = vUv * aspect * uLightGridSize;
+        vec2 lightCell = floor(lightGrid);
+        vec2 lightCellOrigin = lightCell / (aspect * uLightGridSize);
+        vec4 lightSamp = texture2D(tDiffuse, lightCellOrigin + 0.5 / (aspect * uLightGridSize));
+        float lightLuma = dot(lightSamp.rgb, vec3(0.2126, 0.7152, 0.0722));
+
+        vec2 lj = 0.2 * (fract(sin(vec2(dot(lightCell, vec2(127.1, 311.7)), dot(lightCell, vec2(269.5, 183.3)))) * 43758.5453) - 0.5);
+        float la = baseRotation + uRotationJitter * (fract(sin(dot(lightCell, vec2(78.233, 45.164))) * 43758.5453) - 0.5);
+        float lca = cos(la); float lsa = sin(la);
+        vec2 lc = fract(lightGrid) - 0.5 - lj;
+        vec2 lr = vec2(lca * lc.x + lsa * lc.y, -lsa * lc.x + lca * lc.y);
+
+        float ml = smoothstep(0.05, 0.5, lightLuma);
+        float tl = uLightWidth * ml;
+        float sl = 1.0 - smoothstep(tl - 0.01, tl + 0.01, shapeSDF(lr, uLightShape));
+
+        vec2 dkUv = vUv + 2.0 / resolution;
+        vec2 darkGrid = dkUv * aspect * uDarkGridSize;
+        vec2 darkCell = floor(darkGrid);
+        vec2 darkCellOrigin = darkCell / (aspect * uDarkGridSize);
+        vec4 darkSamp = texture2D(tDiffuse, darkCellOrigin + 0.5 / (aspect * uDarkGridSize));
+        float darkLuma = dot(darkSamp.rgb, vec3(0.2126, 0.7152, 0.0722));
+
+        vec2 dj = 0.08 * (fract(sin(vec2(dot(darkCell, vec2(127.1, 311.7)), dot(darkCell, vec2(269.5, 183.3)))) * 43758.5453) - 0.5);
+        float da = 25.0 + baseRotation + uRotationJitter * (fract(sin(dot(darkCell, vec2(78.233, 45.164))) * 43758.5453) - 0.5);
+        float dca = cos(da); float dsa = sin(da);
+        vec2 dc = fract(darkGrid) - 0.5 - dj;
+        vec2 dr = vec2(dca * dc.x + dsa * dc.y, -dsa * dc.x + dca * dc.y);
+
+        float md = smoothstep(0.4, 0.0, darkLuma);
+        float td = uDarkWidth * md;
+        float sd = 1.0 - smoothstep(td - 0.01, td + 0.01, shapeSDF(dr, uDarkShape));
+
+        vec3 color = mix(inputColor.rgb, uDarkColor, sd);
+        color = mix(color, uLightColor, sl);
+        gl_FragColor = vec4(color, 1.0);
+      }
+    `,
+  };
+
+  const composer = new EffectComposer(renderer);
+  composer.addPass(new RenderPass(scene, camera));
+  const halftonePass = new ShaderPass(halftoneShader);
+  composer.addPass(halftonePass);
+  composer.addPass(new OutputPass());
+
+  let dirty = true;
+  let visible = false;
+
+  function resize() {
+    const w = canvas.parentElement.offsetWidth;
+    const h = canvas.parentElement.offsetHeight;
+    if (w === 0 || h === 0) return;
+    renderer.setSize(w, h);
+    composer.setSize(w, h);
+    halftonePass.uniforms.resolution.value.set(w, h);
+    dirty = true;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const obs = new IntersectionObserver(entries => {
+    visible = entries[0].isIntersecting;
+    if (visible) dirty = true;
+  }, { threshold: 0 });
+  obs.observe(canvas);
+
+  window._halftoneState = { zoom: 1.1 };
+
+  window.addEventListener('scroll', () => { if (visible) dirty = true; }, { passive: true });
+
+  function animate() {
+    requestAnimationFrame(animate);
+    if (!visible) return;
+    planeMat.uniforms.zoom.value = window._halftoneState.zoom;
+    halftonePass.uniforms.uTime.value = performance.now() * 0.001;
+    composer.render();
+  }
+  animate();
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+
+const whCanvas = document.getElementById('wormholeCanvas');
+if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const curvePath = [
+    10.136184463414924, -1.374508746897471, 10.384881573913269,
+    9.1152593889854714, -1.374508746897471, 8.5846792797570011,
+    9.0669355709754882, -1.0665123466336568, 5.8937771631608156,
+    10.151040177840205, -0.65913653144937956, 3.4340491740541346,
+    10.806779203170416, 1.8859391007298545, 0.46855774212986023,
+    10.761433540147586, 2.8724172201359197, -1.2811838605587311,
+    9.6195923104445065, 2.8724172201359197, -3.2833099941904766,
+    6.9763020889151646, 2.7659257976905427, -4.7591958908830172,
+    6.0461277891353697, 1.0727045302089879, -6.6638740164090482,
+    7.3472235778544794, -1.8228856326635698, -9.0685043046185623,
+    7.226367212900791, -1.8228856326635698, -10.499536640855691,
+    5.8354566696263914, -1.8228856326635698, -12.039219379199908,
+    3.6532357452141353, -0.20463983570573391, -13.87695442281038,
+    -0.30169589630131455, 1.5965000671484342, -14.879986418947327,
+    -2.8925694230502157, 2.2971364614427481, -13.892095587598131,
+    -4.537672295357936, 4.5863515759659208, -12.140831652074551,
+    -6.1287913464117594, 5.9653814634119815, -8.9776527318875896,
+    -6.0120301606452813, 4.4081161943855998, -6.712084358394045,
+    -5.2138252159038974, 2.820894808418279, -4.4532820412085607,
+    -2.3424712835109611, 2.2032065005086259, -3.0788773693500198,
+    -0.0076956453915433265, 1.8931797788880202, -1.6577070662471063,
+    -0.24767503988481437, 2.8845808465856684, 0.073915859214221724,
+    -2.2174044353598896, 4.2415524507318576, 2.215992718290742,
+    -3.4526531678364756, 3.0615192023340851, 4.7922404932096558,
+    -3.7356278971556445, 1.4054080369354316, 7.8432021841434629,
+    -3.4003734463804118, 1.1924069108769393, 9.2464090886227073,
+    -1.8851803760476225, 1.5269331003449989, 10.306083896408374,
+    0.01071077144031829, 2.1101821577522295, 10.490880699847727,
+    0.42562058195647001, 2.2759939598834387, 11.613129436580291,
+    0.096405262182225115, 0.032317784084054391, 16.223455375061565,
+    2.3458797884520433, 0.38907275257695584, 19.91188266079584,
+    5.7018400098488771, 1.73337964747396, 20.615481586999959,
+    7.9720939736751824, 1.73337964747396, 19.303399329816457,
+    9.8672362721095652, 0.090083018057025177, 16.893338541618121,
+    11.225959519544134, -1.374508746897471, 14.279002555560753,
+    11.288646925965876, -1.374508746897471, 11.926359497447137,
+    10.136184463414924, -1.374508746897471, 10.384881573913269
+  ];
+
+  const points = [];
+  for (let p = 0; p < curvePath.length; p += 3) {
+    points.push(new THREE.Vector3(curvePath[p], curvePath[p + 1], curvePath[p + 2]));
+  }
+  const spline = new THREE.CatmullRomCurve3(points);
+
+  const paperColor = 0xFAF7F2;
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(paperColor);
+  scene.fog = new THREE.FogExp2(paperColor, 0.18);
+
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+  const tubeSegments = 222;
+  const tubeGeo = new THREE.TubeGeometry(spline, tubeSegments, 0.65, 16, true);
+
+  const wallMat = new THREE.MeshBasicMaterial({
+    color: 0xFAF7F2,
+    side: THREE.BackSide,
+    fog: true,
+    polygonOffset: true,
+    polygonOffsetFactor: 1,
+    polygonOffsetUnits: 1
+  });
+  const tubeWall = new THREE.Mesh(tubeGeo, wallMat);
+  scene.add(tubeWall);
+
+  const frenetFrames = spline.computeFrenetFrames(tubeSegments, true);
+
+  const splineSamples = [];
+  for (let i = 0; i <= tubeSegments; i++) {
+    splineSamples.push(spline.getPointAt(i / tubeSegments));
+  }
+
+  const numFlowLines = 100;
+  const lineSpan = 0.45;
+  const ptsPerLine = 40;
+  const flowRadius = 0.635;
+  const ribbonHalf = 0.018;
+  const flowMat = new THREE.MeshBasicMaterial({
+    color: 0x8B7D5E, side: THREE.DoubleSide,
+    transparent: true, opacity: 0.55, fog: true, depthWrite: false
+  });
+  const flowLines = [];
+  const _flC = new THREE.Vector3();
+  const _flN = new THREE.Vector3();
+  const _flBn = new THREE.Vector3();
+
+  for (let i = 0; i < numFlowLines; i++) {
+    const angle = (i / numFlowLines) * Math.PI * 2;
+    const cosA = Math.cos(angle) * flowRadius;
+    const sinA = Math.sin(angle) * flowRadius;
+    const circCos = -Math.sin(angle) * ribbonHalf;
+    const circSin = Math.cos(angle) * ribbonHalf;
+    const baseStart = (i * 0.618) % 1;
+    const numVerts = (ptsPerLine + 1) * 2;
+    const positions = new Float32Array(numVerts * 3);
+    const indices = [];
+    for (let j = 0; j < ptsPerLine; j++) {
+      const a = j * 2, b = j * 2 + 1, c = (j + 1) * 2, d = (j + 1) * 2 + 1;
+      indices.push(a, c, b, b, c, d);
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geo.setIndex(indices);
+    const mesh = new THREE.Mesh(geo, flowMat);
+    mesh.renderOrder = 1;
+    mesh.frustumCulled = false;
+    scene.add(mesh);
+    flowLines.push({ geo, cosA, sinA, circCos, circSin, baseStart, posAttr: geo.attributes.position });
+  }
+
+  function updateFlowLines(scrollP, time) {
+    const flowOffset = scrollP * 1.5 + time * 0.00004;
+    for (let i = 0; i < numFlowLines; i++) {
+      const fl = flowLines[i];
+      const animStart = ((fl.baseStart + flowOffset) % 1 + 1) % 1;
+      const arr = fl.posAttr.array;
+      for (let j = 0; j <= ptsPerLine; j++) {
+        const lp = ((animStart + (j / ptsPerLine) * lineSpan) % 1 + 1) % 1;
+        const scaled = lp * tubeSegments;
+        const fi = Math.floor(scaled) % tubeSegments;
+        const fi1 = fi + 1;
+        const frac = scaled - Math.floor(scaled);
+        _flC.copy(splineSamples[fi]).lerp(splineSamples[fi1], frac);
+        _flN.copy(frenetFrames.normals[fi]).lerp(frenetFrames.normals[fi1], frac);
+        _flBn.copy(frenetFrames.binormals[fi]).lerp(frenetFrames.binormals[fi1], frac);
+        const sx = _flC.x + _flN.x * fl.cosA + _flBn.x * fl.sinA;
+        const sy = _flC.y + _flN.y * fl.cosA + _flBn.y * fl.sinA;
+        const sz = _flC.z + _flN.z * fl.cosA + _flBn.z * fl.sinA;
+        const cx = _flN.x * fl.circCos + _flBn.x * fl.circSin;
+        const cy = _flN.y * fl.circCos + _flBn.y * fl.circSin;
+        const cz = _flN.z * fl.circCos + _flBn.z * fl.circSin;
+        const idx = j * 6;
+        arr[idx]     = sx + cx; arr[idx + 1] = sy + cy; arr[idx + 2] = sz + cz;
+        arr[idx + 3] = sx - cx; arr[idx + 4] = sy - cy; arr[idx + 5] = sz - cz;
+      }
+      fl.posAttr.needsUpdate = true;
+    }
+  }
+
+  const numBoxes = 55;
+  const boxSize = 0.075;
+  const boxGeo = new THREE.BoxGeometry(boxSize, boxSize, boxSize);
+  const boxEdges = new THREE.EdgesGeometry(boxGeo, 0.2);
+  const boxMats = [];
+  for (let i = 0; i < numBoxes; i++) {
+    const bp = (i / numBoxes + Math.random() * 0.1) % 1;
+    const pos = spline.getPointAt(bp);
+    pos.x += Math.random() - 0.4;
+    pos.z += Math.random() - 0.4;
+    const color = new THREE.Color().setHSL(0.08 + bp * 0.1, 0.3, 0.45);
+    const mat = new THREE.LineBasicMaterial({ color });
+    boxMats.push(mat);
+    const boxLines = new THREE.LineSegments(boxEdges, mat);
+    boxLines.position.copy(pos);
+    boxLines.rotation.set(
+      Math.random() * Math.PI,
+      Math.random() * Math.PI,
+      Math.random() * Math.PI
+    );
+    scene.add(boxLines);
+  }
+
+  const stageWaypoints = [0.08, 0.20, 0.32, 0.44, 0.56];
+  const isMobile = window.innerWidth <= 768;
+
+  const renderer = new THREE.WebGLRenderer({ canvas: whCanvas, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+  function whResize() {
+    const w = whCanvas.parentElement.offsetWidth;
+    const h = whCanvas.parentElement.offsetHeight;
+    if (w === 0 || h === 0) return;
+    renderer.setSize(w, h);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  whResize();
+  window.addEventListener('resize', whResize);
+
+  let whVisible = false;
+  let whRaf = 0;
+
+  function startLoop() {
+    if (!whRaf) {
+      lastWhT = 0;
+      whRaf = requestAnimationFrame(whAnimate);
+    }
+  }
+  function stopLoop() {
+    if (whRaf) { cancelAnimationFrame(whRaf); whRaf = 0; }
+  }
+
+  const whObs = new IntersectionObserver(entries => {
+    const next = entries[0].isIntersecting;
+    if (next === whVisible) return;
+    whVisible = next;
+    if (whVisible) startLoop(); else stopLoop();
+  }, { threshold: 0 });
+  whObs.observe(whCanvas);
+
+  let activeStage = -1;
+  const whStages = [...document.querySelectorAll('.wh-stage')];
+  const numSegs = stageWaypoints.length;
+  const segLen = 1 / numSegs;
+  const travelFrac = 0.70;
+
+  function remapWithEasing(scroll) {
+    const seg = Math.min(Math.floor(scroll / segLen), numSegs - 1);
+    const segP = (scroll - seg * segLen) / segLen;
+    const prevWP = seg === 0 ? 0 : stageWaypoints[seg - 1];
+    const currWP = stageWaypoints[seg];
+    if (segP <= travelFrac) {
+      const t = segP / travelFrac;
+      const eased = t < 0.5
+        ? 8 * t * t * t * t
+        : 1 - Math.pow(-2 * t + 2, 4) / 2;
+      return prevWP + (currWP - prevWP) * eased;
+    }
+    return currWP;
+  }
+
+  function circularDist(a, b) {
+    const d = Math.abs(a - b);
+    return Math.min(d, 1 - d);
+  }
+
+  function lerpCircular(a, b, alpha) {
+    let delta = b - a;
+    if (delta > 0.5) delta -= 1;
+    if (delta < -0.5) delta += 1;
+    return ((a + delta * alpha) % 1 + 1) % 1;
+  }
+
+  const _fNormal = new THREE.Vector3();
+  const _fTangent = new THREE.Vector3();
+  const _rollQuat = new THREE.Quaternion();
+  const _camUp = new THREE.Vector3();
+  const _camPos = new THREE.Vector3();
+  const _camLookAt = new THREE.Vector3();
+
+  function getFrameAt(p) {
+    const scaled = p * tubeSegments;
+    const i0 = Math.floor(scaled) % tubeSegments;
+    const i1 = i0 + 1;
+    const f = scaled - Math.floor(scaled);
+    _fNormal.copy(frenetFrames.normals[i0]).lerp(frenetFrames.normals[i1], f).normalize();
+    spline.getTangentAt(p, _fTangent).normalize();
+  }
+
+  function updateCamera(p, t) {
+    spline.getPointAt(p, _camPos);
+    spline.getPointAt((p + 0.03) % 1, _camLookAt);
+    getFrameAt(p);
+    const roll = Math.sin(p * Math.PI * 6 + t * 0.00025) * 0.17;
+    _rollQuat.setFromAxisAngle(_fTangent, roll);
+    _camUp.copy(_fNormal).applyQuaternion(_rollQuat).normalize();
+    camera.position.copy(_camPos);
+    camera.up.copy(_camUp);
+    camera.lookAt(_camLookAt);
+  }
+
+  let lastWhT = 0;
+  let smoothedP = 0;
+  let smoothedPReady = false;
+
+  function whAnimate(t) {
+    whRaf = requestAnimationFrame(whAnimate);
+
+    const dt = lastWhT ? Math.min((t - lastWhT) / 1000, 0.1) : 0;
+    lastWhT = t;
+
+    const scrollProgress = Number(whCanvas.dataset.progress || 0);
+    const targetP = remapWithEasing(scrollProgress);
+    if (!smoothedPReady) {
+      smoothedP = targetP;
+      smoothedPReady = true;
+    } else {
+      smoothedP = lerpCircular(smoothedP, targetP, 1 - Math.exp(-8 * dt));
+    }
+    const drift = Math.sin(t * 0.0003) * 0.008;
+    const p = ((smoothedP + drift) % 1 + 1) % 1;
+
+    updateCamera(p, t);
+    updateFlowLines(smoothedP, t);
+
+    stageWaypoints.forEach((wp, i) => {
+      const dist = circularDist(p, wp);
+      if (activeStage === i && dist > 0.055) {
+        activeStage = -1;
+      } else if (activeStage === -1 && dist < 0.035) {
+        activeStage = i;
+      }
+    });
+    whStages.forEach((el, i) => {
+      const isActive = activeStage === i;
+      el.classList.toggle('active', isActive);
+      el.style.opacity = isActive ? '1' : '0';
+    });
+
+    renderer.render(scene, camera);
+  }
+
+  window.addEventListener('pagehide', () => {
+    stopLoop();
+    whObs.disconnect();
+    window.removeEventListener('resize', whResize);
+    tubeGeo.dispose();
+    wallMat.dispose();
+    flowLines.forEach(fl => fl.geo.dispose());
+    flowMat.dispose();
+    boxGeo.dispose();
+    boxEdges.dispose();
+    boxMats.forEach(m => m.dispose());
+    renderer.dispose();
+  }, { once: true });
+}
 </script>
 </body>
 </html>
