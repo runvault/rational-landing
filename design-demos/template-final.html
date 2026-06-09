@@ -1682,7 +1682,8 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
   const paperColor = 0xFAF7F2;
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(paperColor);
-  scene.fog = new THREE.FogExp2(paperColor, 0.18);
+  const baseFogColor = new THREE.Color(0xF5E6D0);
+  scene.fog = new THREE.FogExp2(baseFogColor, 0.16);
 
   const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
@@ -1690,9 +1691,11 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
   const tubeGeo = new THREE.TubeGeometry(spline, tubeSegments, 0.65, 16, true);
 
   const wallMat = new THREE.MeshBasicMaterial({
-    color: 0xFAF7F2,
+    color: 0xF5E0C8,
     side: THREE.BackSide,
     fog: true,
+    transparent: true,
+    opacity: 0.25,
     polygonOffset: true,
     polygonOffsetFactor: 1,
     polygonOffsetUnits: 1
@@ -1707,13 +1710,23 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
     splineSamples.push(spline.getPointAt(i / tubeSegments));
   }
 
-  const colEntry = new THREE.Color(0x8B7D5E);
-  const colMid = new THREE.Color(0xB87333);
-  const colDeep = new THREE.Color(0x4A3728);
-  const colGold = new THREE.Color(0xD4A855);
+  const colEntry = new THREE.Color(0xD4AF37);
+  const colMid = new THREE.Color(0xCD7F32);
+  const colDeep = new THREE.Color(0x8B4513);
+  const colGold = new THREE.Color(0xFFD700);
   const _gradColor = new THREE.Color();
 
-  const tunnelLight = new THREE.PointLight(0xD4A855, 1.2, 3, 1.5);
+  const stageColors = [
+    { ribbon: new THREE.Color(0xC5943A), wall: new THREE.Color(0xF5E0C8), fog: new THREE.Color(0xF5E6D0) },
+    { ribbon: new THREE.Color(0xD4AF37), wall: new THREE.Color(0xEDD5B5), fog: new THREE.Color(0xF0DCC0) },
+    { ribbon: new THREE.Color(0xFFD700), wall: new THREE.Color(0xE5C8A0), fog: new THREE.Color(0xEBD4B0) },
+    { ribbon: new THREE.Color(0xCD7F32), wall: new THREE.Color(0xDCBB90), fog: new THREE.Color(0xE5C8A0) },
+    { ribbon: new THREE.Color(0x8B4513), wall: new THREE.Color(0xD4AE80), fog: new THREE.Color(0xDEBD95) },
+  ];
+  const _stageWall = new THREE.Color();
+  const _stageFog = new THREE.Color();
+
+  const tunnelLight = new THREE.PointLight(0xFFCC66, 1.8, 4, 1.5);
   scene.add(tunnelLight);
   const _lightPos = new THREE.Vector3();
 
@@ -1724,15 +1737,16 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
   const ribbonBase = 0.016;
   const flowMat = new THREE.MeshStandardMaterial({
     vertexColors: true, side: THREE.DoubleSide,
-    transparent: true, opacity: 0.6, fog: true, depthWrite: false,
-    roughness: 0.7, metalness: 0.1
+    transparent: true, opacity: 0.75, fog: true, depthWrite: false,
+    roughness: 0.4, metalness: 0.3,
+    emissive: new THREE.Color(0xD4AF37), emissiveIntensity: 0.15
   });
   const flowLines = [];
   const _flC = new THREE.Vector3();
   const _flN = new THREE.Vector3();
   const _flBn = new THREE.Vector3();
 
-  const ambLight = new THREE.AmbientLight(0xFAF7F2, 0.4);
+  const ambLight = new THREE.AmbientLight(0xF5DEB3, 0.5);
   scene.add(ambLight);
 
   for (let i = 0; i < numFlowLines; i++) {
@@ -1955,6 +1969,17 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
     updateCamera(p, t);
     spline.getPointAt((p + 0.12) % 1, _lightPos);
     tunnelLight.position.copy(_lightPos);
+
+    const stageF = Math.min(p / 0.56, 1) * (stageColors.length - 1);
+    const si = Math.min(Math.floor(stageF), stageColors.length - 2);
+    const sf = stageF - si;
+    _stageWall.copy(stageColors[si].wall).lerp(stageColors[si + 1].wall, sf);
+    _stageFog.copy(stageColors[si].fog).lerp(stageColors[si + 1].fog, sf);
+    wallMat.color.copy(_stageWall);
+    scene.fog.color.copy(_stageFog);
+    scene.background.copy(_stageFog);
+    flowMat.emissive.copy(stageColors[si].ribbon).lerp(stageColors[si + 1].ribbon, sf);
+
     updateFlowLines(smoothedP, t);
 
     stageWaypoints.forEach((wp, i) => {
