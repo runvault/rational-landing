@@ -505,6 +505,7 @@ section {
   position: relative;
   flex: 1;
   min-height: 0;
+  background: #1A1208;
 }
 .wh-stages {
   position: absolute;
@@ -516,7 +517,7 @@ section {
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity 0.6s ease;
+  transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1);
 }
 .wh-stage.active {
   opacity: 1;
@@ -531,8 +532,13 @@ section {
   color: #fff;
   text-align: center;
   padding: 2rem;
-  background: rgba(0,0,0,0.45);
+  background: rgba(0,0,0,0.3);
   pointer-events: none;
+  transform: translateY(12px) scale(0.97);
+  transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.wh-stage.active .wh-stage-content {
+  transform: translateY(0) scale(1);
 }
 .wh-stage-num {
   font-family: var(--font-heading);
@@ -1679,23 +1685,26 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
   }
   const spline = new THREE.CatmullRomCurve3(points);
 
-  const paperColor = 0xFAF7F2;
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(paperColor);
-  const baseFogColor = new THREE.Color(0xF5E6D0);
-  scene.fog = new THREE.FogExp2(baseFogColor, 0.16);
+  scene.background = new THREE.Color(0x1A1208);
+  const baseFogColor = new THREE.Color(0x2A1F10);
+  scene.fog = new THREE.FogExp2(baseFogColor, 0.22);
 
   const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
   const tubeSegments = 222;
   const tubeGeo = new THREE.TubeGeometry(spline, tubeSegments, 0.65, 16, true);
 
-  const wallMat = new THREE.MeshBasicMaterial({
-    color: 0xF5E0C8,
+  const wallMat = new THREE.MeshStandardMaterial({
+    color: 0xB87333,
     side: THREE.BackSide,
     fog: true,
     transparent: true,
-    opacity: 0.25,
+    opacity: 0.85,
+    metalness: 0.9,
+    roughness: 0.25,
+    emissive: new THREE.Color(0x4A2810),
+    emissiveIntensity: 0.12,
     polygonOffset: true,
     polygonOffsetFactor: 1,
     polygonOffsetUnits: 1
@@ -1710,24 +1719,29 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
     splineSamples.push(spline.getPointAt(i / tubeSegments));
   }
 
-  const colEntry = new THREE.Color(0xD4AF37);
-  const colMid = new THREE.Color(0xCD7F32);
-  const colDeep = new THREE.Color(0x8B4513);
-  const colGold = new THREE.Color(0xFFD700);
+  const colEntry = new THREE.Color(0xFFD700);
+  const colMid = new THREE.Color(0xD4AF37);
+  const colDeep = new THREE.Color(0xCD853F);
+  const colGold = new THREE.Color(0xE8C252);
   const _gradColor = new THREE.Color();
 
   const stageColors = [
-    { ribbon: new THREE.Color(0xC5943A), wall: new THREE.Color(0xF5E0C8), fog: new THREE.Color(0xF5E6D0) },
-    { ribbon: new THREE.Color(0xD4AF37), wall: new THREE.Color(0xEDD5B5), fog: new THREE.Color(0xF0DCC0) },
-    { ribbon: new THREE.Color(0xFFD700), wall: new THREE.Color(0xE5C8A0), fog: new THREE.Color(0xEBD4B0) },
-    { ribbon: new THREE.Color(0xCD7F32), wall: new THREE.Color(0xDCBB90), fog: new THREE.Color(0xE5C8A0) },
-    { ribbon: new THREE.Color(0x8B4513), wall: new THREE.Color(0xD4AE80), fog: new THREE.Color(0xDEBD95) },
+    { ribbon: new THREE.Color(0xD4AF37), wall: new THREE.Color(0xB87333), fog: new THREE.Color(0x2A1F10) },
+    { ribbon: new THREE.Color(0xFFD700), wall: new THREE.Color(0xCD7F32), fog: new THREE.Color(0x30220E) },
+    { ribbon: new THREE.Color(0xE8C252), wall: new THREE.Color(0xC97B2A), fog: new THREE.Color(0x352612) },
+    { ribbon: new THREE.Color(0xCD853F), wall: new THREE.Color(0xA0522D), fog: new THREE.Color(0x2E1E0C) },
+    { ribbon: new THREE.Color(0xB8860B), wall: new THREE.Color(0x8B5E3C), fog: new THREE.Color(0x261808) },
   ];
   const _stageWall = new THREE.Color();
   const _stageFog = new THREE.Color();
 
-  const tunnelLight = new THREE.PointLight(0xFFCC66, 1.8, 4, 1.5);
+  const tunnelLight = new THREE.PointLight(0xFFCC66, 3.0, 6, 1.2);
   scene.add(tunnelLight);
+  const trailLight = new THREE.PointLight(0xFFAA44, 1.5, 5, 1.5);
+  scene.add(trailLight);
+  const dirLight = new THREE.DirectionalLight(0xFFF0DD, 0.6);
+  dirLight.position.set(0, 1, 0);
+  scene.add(dirLight);
   const _lightPos = new THREE.Vector3();
 
   const numFlowLines = 100;
@@ -1737,16 +1751,16 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
   const ribbonBase = 0.016;
   const flowMat = new THREE.MeshStandardMaterial({
     vertexColors: true, side: THREE.DoubleSide,
-    transparent: true, opacity: 0.75, fog: true, depthWrite: false,
-    roughness: 0.4, metalness: 0.3,
-    emissive: new THREE.Color(0xD4AF37), emissiveIntensity: 0.15
+    transparent: true, opacity: 0.85, fog: true, depthWrite: false,
+    roughness: 0.3, metalness: 0.5,
+    emissive: new THREE.Color(0xD4AF37), emissiveIntensity: 0.25
   });
   const flowLines = [];
   const _flC = new THREE.Vector3();
   const _flN = new THREE.Vector3();
   const _flBn = new THREE.Vector3();
 
-  const ambLight = new THREE.AmbientLight(0xF5DEB3, 0.5);
+  const ambLight = new THREE.AmbientLight(0xF5DEB3, 0.35);
   scene.add(ambLight);
 
   for (let i = 0; i < numFlowLines; i++) {
@@ -1777,7 +1791,7 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
   }
 
   function updateFlowLines(scrollP, time) {
-    const flowOffset = scrollP * 1.5 + time * 0.00006;
+    const flowOffset = scrollP * 0.6 + time * 0.000018;
     for (let i = 0; i < numFlowLines; i++) {
       const fl = flowLines[i];
       const animStart = ((fl.baseStart + flowOffset) % 1 + 1) % 1;
@@ -1851,6 +1865,8 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
   const renderer = new THREE.WebGLRenderer({ canvas: whCanvas, antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.1;
 
   function whResize() {
     const w = whCanvas.parentElement.offsetWidth;
@@ -1937,7 +1953,7 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
     spline.getPointAt(p, _camPos);
     spline.getPointAt((p + 0.03) % 1, _camLookAt);
     getFrameAt(p);
-    const roll = Math.sin(p * Math.PI * 6 + t * 0.00025) * 0.17;
+    const roll = Math.sin(p * Math.PI * 2 + t * 0.0001) * 0.06;
     _rollQuat.setFromAxisAngle(_fTangent, roll);
     _camUp.copy(_fNormal).applyQuaternion(_rollQuat).normalize();
     camera.position.copy(_camPos);
@@ -1961,7 +1977,14 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
       smoothedP = targetP;
       smoothedPReady = true;
     } else {
-      smoothedP = lerpCircular(smoothedP, targetP, 1 - Math.exp(-8 * dt));
+      let dampRate = 8;
+      const nearestDist = Math.min(...stageWaypoints.map(wp => circularDist(targetP, wp)));
+      if (nearestDist < 0.025) {
+        dampRate = 2.5;
+      } else if (nearestDist < 0.05) {
+        dampRate = 2.5 + 5.5 * ((nearestDist - 0.025) / 0.025);
+      }
+      smoothedP = lerpCircular(smoothedP, targetP, 1 - Math.exp(-dampRate * dt));
     }
     const drift = Math.sin(t * 0.0003) * 0.008;
     const p = ((smoothedP + drift) % 1 + 1) % 1;
@@ -1969,6 +1992,9 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
     updateCamera(p, t);
     spline.getPointAt((p + 0.12) % 1, _lightPos);
     tunnelLight.position.copy(_lightPos);
+    spline.getPointAt(((p - 0.08) % 1 + 1) % 1, _lightPos);
+    trailLight.position.copy(_lightPos);
+    dirLight.position.copy(_camPos).add(_fNormal);
 
     const stageF = Math.min(p / 0.56, 1) * (stageColors.length - 1);
     const si = Math.min(Math.floor(stageF), stageColors.length - 2);
