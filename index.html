@@ -896,8 +896,8 @@ footer span {
     <div class="approach-content" id="approachContent">
       <p class="section-label">The Approach</p>
       <h2 class="approach-headline">
-        Knowledge has become a commodity.<br>
-        <em>We take action.</em>
+        Humans Bring Judgement.<br>
+        <em>Rational Handles The Rest.</em>
       </h2>
     </div>
     <div class="approach-image-wrap">
@@ -1196,16 +1196,12 @@ footer span {
     const scrolled = -rect.top;
     const progress = Math.max(0, Math.min(1, scrolled / scrollDistance));
 
-    if (window._halftoneState) window._halftoneState.zoom = lerp(1.1, 1.6, progress);
+    if (window._halftoneState) window._halftoneState.zoom = 1.1;
 
-    const insetX = lerp(18, 0, progress);
-    const insetY = lerp(12, 0, progress);
-    approachImageWrap.style.clipPath = 'inset(' + insetY + '% ' + insetX + '% ' + insetY + '% ' + insetX + '%)';
+    approachImageWrap.style.clipPath = 'inset(12% 18% 12% 18%)';
 
-    const textDrift = progress * -30;
-    const textOpacity = progress < 0.7 ? 1 : 1 - ((progress - 0.7) / 0.3);
-    approachContent.style.transform = 'translateY(' + textDrift + 'px)';
-    approachContent.style.opacity = textOpacity;
+    approachContent.style.transform = 'translateY(0)';
+    approachContent.style.opacity = 1;
   }
 
   function buildDiagram() {
@@ -1689,11 +1685,13 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0xFFFFFF);
+  scene.fog = new THREE.Fog(0xFFFFFF, 1.2, 4.5);
 
   const camera = new THREE.PerspectiveCamera(95, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-  const tubeSegments = 222;
-  const tubeGeo = new THREE.TubeGeometry(spline, tubeSegments, 0.65, 32, true);
+  const tubeSegments = 512;
+  const pathSegs = 1024;
+  const tubeGeo = new THREE.TubeGeometry(spline, tubeSegments, 0.65, 256, true);
 
   const wallMat = new THREE.MeshBasicMaterial({
     color: 0xFFFFFF,
@@ -1708,11 +1706,11 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
   const tubeWall = new THREE.Mesh(tubeGeo, wallMat);
   scene.add(tubeWall);
 
-  const frenetFrames = spline.computeFrenetFrames(tubeSegments, true);
+  const frenetFrames = spline.computeFrenetFrames(pathSegs, true);
 
   const splineSamples = [];
-  for (let i = 0; i <= tubeSegments; i++) {
-    splineSamples.push(spline.getPointAt(i / tubeSegments));
+  for (let i = 0; i <= pathSegs; i++) {
+    splineSamples.push(spline.getPointAt(i / pathSegs));
   }
 
   const bokehMats = [];
@@ -1743,16 +1741,16 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
   const _lightPos = new THREE.Vector3();
   const isMobile = window.innerWidth <= 768;
 
-  const numFibers = isMobile ? 500 : 1200;
-  const minSpan = 0.08;
-  const maxSpan = 0.35;
-  const fiberWidthThin = 0.0012;
-  const fiberWidthThick = 0.0024;
+  const numFibers = isMobile ? 400 : 1075;
+  const minSpan = 0.05;
+  const maxSpan = 0.08;
+  const fiberWidthThin = 0.0024;
+  const fiberWidthThick = 0.0036;
   const flowRadius = 0.635;
   const endFade = 0.15;
   const flowMat = new THREE.MeshBasicMaterial({
     vertexColors: true, side: THREE.DoubleSide,
-    transparent: true, opacity: 1.0, fog: false, depthWrite: false
+    transparent: true, opacity: 1.0, fog: true, depthWrite: false
   });
   const flowLines = [];
   const _flC = new THREE.Vector3();
@@ -1777,7 +1775,7 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
     const angle = (i / numFibers) * Math.PI * 2 + (rng() - 0.5) * 0.12;
     const baseStart = (i * 0.618033988 + rng() * 0.03) % 1;
     const span = minSpan + rng() * (maxSpan - minSpan);
-    const ptsPerFiber = Math.max(12, Math.round(span * 80));
+    const ptsPerFiber = Math.max(20, Math.round(span * 250));
     const vertexOffset = totalFlowVerts;
     totalFlowVerts += (ptsPerFiber + 1) * 2;
     totalFlowTris += ptsPerFiber * 6;
@@ -1840,11 +1838,18 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
     for (let i = 0; i < numFibers; i++) {
       const fl = flowLines[i];
       const animStart = ((fl.baseStart + flowOffset) % 1 + 1) % 1;
+      // wrapBoundary: rawLp = animStart + t*span crosses 1.0 mid-fiber,
+      // producing a jump from spline-end to spline-start in the triangle strip.
+      // Track the wrap t-value so we can zero alpha at that vertex pair.
+      const wrapT = animStart < 1 && (animStart + fl.span) > 1
+        ? (1 - animStart) / fl.span   // normalized t at which rawLp crosses 1
+        : -1;
       for (let j = 0; j <= fl.ptsPerFiber; j++) {
         const t = j / fl.ptsPerFiber;
-        const lp = ((animStart + t * fl.span) % 1 + 1) % 1;
-        const scaled = lp * tubeSegments;
-        const fi = Math.floor(scaled) % tubeSegments;
+        const rawLp = animStart + t * fl.span;
+        const lp = rawLp >= 1 ? rawLp - 1 : rawLp;  // equivalent to % 1 for [0..1.08] range
+        const scaled = lp * pathSegs;
+        const fi = Math.floor(scaled) % pathSegs;
         const fi1 = fi + 1;
         const frac = scaled - Math.floor(scaled);
         _flC.copy(splineSamples[fi]).lerp(splineSamples[fi1], frac);
@@ -1862,15 +1867,15 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
         pArr[pidx + 3] = sx - cx; pArr[pidx + 4] = sy - cy; pArr[pidx + 5] = sz - cz;
 
         let alpha = 1.0;
-        if (t < endFade) alpha = t / endFade;
+        // Zero alpha at the spline wrap boundary to collapse the degenerate
+        // triangle that would otherwise streak across the entire tunnel length.
+        if (wrapT >= 0 && Math.abs(t - wrapT) < (1 / fl.ptsPerFiber) * 1.5) {
+          alpha = 0;
+        } else if (t < endFade) alpha = t / endFade;
         else if (t > 1 - endFade) alpha = (1 - t) / endFade;
         alpha = alpha * alpha;
 
-        if (lp < 0.5) {
-          _gradColor.copy(colEntry).lerp(colMid, lp * 2);
-        } else {
-          _gradColor.copy(colMid).lerp(colDeep, (lp - 0.5) * 2);
-        }
+        _gradColor.copy(colMid);
         const ci = (fl.vertexOffset + j * 2) * 4;
         cArr[ci]     = cArr[ci + 4] = _gradColor.r;
         cArr[ci + 1] = cArr[ci + 5] = _gradColor.g;
@@ -1943,9 +1948,12 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
   function remapWithEasing(scroll) {
     const seg = Math.min(Math.floor(scroll / segLen), numSegs - 1);
     const segP = (scroll - seg * segLen) / segLen;
+    // Smoothstep makes velocity continuous at segment boundaries, eliminating
+    // the sudden camera-speed pop that linear interpolation produces.
+    const eased = segP * segP * (3 - 2 * segP);
     const prevWP = seg === 0 ? 0 : stageWaypoints[seg - 1];
     const currWP = stageWaypoints[seg];
-    return prevWP + (currWP - prevWP) * segP;
+    return prevWP + (currWP - prevWP) * eased;
   }
 
   function circularDist(a, b) {
@@ -1968,8 +1976,8 @@ if (whCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
   const _camLookAt = new THREE.Vector3();
 
   function getFrameAt(p) {
-    const scaled = p * tubeSegments;
-    const i0 = Math.floor(scaled) % tubeSegments;
+    const scaled = p * pathSegs;
+    const i0 = Math.floor(scaled) % pathSegs;
     const i1 = i0 + 1;
     const f = scaled - Math.floor(scaled);
     _fNormal.copy(frenetFrames.normals[i0]).lerp(frenetFrames.normals[i1], f).normalize();
