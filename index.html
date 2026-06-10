@@ -101,20 +101,11 @@ nav.scrolled {
   align-items: center;
   gap: 0.5rem;
   pointer-events: auto;
+  margin-bottom: 30px;
 }
 .yc-logo {
   width: 24px;
   height: 24px;
-  background: #F26522;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-body);
-  font-weight: 500;
-  font-size: 0.85rem;
-  color: #fff;
-  line-height: 1;
 }
 .yc-text {
   font-size: 0.8rem;
@@ -179,7 +170,7 @@ nav.scrolled {
   font-size: clamp(2.8rem, 7vw, 5.5rem);
   line-height: 1.1;
   color: var(--ink);
-  margin-bottom: 1rem;
+  margin-bottom: 20px;
 }
 .hero-headline .char {
   display: inline-block;
@@ -195,7 +186,8 @@ nav.scrolled {
   font-size: clamp(1rem, 2vw, 1.3rem);
   color: var(--t1);
   max-width: 500px;
-  margin: 0 auto;
+  margin: 0 auto 20px auto;
+  text-align: center;
 }
 
 /* ===== SOCIAL PROOF PILL ===== */
@@ -794,12 +786,12 @@ footer span {
     <div class="hero-image" id="heroImage"></div>
     <div class="hero-text" id="heroText">
       <div class="yc-badge">
-        <span class="yc-logo">Y</span>
+        <svg class="yc-logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="24" rx="0" fill="#FF6600"/><path d="M7.2 6.5L11.1 13.1V17.5H12.9V13.1L16.8 6.5H14.7L12 11.4L9.3 6.5H7.2Z" fill="white"/></svg>
         <span class="yc-text">Backed by Y Combinator</span>
       </div>
-      <h1 class="hero-headline" id="heroHeadline"></h1>
-      <p class="hero-subtitle">AI employees that coordinate your firm's work, remember every client preference, and get better every week. Onboarded in 48 hours.</p>
-      <div class="social-proof-pill" id="socialPill" style="margin-top: 1.2rem; margin-bottom: 0;">
+      <h1 class="hero-headline" id="heroHeadline">Built to Close Books.</h1>
+      <p class="hero-subtitle">No more SaaS. <br> No More Outsourcing. <br> Onboarded in 48 hours.</p>
+      <div class="social-proof-pill" id="socialPill" style="margin-top: 20px; margin-bottom: 0;">
         <div class="pill-avatars">
           <img src="https://i.pravatar.cc/80?img=32" width="20" height="20" alt="" class="pill-avatar">
           <img src="https://i.pravatar.cc/80?img=47" width="20" height="20" alt="" class="pill-avatar">
@@ -1044,8 +1036,9 @@ footer span {
   'use strict';
 
   // ===== HERO HEADLINE CHAR-BY-CHAR ANIMATION =====
-  const headlineText = 'Your perfect next hire.';
+  const headlineText = 'Built to Close Books.';
   const headlineEl = document.getElementById('heroHeadline');
+  headlineEl.textContent = '';
   headlineText.split('').forEach((char, i) => {
     const span = document.createElement('span');
     span.className = 'char';
